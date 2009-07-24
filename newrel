@@ -1,0 +1,35 @@
+#!/bin/sh
+
+# check number of arguments
+if [ $# -lt 1 -o $# -gt 2 ]; then
+  echo "Usage: `basename $0` directory [release]" 1>&2
+  exit 1
+fi
+
+# read arguments
+DIR=$1
+RELEASE=head
+if [ $# -gt 1 ]; then
+  RELEASE=$2
+  svn list ${BELLE2_REPOSITORY}/releases/${RELEASE} &> /dev/null
+  if [ "$?" != "0" ]; then
+    echo "The release ${RELEASE} does not exist." 1>&2
+    exit 1
+  fi
+fi
+
+# create release directory and write release version to .release
+if [ -d ${DIR} ]; then
+  echo "The directory ${DIR} already exists." 1>&2
+  exit 1
+fi
+mkdir ${DIR}
+echo ${RELEASE} > ${DIR}/.release
+
+# check out makefiles and link the main makefile
+if [ "${RELEASE}" == "head" ]; then
+  svn co ${BELLE2_REPOSITORY}/makefiles/trunk ${DIR}/makefiles
+else
+  svn co ${BELLE2_REPOSITORY}/releases/${RELEASE}/makefiles ${DIR}/makefiles
+fi
+cd $DIR; ln -s makefiles/Makefile .

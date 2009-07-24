@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# check astyle and its version
+which astyle &> /dev/null
+if [ $? != 0 ]; then
+  echo "astyle tool not found. Add externals package, build it, and add bin directory to PATH." 1>&2
+  exit 1
+fi
+VERSION=`astyle -V 2>&1`
+if [ "${VERSION}" != "Artistic Style Version 1.23" ]; then
+  echo "Wrong version of astyle. Add externals package, build it, and add bin directory to PATH." 1>&2
+  exit 1
+fi
+
+# check arguments
+ARGS=$*
+if [ $# -lt 1 ]; then
+  ARGS="--recursive *.cc *.h"
+fi
+
+# run astyle
+astyle \
+--indent=spaces=2 \
+--convert-tabs \
+--brackets=stroustrup \
+--indent-switches \
+--indent-namespaces \
+--indent-preprocessor \
+--max-instatement-indent=60 \
+--min-conditional-indent=0 \
+--pad-oper \
+--unpad-paren \
+--keep-one-line-statements \
+--keep-one-line-blocks \
+--suffix=none \
+--formatted \
+${ARGS}

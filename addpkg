@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# check number of arguments
+if [ $# -lt 1 -o $# -gt 2 ]; then
+  echo "Usage: `basename $0` package [\"release\"(=default)/\"head\"/tag]" 1>&2
+  exit 1
+fi
+
+# read arguments
+PACKAGE=$1
+if [ -d ${PACKAGE} ]; then
+  echo "The directory ${PACKAGE} already exists." 1>&2
+  exit 1
+fi
+svn list ${BELLE2_REPOSITORY}/${PACKAGE} &> /dev/null
+if [ "$?" != "0" ]; then
+  echo "The package ${PACKAGE} does not exist." 1>&2
+  exit 1
+fi
+TAG=release
+if [ $# -gt 1 ]; then
+  TAG=$2
+  if [ "${TAG}" != "head" -a "${TAG}" != "release" ]; then
+    svn list ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG} &> /dev/null
+    if [ "$?" != "0" ]; then
+      echo "The tag ${TAG} does not exist." 1>&2
+      exit 1
+    fi
+  fi
+fi
+
+# check out package
+if [ "${TAG}" == "release" ]; then
+  if [ ! -f .release ]; then
+    echo "Not in a release directory." 1>&2
+    exit 1
+  fi
+  RELEASE=`cat .release`
+  if [ "${RELEASE}" == "head" ]; then
+    svn co ${BELLE2_REPOSITORY}/${PACKAGE}/trunk ${PACKAGE}
+  else
+    svn co ${BELLE2_REPOSITORY}/releases/${RELEASE}/${PACKAGE} ${PACKAGE}
+  fi
+elif [ "${TAG}" == "head" ]; then
+  svn co ${BELLE2_REPOSITORY}/${PACKAGE}/trunk ${PACKAGE}
+else
+  svn co ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG} ${PACKAGE}
+fi
+
