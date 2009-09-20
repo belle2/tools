@@ -27,7 +27,7 @@ mkdir ${DIR}
 echo ${RELEASE} > ${DIR}/.release
 
 # check out makefiles and link the main makefile
-if [ "${RELEASE}" == "head" ]; then
+if [ "${RELEASE}" = "head" ]; then
   svn co ${BELLE2_REPOSITORY}/makefiles/trunk ${DIR}/makefiles
 else
   svn co ${BELLE2_REPOSITORY}/releases/${RELEASE}/makefiles ${DIR}/makefiles

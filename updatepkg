@@ -28,18 +28,18 @@ if [ $# -gt 0 ]; then
 fi
 
 # update package
-if [ "${TAG}" == "release" ]; then
+if [ "${TAG}" = "release" ]; then
   if [ ! -f ../.release ]; then
     echo "Not in a release directory." 1>&2
     exit 1
   fi
   RELEASE=`cat ../.release`
-  if [ "${RELEASE}" == "head" ]; then
+  if [ "${RELEASE}" = "head" ]; then
     svn switch ${BELLE2_REPOSITORY}/${PACKAGE}/trunk
   else
     svn switch ${BELLE2_REPOSITORY}/releases/${RELEASE}/${PACKAGE}
   fi
-elif [ "${TAG}" == "head" ]; then
+elif [ "${TAG}" = "head" ]; then
   svn switch ${BELLE2_REPOSITORY}/${PACKAGE}/trunk
 else
   svn switch ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG}

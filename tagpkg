@@ -16,12 +16,12 @@ fi
 
 # check whether we are at the head of the trunk and there are no changes
 svn info -R | grep URL | grep -v ${BELLE2_REPOSITORY}/${PACKAGE}/trunk &> /dev/null
-if [ "$?" == "0" ]; then
+if [ "$?" = "0" ]; then
   echo "Not at the trunk head. Use updatepkg head." 1>&2
   exit 1
 fi
 svn status -u -q | grep -v "Status against revision" &> /dev/null
-if [ "$?" == "0" ]; then
+if [ "$?" = "0" ]; then
   echo "There are modified files." 1>&2
   exit 1
 fi
@@ -41,20 +41,20 @@ fi
 
 # determine last tag
 LASTTAG=`svn list ${BELLE2_REPOSITORY}/${PACKAGE}/tags | grep -e "v[0-9][0-9]-[0-9][0-9]-[0-9][0-9]" |tail -1`
-if [ "${LASTTAG}" == "" ]; then
+if [ "${LASTTAG}" = "" ]; then
   LASTTAG=v00-00-00
 fi
 
 # determine version numbers
 PATCH=`echo ${LASTTAG} | cut -c 8,9`
-if [ "${TAG}" == "patch" ]; then
+if [ "${TAG}" = "patch" ]; then
   PATCH=$[${PATCH}+1]
   if [ ${PATCH} -lt 10 ]; then
     PATCH="0${PATCH}"
   fi
 fi
 MINOR=`echo ${LASTTAG} | cut -c 5,6`
-if [ "${TAG}" == "minor" ]; then
+if [ "${TAG}" = "minor" ]; then
   MINOR=$[${MINOR}+1]
   if [ ${MINOR} -lt 10 ]; then
     MINOR="0${MINOR}"
@@ -62,7 +62,7 @@ if [ "${TAG}" == "minor" ]; then
   PATCH="00"
 fi
 MAJOR=`echo ${LASTTAG} | cut -c 2,3`
-if [ "${TAG}" == "major" ]; then
+if [ "${TAG}" = "major" ]; then
   MAJOR=$[${MAJOR}+1]
   if [ ${MAJOR} -lt 10 ]; then
     MAJOR="0${MAJOR}"
