@@ -18,10 +18,9 @@ else
   setenv LD_LIBRARY_PATH ${DIR}/lib/${ARCH}
 endif
 
-# setup root
-setenv ROOTSYS ${DIR}/externals/root
-setenv PATH ${ROOTSYS}/bin:${PATH}
-setenv LD_LIBRARY_PATH ${ROOTSYS}/lib:${LD_LIBRARY_PATH}
+# add externals directory to path and library path
+setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
+setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
 
 unset DIR
 unset ARCH
