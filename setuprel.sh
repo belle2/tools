@@ -22,5 +22,8 @@ fi
 export PATH=${DIR}/externals/bin/${ARCH}:${PATH}
 export LD_LIBRARY_PATH=${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
 
+# set ROOTSYS
+export ROOTSYS=${DIR}/externals/root
+
 unset DIR
 unset ARCH

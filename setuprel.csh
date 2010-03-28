@@ -22,5 +22,8 @@ endif
 setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
 setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
 
+# set ROOTSYS
+setenv ROOTSYS ${DIR}/externals/root
+
 unset DIR
 unset ARCH
