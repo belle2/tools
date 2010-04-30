@@ -10,6 +10,11 @@ else
   setenv PATH ${BELLE2_TOOLS}
 endif
 
+# set top directory of Belle II software installation
+if ( ! ${?VO_BELLE2_SW_DIR} ) then
+  setenv VO_BELLE2_SW_DIR `readlink -f "${BELLE2_TOOLS}/.."`
+endif
+
 # set location of Belle II code repository
 setenv BELLE2_REPOSITORY https://b2comp.kek.jp
 

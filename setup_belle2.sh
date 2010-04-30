@@ -6,11 +6,16 @@ else
   export PATH=${BELLE2_TOOLS}
 fi
 
+# set top directory of Belle II software installation
+if [ -z "${VO_BELLE2_SW_DIR}" ]; then
+  export VO_BELLE2_SW_DIR=$(readlink -f "${BELLE2_TOOLS}/..")
+fi
+
 # set location of Belle II code repository
 export BELLE2_REPOSITORY=https://b2comp.kek.jp
 
 # define functions for release setup
-setuprel ()
+function setuprel
 {
   . ${BELLE2_TOOLS}/setuprel.sh
 }

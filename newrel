@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # check number of arguments
-if [ $# -lt 1 -o $# -gt 2 ]; then
+if [ $# -lt 1 -o $# -gt 2 -o "$1" = "-h" ]; then
   echo "Usage: `basename $0` directory [release]" 1>&2
   exit 1
 fi
