@@ -55,6 +55,9 @@ if ( "${RELEASE}" != "head" ) then
 
     # set ROOTSYS
     setenv ROOTSYS ${DIR}/externals/root
+
+    # set environment variables
+    setenv BELLE2_RELEASE_DIR ${DIR}
   endif
 endif
 
@@ -83,14 +86,14 @@ if ( ${?LOCAL_RELEASE} ) then
   if ( -d ${DIR}/externals/root ) then
     setenv ROOTSYS ${DIR}/externals/root
   endif
+
+  # set environment variables
+  setenv BELLE2_LOCAL_DIR ${DIR}
 endif
 
 # set environment variables
 if ( ${?RELEASE} ) then
   setenv BELLE2_RELEASE ${RELEASE}
-endif
-if ( ${?LOCAL_RELEASE} ) then
-  setenv BELLE2_LOCAL ${DIR}
 endif
 
 # clean up

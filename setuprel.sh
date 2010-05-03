@@ -55,6 +55,9 @@ if [ "${RELEASE}" != "head" ]; then
 
     # set ROOTSYS
     export ROOTSYS=${DIR}/externals/root
+
+    # set environment variables
+    export BELLE2_RELEASE_DIR=${DIR}
   fi
 fi
 
@@ -83,14 +86,14 @@ if [ -n "${LOCAL_RELEASE}" ]; then
   if [ -d ${DIR}/externals/root ]; then
     export ROOTSYS=${DIR}/externals/root
   fi
+
+  # set environment variables
+  export BELLE2_LOCAL_DIR=${DIR}
 fi
 
 # set environment variables
 if [ -n "${RELEASE}" ]; then
   export BELLE2_RELEASE=${RELEASE}
-fi
-if [ -n "${LOCAL_RELEASE}" ]; then
-  export BELLE2_LOCAL=${DIR}
 fi
 
 # clean up
