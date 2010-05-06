@@ -53,6 +53,11 @@ if ( "${RELEASE}" != "head" ) then
     setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
     setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
 
+    # add prototype directory to path and library path
+    setenv PATH=${DIR}/prototype/bin/${ARCH}:${PATH}
+    setenv LD_LIBRARY_PATH=${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
+    setenv PYTHONPATH=${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
+
     # set ROOTSYS
     setenv ROOTSYS ${DIR}/externals/root
 
@@ -81,6 +86,11 @@ if ( ${?LOCAL_RELEASE} ) then
   # add externals directory to path and library path
   setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
   setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
+
+  # add prototype directory to path and library path
+  setenv PATH=${DIR}/prototype/bin/${ARCH}:${PATH}
+  setenv LD_LIBRARY_PATH=${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
+  setenv PYTHONPATH=${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
 
   # set ROOTSYS
   if ( -d ${DIR}/externals/root ) then
