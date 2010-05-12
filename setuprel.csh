@@ -56,6 +56,11 @@ if ( "${RELEASE}" != "head" ) then
     # setup geant4 environment
     source ${DIR}/externals/geant4/env.csh > /dev/null
 
+    # setup scons library directory
+    if ( ! ${?SCONS_LIB_DIR} ) then
+      setenv SCONS_LIB_DIR ${DIR}/externals/lib/${ARCH}
+    endif
+
     # add prototype directory to path and library path
     setenv PATH ${DIR}/prototype/bin/${ARCH}:${PATH}
     setenv LD_LIBRARY_PATH ${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
@@ -93,6 +98,11 @@ if ( ${?LOCAL_RELEASE} ) then
   # setup geant4 environment
   if ( -f ${DIR}/externals/geant4/env.csh ) then
     source ${DIR}/externals/geant4/env.csh > /dev/null
+  endif
+
+  # setup scons library directory
+  if ( ! ${?SCONS_LIB_DIR} ) then
+    setenv SCONS_LIB_DIR ${DIR}/externals/lib/${ARCH}
   endif
 
   # add prototype directory to path and library path
