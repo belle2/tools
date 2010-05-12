@@ -53,6 +53,9 @@ if ( "${RELEASE}" != "head" ) then
     setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
     setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
 
+    # setup geant4 environment
+    source ${DIR}/externals/geant4/env.csh > /dev/null
+
     # add prototype directory to path and library path
     setenv PATH ${DIR}/prototype/bin/${ARCH}:${PATH}
     setenv LD_LIBRARY_PATH ${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
@@ -86,6 +89,11 @@ if ( ${?LOCAL_RELEASE} ) then
   # add externals directory to path and library path
   setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
   setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
+
+  # setup geant4 environment
+  if ( -f ${DIR}/externals/geant4/env.csh ) then
+    source ${DIR}/externals/geant4/env.csh > /dev/null
+  endif
 
   # add prototype directory to path and library path
   setenv PATH ${DIR}/prototype/bin/${ARCH}:${PATH}
