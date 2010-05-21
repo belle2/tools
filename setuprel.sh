@@ -64,7 +64,11 @@ if [ "${RELEASE}" != "head" ]; then
     # add prototype directory to path and library path
     export PATH=${DIR}/prototype/bin/${ARCH}:${PATH}
     export LD_LIBRARY_PATH=${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
-    export PYTHONPATH=${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
+    if [ -n "${PYTHONPATH}" ]; then
+      export PYTHONPATH=${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
+    else
+      export PYTHONPATH=${DIR}/prototype/lib/${ARCH}
+    fi
 
     # set ROOTSYS
     export ROOTSYS=${DIR}/externals/root
@@ -108,7 +112,11 @@ if [ -n "${LOCAL_RELEASE}" ]; then
   # add prototype directory to path and library path
   export PATH=${DIR}/prototype/bin/${ARCH}:${PATH}
   export LD_LIBRARY_PATH=${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
-  export PYTHONPATH=${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
+  if [ -n "${PYTHONPATH}" ]; then
+    export PYTHONPATH=${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
+  else
+    export PYTHONPATH=${DIR}/prototype/lib/${ARCH}
+  fi
 
   # set ROOTSYS
   if [ -d ${DIR}/externals/root ]; then
