@@ -22,3 +22,6 @@ function setuprel
   . $tmp > /dev/null
   rm $tmp
 }
+
+# set scons library directory
+export SCONS_LIB_DIR=${BELLE2_TOOLS}/lib

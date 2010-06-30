@@ -22,3 +22,6 @@ setenv BELLE2_REPOSITORY https://b2comp.kek.jp
 set BELLE2_TMP=`mktemp`
 rm $BELLE2_TMP
 alias setuprel "${BELLE2_TOOLS}/setuprel.py > $BELLE2_TMP; source $BELLE2_TMP > /dev/null; rm $BELLE2_TMP"
+
+# set scons library directory
+setenv SCONS_LIB_DIR ${BELLE2_TOOLS}/lib
