@@ -19,4 +19,6 @@ endif
 setenv BELLE2_REPOSITORY https://b2comp.kek.jp
 
 # define alias for release setup
-alias setuprel source ${BELLE2_TOOLS}/setuprel.csh
+set BELLE2_TMP=`mktemp`
+rm $BELLE2_TMP
+alias setuprel "${BELLE2_TOOLS}/setuprel.py > $BELLE2_TMP; source $BELLE2_TMP > /dev/null; rm $BELLE2_TMP"

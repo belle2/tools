@@ -28,8 +28,14 @@ else
   set RELEASE=${LOCAL_RELEASE}
 endif
 
+# define architecture and build option
+setenv BELLE2_ARCH `uname`_`uname -m`
+if ( ! ${?BELLE2_OPTION} ) then
+    setenv BELLE2_OPTION debug
+endif
+setenv BELLE2_SUBDIR ${BELLE2_ARCH}/${BELLE2_OPTION}
+
 # check whether a central release exists
-set ARCH=`uname`_`uname -m`
 set DIR=${VO_BELLE2_SW_DIR}/releases/${RELEASE}
 if ( "${RELEASE}" != "head" ) then
   if ( ! -d ${DIR} ) then
@@ -37,38 +43,29 @@ if ( "${RELEASE}" != "head" ) then
     unset RELEASE
 
   else
-    # add release directory to path and library path
+    # add release directory to path, library path, and python path
     if ( ${?PATH} ) then
-      setenv PATH ${DIR}/bin/${ARCH}:${PATH}
+      setenv PATH ${DIR}/bin/${BELLE2_SUBDIR}:${PATH}
     else
-      setenv PATH ${DIR}/bin/${ARCH}
+      setenv PATH ${DIR}/bin/${BELLE2_SUBDIR}
     endif
     if ( ${?LD_LIBRARY_PATH} ) then
-      setenv LD_LIBRARY_PATH ${DIR}/lib/${ARCH}:${LD_LIBRARY_PATH}
+      setenv LD_LIBRARY_PATH ${DIR}/lib/${BELLE2_SUBDIR}:${LD_LIBRARY_PATH}
     else
-      setenv LD_LIBRARY_PATH ${DIR}/lib/${ARCH}
+      setenv LD_LIBRARY_PATH ${DIR}/lib/${BELLE2_SUBDIR}
+    endif
+    if ( ${?PYTHONPATH} ) then
+      setenv PYTHONPATH ${DIR}/lib/${BELLE2_SUBDIR}:${PYTHONPATH}
+    else
+      setenv PYTHONPATH ${DIR}/lib/${BELLE2_SUBDIR}
     endif
 
     # add externals directory to path and library path
-    setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
-    setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
+    setenv PATH ${DIR}/externals/bin/${BELLE2_SUBDIR}:${PATH}
+    setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${BELLE2_SUBDIR}:${LD_LIBRARY_PATH}
 
     # setup geant4 environment
     source ${DIR}/externals/geant4/env.csh > /dev/null
-
-    # setup scons library directory
-    if ( ! ${?SCONS_LIB_DIR} ) then
-      setenv SCONS_LIB_DIR ${DIR}/externals/lib/${ARCH}
-    endif
-
-    # add prototype directory to path and library path
-    setenv PATH ${DIR}/prototype/bin/${ARCH}:${PATH}
-    setenv LD_LIBRARY_PATH ${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
-    if ( ${?PYTHONPATH} ) then
-      setenv PYTHONPATH ${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
-    else
-      setenv PYTHONPATH ${DIR}/prototype/lib/${ARCH}
-    endif
 
     # set ROOTSYS
     setenv ROOTSYS ${DIR}/externals/root
@@ -83,39 +80,30 @@ set DIR=$PWD
 if ( ${?LOCAL_RELEASE} ) then
   set RELEASE=${LOCAL_RELEASE}
 
-  # add release directory to path and library path
+  # add release directory to path, library path, and python path
   if ( ${?PATH} ) then
-    setenv PATH ${DIR}/bin/${ARCH}:${PATH}
+    setenv PATH ${DIR}/bin/${BELLE2_SUBDIR}:${PATH}
   else
-    setenv PATH ${DIR}/bin/${ARCH}
+    setenv PATH ${DIR}/bin/${BELLE2_SUBDIR}
   endif
   if ( ${?LD_LIBRARY_PATH} ) then
-    setenv LD_LIBRARY_PATH ${DIR}/lib/${ARCH}:${LD_LIBRARY_PATH}
+    setenv LD_LIBRARY_PATH ${DIR}/lib/${BELLE2_SUBDIR}:${LD_LIBRARY_PATH}
   else
-    setenv LD_LIBRARY_PATH ${DIR}/lib/${ARCH}
+    setenv LD_LIBRARY_PATH ${DIR}/lib/${BELLE2_SUBDIR}
+  endif
+  if ( ${?PYTHONPATH} ) then
+    setenv PYTHONPATH ${DIR}/lib/${BELLE2_SUBDIR}:${PYTHONPATH}
+  else
+    setenv PYTHONPATH ${DIR}/lib/${BELLE2_SUBDIR}
   endif
 
   # add externals directory to path and library path
-  setenv PATH ${DIR}/externals/bin/${ARCH}:${PATH}
-  setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${ARCH}:${LD_LIBRARY_PATH}
+  setenv PATH ${DIR}/externals/bin/${BELLE2_SUBDIR}:${PATH}
+  setenv LD_LIBRARY_PATH ${DIR}/externals/lib/${BELLE2_SUBDIR}:${LD_LIBRARY_PATH}
 
   # setup geant4 environment
   if ( -f ${DIR}/externals/geant4/env.csh ) then
     source ${DIR}/externals/geant4/env.csh > /dev/null
-  endif
-
-  # setup scons library directory
-  if ( ! ${?SCONS_LIB_DIR} ) then
-    setenv SCONS_LIB_DIR ${DIR}/externals/lib/${ARCH}
-  endif
-
-  # add prototype directory to path and library path
-  setenv PATH ${DIR}/prototype/bin/${ARCH}:${PATH}
-  setenv LD_LIBRARY_PATH ${DIR}/prototype/lib/${ARCH}:${LD_LIBRARY_PATH}
-  if ( ${?PYTHONPATH} ) then
-    setenv PYTHONPATH ${DIR}/prototype/lib/${ARCH}:${PYTHONPATH}
-  else
-    setenv PYTHONPATH ${DIR}/prototype/lib/${ARCH}
   endif
 
   # set ROOTSYS
@@ -134,6 +122,5 @@ endif
 
 # clean up
 unset DIR
-unset ARCH
 unset LOCAL_RELEASE
 unset RELEASE

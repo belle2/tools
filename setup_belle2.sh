@@ -17,5 +17,8 @@ export BELLE2_REPOSITORY=https://b2comp.kek.jp
 # define functions for release setup
 function setuprel
 {
-  . ${BELLE2_TOOLS}/setuprel.sh
+  tmp=`mktemp`
+  ${BELLE2_TOOLS}/setuprel.py > $tmp
+  . $tmp > /dev/null
+  rm $tmp
 }

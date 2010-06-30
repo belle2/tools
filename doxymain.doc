@@ -1,0 +1,15 @@
+/*! \mainpage
+Use the <a href="http://b2comp.kek.jp/~twiki/bin/view/Computing/Basf2SoftwarePortal">basf2 Software Portal</a>
+for general information.
+
+If you have a problem with basf2 in general, please contact
+<a href="mailto:molland@mpp.mpg.de,martin.heck@kit.edu,ryosuke.itoh@kek.jp">
+Andreas Moll,
+Martin Heck,
+Ryosuke Itoh
+</a>
+*/
+
+//! Namespace for all basf2 objects.
+namespace Belle2 {}
+
