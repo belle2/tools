@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # check number of arguments
 if [ $# -gt 1 ]; then
@@ -8,7 +8,7 @@ fi
 
 # determine package name
 PACKAGE=`pwd | awk -F/ '{print $NF}'`
-svn list ${BELLE2_REPOSITORY}/${PACKAGE} &> /dev/null
+svn list ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
 if [ "$?" != "0" ]; then
   echo "Not in a package directory." 1>&2
   exit 1
@@ -19,7 +19,7 @@ TAG=head
 if [ $# -gt 0 ]; then
   TAG=$1
   if [ "${TAG}" != "head" -a "${TAG}" != "release" ]; then
-    svn list ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG} &> /dev/null
+    svn list ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} &> /dev/null
     if [ "$?" != "0" ]; then
       echo "The tag ${TAG} does not exist." 1>&2
       exit 1
@@ -35,13 +35,13 @@ if [ "${TAG}" = "release" ]; then
   fi
   RELEASE=`cat ../.release`
   if [ "${RELEASE}" = "head" ]; then
-    svn switch ${BELLE2_REPOSITORY}/${PACKAGE}/trunk
+    svn switch ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}
   else
-    svn switch ${BELLE2_REPOSITORY}/releases/${RELEASE}/${PACKAGE}
+    svn switch ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/${PACKAGE}
   fi
 elif [ "${TAG}" = "head" ]; then
-  svn switch ${BELLE2_REPOSITORY}/${PACKAGE}/trunk
+  svn switch ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}
 else
-  svn switch ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG}
+  svn switch ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG}
 fi
 

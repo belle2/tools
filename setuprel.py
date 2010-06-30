@@ -87,9 +87,10 @@ def unsetup_release(location):
     remove_path('PATH', os.path.join(location, 'externals', 'bin', subdir))
     remove_path('LD_LIBRARY_PATH', os.path.join(location, 'externals', 'lib', subdir))
     # geant4
-    remove_path('LD_LIBRARY_PATH', os.path.join(os.environ['G4LIB'], os.environ['G4SYSTEM']))
-    remove_path('LD_LIBRARY_PATH', os.environ['CLHEP_LIB_DIR'])
-    remove_path('PATH', os.path.join(os.environ['G4WORKDIR'], 'bin', os.environ['G4SYSTEM']))
+    if os.environ.has_key('G4SYSTEM'):
+        remove_path('LD_LIBRARY_PATH', os.path.join(os.environ['G4LIB'], os.environ['G4SYSTEM']))
+        remove_path('LD_LIBRARY_PATH', os.environ['CLHEP_LIB_DIR'])
+        remove_path('PATH', os.path.join(os.environ['G4WORKDIR'], 'bin', os.environ['G4SYSTEM']))
     # release
     remove_path('PATH', os.path.join(location, 'bin', subdir))
     remove_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
@@ -105,10 +106,11 @@ def setup_release(location):
         
     # setup geant4 environment
     geant_dir = os.path.join(location, 'externals', 'geant4')
-    if csh:
-        print 'source %s' % os.path.join(geant_dir, 'env.csh')
-    else:
-        print 'source %s' % os.path.join(geant_dir, 'env.sh')
+    if os.path.isdir(geant_dir):
+        if csh:
+            print 'source %s' % os.path.join(geant_dir, 'env.csh')
+        else:
+            print 'source %s' % os.path.join(geant_dir, 'env.sh')
 
     # set ROOTSYS
     root_dir = os.path.join(location, 'externals', 'root')

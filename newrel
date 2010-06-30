@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # check number of arguments
 if [ $# -lt 1 -o $# -gt 2 -o "$1" = "-h" ]; then
@@ -26,10 +26,15 @@ fi
 mkdir ${DIR}
 echo ${RELEASE} > ${DIR}/.release
 
-# check out makefiles and link the main makefile
+# check out base directory and site-scons
 if [ "${RELEASE}" = "head" ]; then
-  svn co ${BELLE2_REPOSITORY}/makefiles/trunk ${DIR}/makefiles
+  svn co --depth=empty ${BELLE2_REPOSITORY}/trunk/software ${DIR}
+  cd ${DIR}
+  svn up SConstruct
+  svn up site_scons
 else
-  svn co ${BELLE2_REPOSITORY}/releases/${RELEASE}/makefiles ${DIR}/makefiles
+  svn co --depth=empty ${BELLE2_REPOSITORY}/releases/software/${RELEASE} ${DIR}
+  cd ${DIR}
+  svn up SConstruct
+  svn up site_scons
 fi
-cd $DIR; ln -s makefiles/Makefile .

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # check astyle and its version
 which astyle &> /dev/null

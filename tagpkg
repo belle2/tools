@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # check number of arguments
 if [ $# -gt 1 ]; then
@@ -8,14 +8,14 @@ fi
 
 # determine package name
 PACKAGE=`pwd | awk -F/ '{print $NF}'`
-svn list ${BELLE2_REPOSITORY}/${PACKAGE} &> /dev/null
+svn list ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
 if [ "$?" != "0" ]; then
   echo "Not in a package directory." 1>&2
   exit 1
 fi
 
 # check whether we are at the head of the trunk and there are no changes
-svn info -R | grep URL | grep -v ${BELLE2_REPOSITORY}/${PACKAGE}/trunk &> /dev/null
+svn info -R | grep URL | grep -v ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
 if [ "$?" = "0" ]; then
   echo "Not at the trunk head. Use updatepkg head." 1>&2
   exit 1
@@ -35,7 +35,7 @@ fi
 # make tag and exit if tag name is explicitly given
 if [ "${TAG}" != "major" -a "${TAG}" != "minor" -a "${TAG}" != "patch" ]; then
   echo "committing tag ${TAG} of package ${PACKAGE}"
-  svn copy ${BELLE2_REPOSITORY}/${PACKAGE}/trunk ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
+  svn copy --parents ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
   exit 0
 fi
 
@@ -74,4 +74,4 @@ fi
 # make tag
 TAG="v${MAJOR}-${MINOR}-${PATCH}"
 echo "committing tag ${TAG} of package ${PACKAGE}"
-svn copy ${BELLE2_REPOSITORY}/${PACKAGE}/trunk ${BELLE2_REPOSITORY}/${PACKAGE}/tags/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
+svn copy --parents ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
