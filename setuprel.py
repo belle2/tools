@@ -94,7 +94,7 @@ def unsetup_release(location):
     # release
     remove_path('PATH', os.path.join(location, 'bin', subdir))
     remove_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
-    remove_path('PYTHON_PATH', os.path.join(location, 'lib', subdir))
+    remove_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
 
 
 # function to setup a release directory
@@ -120,7 +120,7 @@ def setup_release(location):
     # add release directory to path, library path, and python path
     add_path('PATH', os.path.join(location, 'bin', subdir))
     add_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
-    add_path('PYTHON_PATH', os.path.join(location, 'lib', subdir))
+    add_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
 
 
 # remove path settings from old release
