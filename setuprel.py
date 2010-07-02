@@ -131,7 +131,7 @@ if os.environ.has_key('BELLE2_LOCAL_DIR'):
 
 
 # setup the central release if it exists
-location = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'release', release)
+location = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release)
 if release != 'head':
     if not os.path.isdir(location):
         sys.stderr.write('Warning: No central release %s found.\n' % release)
