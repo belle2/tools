@@ -18,7 +18,7 @@ export BELLE2_REPOSITORY=https://b2comp.kek.jp
 function setuprel
 {
   tmp=`mktemp`
-  ${BELLE2_TOOLS}/setuprel.py > $tmp
+  ${BELLE2_TOOLS}/setuprel.py $* > $tmp
   . $tmp > /dev/null
   rm $tmp
 }
