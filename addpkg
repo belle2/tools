@@ -9,12 +9,12 @@ fi
 # read arguments
 PACKAGE=$1
 if [ -d ${PACKAGE} ]; then
-  echo "The directory ${PACKAGE} already exists." 1>&2
+  echo "Error: The directory ${PACKAGE} already exists." 1>&2
   exit 1
 fi
 svn list ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
 if [ "$?" != "0" ]; then
-  echo "The package ${PACKAGE} does not exist." 1>&2
+  echo "Error: The package ${PACKAGE} does not exist." 1>&2
   exit 1
 fi
 TAG=release
@@ -23,7 +23,7 @@ if [ $# -gt 1 ]; then
   if [ "${TAG}" != "head" -a "${TAG}" != "release" ]; then
     svn list ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} &> /dev/null
     if [ "$?" != "0" ]; then
-      echo "The tag ${TAG} does not exist." 1>&2
+      echo "Error: The tag ${TAG} does not exist." 1>&2
       exit 1
     fi
   fi
@@ -32,7 +32,7 @@ fi
 # check out package
 if [ "${TAG}" = "release" ]; then
   if [ ! -f .release ]; then
-    echo "Not in a release directory." 1>&2
+    echo "Error: Not in a release directory." 1>&2
     exit 1
   fi
   svn up ${PACKAGE}
@@ -42,8 +42,17 @@ if [ "${TAG}" = "release" ]; then
 #  else
 #    svn co ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/${PACKAGE} ${PACKAGE}
 #  fi
+  if [ "$?" == "0" ]; then
+    echo "Added release version of ${PACKAGE}."
+  fi
 elif [ "${TAG}" = "head" ]; then
   svn co ${BELLE2_REPOSITORY}/trunk/${PACKAGE} ${PACKAGE}
+  if [ "$?" == "0" ]; then
+    echo "Added head version of ${PACKAGE}."
+  fi
 else
   svn co ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} ${PACKAGE}
+  if [ "$?" == "0" ]; then
+    echo "Added tag ${TAG} of ${PACKAGE}."
+  fi
 fi

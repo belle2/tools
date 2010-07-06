@@ -10,7 +10,7 @@ fi
 PACKAGE=`pwd | awk -F/ '{print $NF}'`
 svn list ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
 if [ "$?" != "0" ]; then
-  echo "Not in a package directory." 1>&2
+  echo "Error: Not in a package directory." 1>&2
   exit 1
 fi
 
@@ -21,7 +21,7 @@ if [ $# -gt 0 ]; then
   if [ "${TAG}" != "head" -a "${TAG}" != "release" ]; then
     svn list ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} &> /dev/null
     if [ "$?" != "0" ]; then
-      echo "The tag ${TAG} does not exist." 1>&2
+      echo "Error: The tag ${TAG} does not exist." 1>&2
       exit 1
     fi
   fi
@@ -30,18 +30,30 @@ fi
 # update package
 if [ "${TAG}" = "release" ]; then
   if [ ! -f ../.release ]; then
-    echo "Not in a release directory." 1>&2
+    echo "Error: Not in a release directory." 1>&2
     exit 1
   fi
   RELEASE=`cat ../.release`
   if [ "${RELEASE}" = "head" ]; then
     svn switch ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}
+    if [ "$?" == "0" ]; then
+      echo "Updated ${PACKAGE} to head version."
+    fi
   else
     svn switch ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/${PACKAGE}
+    if [ "$?" == "0" ]; then
+      echo "Updated ${PACKAGE} to release version."
+    fi
   fi
 elif [ "${TAG}" = "head" ]; then
   svn switch ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}
+  if [ "$?" == "0" ]; then
+    echo "Updated ${PACKAGE} to head version."
+  fi
 else
   svn switch ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG}
+  if [ "$?" == "0" ]; then
+    echo "Updated ${PACKAGE} to tag ${TAG}."
+  fi
 fi
 

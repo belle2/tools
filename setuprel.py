@@ -23,12 +23,15 @@ if len(sys.argv) == 2:
         
         if local_release != release:
             sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s). Ignoring the local version.\n' % (release, local_release))
-            local_release = None
+
+            if not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release)):
+                sys.stderr.write('Error: No central release %s found.\n' % release)
+                sys.exit(1)
     
 else:
     # check whether we are in a release directory and take the release version from there
     if not os.path.isfile('.release'):
-        sys.stderr.write('Not in a release directory.\n')
+        sys.stderr.write('Error: Not in a release directory.\n')
         sys.exit(1)
 
     local_release = open('.release').readline().strip()
@@ -108,9 +111,9 @@ def setup_release(location):
     geant_dir = os.path.join(location, 'externals', 'geant4')
     if os.path.isdir(geant_dir):
         if csh:
-            print 'source %s' % os.path.join(geant_dir, 'env.csh')
+            print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.csh')
         else:
-            print 'source %s' % os.path.join(geant_dir, 'env.sh')
+            print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.sh')
 
     # set ROOTSYS
     root_dir = os.path.join(location, 'externals', 'root')
@@ -126,8 +129,10 @@ def setup_release(location):
 # remove path settings from old release
 if os.environ.has_key('BELLE2_RELEASE_DIR'):
     unsetup_release(os.environ['BELLE2_RELEASE_DIR'])
+env_vars['BELLE2_RELEASE_DIR'] = ''
 if os.environ.has_key('BELLE2_LOCAL_DIR'):
     unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
+env_vars['BELLE2_LOCAL_DIR'] = ''
 
 
 # setup the central release if it exists
@@ -159,8 +164,36 @@ for var in env_vars.keys():
     value = env_vars[var]
     if isinstance(value, list):
         value = ':'.join(value)
-    if csh:
-        print('setenv %s %s' % (var, value))
+    if value and len(value) > 0:
+        if csh:
+            print('setenv %s %s' % (var, value))
+        else:
+            print('export %s=%s' % (var, value))
     else:
-        print('export %s=%s' % (var, value))
+        if csh:
+            print('unsetenv %s' % var)
+        else:
+            print('unset %s' % var)
 
+
+# inform user about successful completion
+print('echo "Environment setup for release: ${BELLE2_RELEASE}"')
+if len(env_vars['BELLE2_RELEASE_DIR']) > 0:
+    print('echo "Central release directory    : ${BELLE2_RELEASE_DIR}"')
+print('echo "Local release directory      : ${BELLE2_LOCAL_DIR}"')
+
+# check for geant4 and root and warn the user if they are missing
+need_externals = False
+if not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals', 'geant4', 'env.sh')):
+    if (len(env_vars['BELLE2_RELEASE_DIR']) == 0) or not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals', 'geant4', 'end.sh')):
+        need_externals = True
+        sys.stderr.write('Warning: geant4 installation is missing.\n')
+if not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals', 'bin', subdir, 'root.exe')):
+    if (len(env_vars['BELLE2_RELEASE_DIR']) == 0) or not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals', 'bin', subdir, 'root.exe')):
+        need_externals = True
+        sys.stderr.write('Warning: root installation is missing.\n')
+if need_externals:
+    if os.path.isdir(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals')):
+        sys.stderr.write('-> Build externals: scons externals\n')
+    else:
+        sys.stderr.write('-> Install and build externals: addpkg externals; scons externals\n')

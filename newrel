@@ -13,14 +13,14 @@ if [ $# -gt 1 ]; then
   RELEASE=$2
   svn list ${BELLE2_REPOSITORY}/releases/${RELEASE} &> /dev/null
   if [ "$?" != "0" ]; then
-    echo "The release ${RELEASE} does not exist." 1>&2
+    echo "Error: The release ${RELEASE} does not exist." 1>&2
     exit 1
   fi
 fi
 
 # create release directory and write release version to .release
 if [ -d ${DIR} ]; then
-  echo "The directory ${DIR} already exists." 1>&2
+  echo "Error: The directory ${DIR} already exists." 1>&2
   exit 1
 fi
 mkdir ${DIR}
@@ -38,3 +38,7 @@ else
   svn up SConstruct
   svn up site_scons
 fi
+
+# inform user about successful completion
+echo "New local directory created for ${RELEASE} release: ${DIR}"
+echo "-> change to the new directory and set up the environment: cd ${DIR}; setuprel"

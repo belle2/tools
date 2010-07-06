@@ -19,9 +19,12 @@ function setuprel
 {
   tmp=`mktemp`
   ${BELLE2_TOOLS}/setuprel.py $* > $tmp
-  . $tmp > /dev/null
-  rm $tmp
+  . $tmp
+  rm -f $tmp
 }
 
 # set scons library directory
 export SCONS_LIB_DIR=${BELLE2_TOOLS}/lib
+
+# inform user about successful setup
+echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
