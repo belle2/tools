@@ -13,7 +13,7 @@ cp bin/astyle ${DIR}
 
 # scons
 cd ${DIR}/src
-svn co -r4725 http://scons.tigris.org/svn/scons/tags/1.3.0 scons
+svn co --username guest --password guest --non-interactive -r4725 http://scons.tigris.org/svn/scons/tags/1.3.0 scons
 cd scons
 python bootstrap.py build/scons
 cd build/scons
