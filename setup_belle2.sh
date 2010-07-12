@@ -26,5 +26,15 @@ function setuprel
 # set scons library directory
 export SCONS_LIB_DIR=${BELLE2_TOOLS}/lib
 
+# set up svn if it is installed in the Belle II software directory
+if [ -d ${VO_BELLE2_SW_DIR}/subversion ]; then
+  export PATH=${VO_BELLE2_SW_DIR}/subversion/bin:$PATH
+  if [ -n "${LD_LIBRARY_PATH}" ]; then
+    export LD_LIBRARY_PATH=${VO_BELLE2_SW_DIR}/subversion/lib:${LD_LIBRARY_PATH}
+  else
+    export LD_LIBRARY_PATH=${VO_BELLE2_SW_DIR}/subversion/lib
+  fi
+fi
+
 # inform user about successful setup
 echo "Belle II software tools set up at: ${BELLE2_TOOLS}"

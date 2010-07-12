@@ -26,6 +26,16 @@ alias setuprel "${BELLE2_TOOLS}/setuprel.py $* > $BELLE2_TMP; source $BELLE2_TMP
 # set scons library directory
 setenv SCONS_LIB_DIR ${BELLE2_TOOLS}/lib
 
+# set up svn if it is installed in the Belle II software directory
+if ( -d ${VO_BELLE2_SW_DIR}/subversion ) then
+  setenv PATH ${VO_BELLE2_SW_DIR}/subversion/bin:$PATH
+  if ( ${?LD_LIBRARY_PATH} ) then
+    setenv LD_LIBRARY_PATH ${VO_BELLE2_SW_DIR}/subversion/lib:${LD_LIBRARY_PATH}
+  else
+    setenv LD_LIBRARY_PATH ${VO_BELLE2_SW_DIR}/subversion/lib
+  endif
+endif
+
 # make PATH changes active
 rehash
 
