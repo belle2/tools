@@ -42,7 +42,7 @@ if [ "${TAG}" != "major" -a "${TAG}" != "minor" -a "${TAG}" != "patch" ]; then
 fi
 
 # determine last tag
-LASTTAG=`svn list ${BELLE2_REPOSITORY}/${PACKAGE}/tags | grep -e "v[0-9][0-9]-[0-9][0-9]-[0-9][0-9]" |tail -1`
+LASTTAG=`svn list ${BELLE2_REPOSITORY}/tags/software/${PACKAGE} 2> /dev/null | grep -e "v[0-9][0-9]-[0-9][0-9]-[0-9][0-9]" |tail -1`
 if [ "${LASTTAG}" = "" ]; then
   LASTTAG=v00-00-00
 fi
