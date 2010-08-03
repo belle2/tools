@@ -30,13 +30,13 @@ echo ${RELEASE} > ${DIR}/.release
 if [ "${RELEASE}" = "head" ]; then
   svn co --depth=empty ${BELLE2_REPOSITORY}/trunk/software ${DIR}
   cd ${DIR}
-  svn up SConstruct
   svn up site_scons
+  ln -s site_scons/SConstruct .
 else
   svn co --depth=empty ${BELLE2_REPOSITORY}/releases/software/${RELEASE} ${DIR}
   cd ${DIR}
-  svn up SConstruct
   svn up site_scons
+  ln -s site_scons/SConstruct .
 fi
 
 # inform user about successful completion
