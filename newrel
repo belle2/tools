@@ -11,7 +11,7 @@ DIR=$1
 RELEASE=head
 if [ $# -gt 1 ]; then
   RELEASE=$2
-  svn list ${BELLE2_REPOSITORY}/releases/${RELEASE} &> /dev/null
+  svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE} &> /dev/null
   if [ "$?" != "0" ]; then
     echo "Error: The release ${RELEASE} does not exist." 1>&2
     exit 1
