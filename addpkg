@@ -46,7 +46,7 @@ if [ "${TAG}" = "release" ]; then
     echo "Added release version of ${PACKAGE}."
   fi
 elif [ "${TAG}" = "head" ]; then
-  svn co ${BELLE2_REPOSITORY}/trunk/${PACKAGE} ${PACKAGE}
+  svn co ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${PACKAGE}
   if [ "$?" == "0" ]; then
     echo "Added head version of ${PACKAGE}."
   fi
