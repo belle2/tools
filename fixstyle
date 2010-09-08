@@ -3,23 +3,17 @@
 # check astyle and its version
 which astyle &> /dev/null
 if [ $? != 0 ]; then
-  echo "astyle tool not found. Add externals package, build it, and add bin directory to PATH." 1>&2
+  echo "astyle tool not found. Execute the install.sh script in the ${BELLE2_TOOLS} directory." 1>&2
   exit 1
 fi
 VERSION=`astyle -V 2>&1`
 if [ "${VERSION}" != "Artistic Style Version 1.23" ]; then
-  echo "Wrong version of astyle. Add externals package, build it, and add bin directory to PATH." 1>&2
+  echo "Wrong version of astyle. Execute the install.sh script in the ${BELLE2_TOOLS} directory." 1>&2
   exit 1
 fi
 
-# check arguments
-ARGS=$*
-if [ $# -lt 1 ]; then
-  ARGS="--recursive *.cc *.h"
-fi
-
-# run astyle
-astyle \
+# astyle command
+ASTYLE="astyle \
 --indent=spaces=2 \
 --convert-tabs \
 --brackets=stroustrup \
@@ -33,5 +27,36 @@ astyle \
 --keep-one-line-statements \
 --keep-one-line-blocks \
 --suffix=none \
---formatted \
-${ARGS}
+--formatted"
+
+# define functions for python code formatting
+function PythonTidy ()
+{
+  TMP=`mktemp`
+  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
+  if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
+    ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
+    echo "formatted $1"
+  fi
+  rm $TMP
+}
+
+# fix all C++ and python code below the current directory if no arguments are given
+if [ $# -lt 1 ]; then
+  ${ASTYLE} --recursive *.{h,cc}
+  for i in `find . -name *.py`; do
+    PythonTidy $i
+  done
+
+else
+  for i in $*; do
+    if [ `echo $i| grep ".py$"` ]; then
+      PythonTidy $i
+    elif [ `echo $i| grep ".h$\|.cc$"` ]; then
+      ${ASTYLE} $i
+    else
+      echo "File of unknown type not formatted: $i"
+    fi
+  done
+fi
+
