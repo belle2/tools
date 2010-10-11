@@ -2,8 +2,23 @@
 import sys, os, subprocess
 
 
+# check for help option
+if ((len(sys.argv) >= 2) and (sys.argv[1] in ['--help', '-h', '-?'])):
+    sys.stderr.write("""
+Usage: setuprel [release]
+    
+- To set up the environment for a local copy of the Belle II software,
+  execute the setuprel command in the local release directoy.
+- If a centrally installed release with the same version as the local one
+  exists, it is set up, too.
+- A particular version of a central release can be set up explicitly
+  by giving the release version as argument.
+
+""")
+    sys.exit(0)
+
 # check number of arguments
-if (len(sys.argv) > 2) or ((len(sys.argv) == 2) and (sys.argv[1] == '-h')):
+if (len(sys.argv) > 2):
     sys.stderr.write('Usage: setuprel [release]\n')
     sys.exit(1)
 

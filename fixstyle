@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [files]"
+  echo
+  echo "- The fixstyle tool formats the layout of C++ and python code."
+  echo "  It helps developers to achieve a common style of all Belle II software."
+  echo "- By default it checks all C++ and python files in the current directory and"
+  echo "  its subfolders recursively."
+  echo "- Individual files can be checked explicitly by giving them as argument."
+  echo
+  exit 0
+fi
+
 # check astyle and its version
 which astyle &> /dev/null
 if [ $? != 0 ]; then

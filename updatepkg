@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [\"release\"/\"head\"(=default)/tag]"
+  echo
+  echo "- This command updates the source code of a package to a selected version."
+  echo "  It has to be called in the package directory of the local release."
+  echo "  If files were modified locally, the changes will be merged."
+  echo "- By default the source code is updated to the latest version (svn head)."
+  echo "- If \"release\" is given as second argument, the source code is updated"
+  echo "  to the version corresponding to the local release version."
+  echo "- A particular tagged version of the package's source code can be obtained"
+  echo "  by using the tag name as second argument."
+  echo
+  exit 0
+fi
+
 # check number of arguments
 if [ $# -gt 1 ]; then
   echo "Usage: `basename $0` [\"release\"/\"head\"(=default)/tag]" 1>&2

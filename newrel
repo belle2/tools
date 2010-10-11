@@ -1,7 +1,23 @@
 #!/bin/bash
 
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` directory [release]"
+  echo
+  echo "- This command creates a local directory with the given name"
+  echo "  as basis for a working copy of the Belle II software."
+  echo "  It also prepares the build system."
+  echo "- If the basis for the code development should be a particular release,"
+  echo "  the version can be given as second argument."
+  echo "- If no second argument is given, the latest version of the code"
+  echo "  (head of svn trunk) is taken."
+  echo
+  exit 0
+fi
+
 # check number of arguments
-if [ $# -lt 1 -o $# -gt 2 -o "$1" = "-h" ]; then
+if [ $# -lt 1 -o $# -gt 2 ]; then
   echo "Usage: `basename $0` directory [release]" 1>&2
   exit 1
 fi
