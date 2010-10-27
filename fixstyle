@@ -52,13 +52,13 @@ function PythonTidy ()
     ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
     echo "formatted $1"
   fi
-  rm $TMP
+  rm -f $TMP
 }
 
 # fix all C++ and python code below the current directory if no arguments are given
 if [ $# -lt 1 ]; then
   ${ASTYLE} --recursive *.{h,cc}
-  for i in `find . -name *.py`; do
+  for i in `find . -name \\*.py`; do
     PythonTidy $i
   done
 
