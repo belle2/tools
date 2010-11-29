@@ -43,6 +43,9 @@ ASTYLE="astyle \
 --suffix=none \
 --formatted"
 
+# set tools directory if unset
+BELLE2_TOOLS=${BELLE2_TOOLS:-`dirname $0`}
+
 # define functions for python code formatting
 function PythonTidy ()
 {
