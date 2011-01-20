@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys
@@ -101,6 +101,29 @@ def remove_path(path, entry):
         env_vars[path].remove(entry)
 
 
+def add_option(var, option):
+    """helper function to add an option to a variable"""
+
+    if not env_vars.has_key(var):
+        if os.environ.has_key(var):
+            env_vars[var] = os.environ[var]
+        else:
+            env_vars[var] = ''
+    env_vars[var] = (env_vars[var] + ' ' + option).strip()
+
+
+def remove_option(var, option):
+    """helper function to remove an option from a variable"""
+
+    if not env_vars.has_key(var):
+        if os.environ.has_key(var):
+            env_vars[var] = os.environ[var]
+        else:
+            return
+    env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, ''
+            ).strip()
+
+
 # define variables
 unamelist = os.uname()
 env_vars['BELLE2_ARCH'] = unamelist[0] + '_' + unamelist[4]
@@ -162,6 +185,7 @@ if os.environ.has_key('BELLE2_RELEASE_DIR'):
 env_vars['BELLE2_RELEASE_DIR'] = ''
 if os.environ.has_key('BELLE2_LOCAL_DIR'):
     unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
+    remove_option('SCONSFLAGS', '-C ' + os.environ['BELLE2_LOCAL_DIR'])
 env_vars['BELLE2_LOCAL_DIR'] = ''
 
 # setup the central release if it exists
@@ -181,6 +205,7 @@ if local_release:
     release = local_release
     setup_release(location)
     env_vars['BELLE2_LOCAL_DIR'] = location
+    add_option('SCONSFLAGS', '-C ' + location)
 
 # export release version
 env_vars['BELLE2_RELEASE'] = release
@@ -192,9 +217,9 @@ for var in env_vars.keys():
         value = ':'.join(value)
     if value and len(value) > 0:
         if csh:
-            print 'setenv %s %s' % (var, value)
+            print 'setenv %s "%s"' % (var, value)
         else:
-            print 'export %s=%s' % (var, value)
+            print 'export %s="%s"' % (var, value)
     else:
         if csh:
             print 'unsetenv %s' % var
