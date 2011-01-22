@@ -5,9 +5,9 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "Usage: `basename $0` [-f]"
   echo
-  echo "- This command deletes all built object files, libraries, modules, and"
-  echo "  executables of your current local release."
-  echo "  The prompt for confirmation can be disabled with the -f option."
+  echo "This command deletes all built includes, object files, libraries, modules,"
+  echo "and executables of your current local release."
+  echo "The prompt for confirmation can be disabled with the -f option."
   echo
   exit 0
 fi
@@ -27,6 +27,8 @@ if [ "$1" != "-f" ]; then
 fi
 
 # delete the built local release files and directories
+echo "Cleaning ${BELLE2_LOCAL_DIR}/include"
+rm -rf ${BELLE2_LOCAL_DIR}/include
 echo "Cleaning ${BELLE2_LOCAL_DIR}/build/${BELLE2_SUBDIR}"
 rm -rf ${BELLE2_LOCAL_DIR}/build/${BELLE2_SUBDIR}
 echo "Cleaning ${BELLE2_LOCAL_DIR}/lib/${BELLE2_SUBDIR}"
