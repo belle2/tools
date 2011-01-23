@@ -13,7 +13,7 @@ else
     echo "Unknown linux distribution. Trying installation with yum..."
   fi
   # RH, SL, CentOS
-  su -c "yum install subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel openssl-devel"
+  su -c "yum install subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel"
 fi
 
 
