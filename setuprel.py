@@ -187,6 +187,7 @@ if os.environ.has_key('BELLE2_LOCAL_DIR'):
     unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
     remove_option('SCONSFLAGS', '-C ' + os.environ['BELLE2_LOCAL_DIR'])
 env_vars['BELLE2_LOCAL_DIR'] = ''
+env_vars['BELLE2_EXTERNALS_DIR'] = ''
 
 # setup the central release if it exists
 location = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release)
@@ -198,6 +199,7 @@ if release != 'head':
 
         setup_release(location)
         env_vars['BELLE2_RELEASE_DIR'] = location
+        env_vars['BELLE2_EXTERNALS_DIR'] = os.path.join(location, 'externals')
 
 # take care of local release
 location = os.getcwd()
@@ -205,6 +207,7 @@ if local_release:
     release = local_release
     setup_release(location)
     env_vars['BELLE2_LOCAL_DIR'] = location
+    env_vars['BELLE2_EXTERNALS_DIR'] = os.path.join(location, 'externals')
     add_option('SCONSFLAGS', '-C ' + location)
 
 # export release version
