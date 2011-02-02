@@ -146,6 +146,12 @@ def unsetup_release(location):
         remove_path('LD_LIBRARY_PATH', os.environ['CLHEP_LIB_DIR'])
         remove_path('PATH', os.path.join(os.environ['G4WORKDIR'], 'bin',
                     os.environ['G4SYSTEM']))
+    # root
+    root_dir = os.path.join(location, 'externals', 'root')
+    if env_vars.has_key('ROOTSYS') and env_vars['ROOTSYS'] == root_dir:
+        env_vars['ROOTSYS'] = ''
+    remove_path('PATH', os.path.join(root_dir, 'bin'))
+    remove_path('LD_LIBRARY_PATH', os.path.join(root_dir, 'lib'))
     # release
     remove_path('PATH', os.path.join(location, 'bin', subdir))
     remove_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
@@ -168,10 +174,12 @@ def setup_release(location):
         else:
             print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.sh')
 
-    # set ROOTSYS
+    # setup root
     root_dir = os.path.join(location, 'externals', 'root')
     if os.path.isdir(root_dir):
         env_vars['ROOTSYS'] = root_dir
+    add_path('PATH', os.path.join(root_dir, 'bin'))
+    add_path('LD_LIBRARY_PATH', os.path.join(root_dir, 'lib'))
 
     # add release directory to path, library path, and python path
     add_path('PATH', os.path.join(location, 'bin', subdir))
@@ -245,10 +253,10 @@ if not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals'
         need_externals = True
         sys.stderr.write('Warning: geant4 installation is missing.\n')
 if not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals'
-                      , 'bin', subdir, 'root.exe')):
+                      , 'root', 'bin', 'root.exe')):
     if len(env_vars['BELLE2_RELEASE_DIR']) == 0 \
         or not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'],
-                              'externals', 'bin', subdir, 'root.exe')):
+                              'externals', 'root', 'bin', 'root.exe')):
         need_externals = True
         sys.stderr.write('Warning: root installation is missing.\n')
 if need_externals:
