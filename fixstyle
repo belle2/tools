@@ -67,7 +67,9 @@ if [ $# -lt 1 ]; then
 
 else
   for i in $*; do
-    if [ `echo $i| grep ".py$"` ]; then
+    if [ ! -e $i ]; then
+      echo "The file $i does not exist"
+    elif [ `echo $i| grep ".py$"` ]; then
       PythonTidy $i
     elif [ `echo $i| grep ".h$\|.cc$"` ]; then
       ${ASTYLE} $i
