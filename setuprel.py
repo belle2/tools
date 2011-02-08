@@ -251,7 +251,7 @@ if not os.path.isfile(os.path.join(env_vars['BELLE2_LOCAL_DIR'], 'externals',
                       'geant4', 'env.sh')):
     if len(env_vars['BELLE2_RELEASE_DIR']) == 0 \
         or not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'],
-                              'externals', 'geant4', 'end.sh')):
+                              'externals', 'geant4', 'env.sh')):
         need_externals = True
         sys.stderr.write('Warning: geant4 installation is missing.\n')
 if not os.path.isfile(os.path.join(env_vars['BELLE2_LOCAL_DIR'], 'externals',
