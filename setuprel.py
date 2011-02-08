@@ -166,14 +166,6 @@ def setup_release(location):
     add_path('LD_LIBRARY_PATH', os.path.join(location, 'externals', 'lib',
              subdir))
 
-    # setup geant4 environment
-    geant_dir = os.path.join(location, 'externals', 'geant4')
-    if os.path.isdir(geant_dir):
-        if csh:
-            print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.csh')
-        else:
-            print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.sh')
-
     # setup root
     root_dir = os.path.join(location, 'externals', 'root')
     if os.path.isdir(root_dir):
@@ -237,6 +229,14 @@ for var in env_vars.keys():
         else:
             print 'unset %s' % var
 
+# setup geant4 environment
+geant_dir = os.path.join(env_vars['BELLE2_EXTERNALS_DIR'], 'geant4')
+if os.path.isdir(geant_dir):
+    if csh:
+        print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.csh')
+    else:
+        print 'source %s > /dev/null' % os.path.join(geant_dir, 'env.sh')
+
 # inform user about successful completion
 print 'echo "Environment setup for release: ${BELLE2_RELEASE}"'
 if len(env_vars['BELLE2_RELEASE_DIR']) > 0:
@@ -245,15 +245,15 @@ print 'echo "Local release directory      : ${BELLE2_LOCAL_DIR}"'
 
 # check for geant4 and root and warn the user if they are missing
 need_externals = False
-if not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals'
-                      , 'geant4', 'env.sh')):
+if not os.path.isfile(os.path.join(env_vars['BELLE2_LOCAL_DIR'], 'externals',
+                      'geant4', 'env.sh')):
     if len(env_vars['BELLE2_RELEASE_DIR']) == 0 \
         or not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'],
                               'externals', 'geant4', 'end.sh')):
         need_externals = True
         sys.stderr.write('Warning: geant4 installation is missing.\n')
-if not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'], 'externals'
-                      , 'root', 'bin', 'root.exe')):
+if not os.path.isfile(os.path.join(env_vars['BELLE2_LOCAL_DIR'], 'externals',
+                      'root', 'bin', 'root.exe')):
     if len(env_vars['BELLE2_RELEASE_DIR']) == 0 \
         or not os.path.isfile(os.path.join(env_vars['BELLE2_RELEASE_DIR'],
                               'externals', 'root', 'bin', 'root.exe')):
