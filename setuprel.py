@@ -31,6 +31,7 @@ shell = (subprocess.Popen(('ps -p %d -o comm=' % os.getppid()).split(),
 csh = shell in ['csh', 'tcsh']
 
 # if the release version is given as argument take it from there
+local_release = None
 if len(sys.argv) == 2:
     release = sys.argv[1]
 
@@ -241,7 +242,8 @@ if os.path.isdir(geant_dir):
 print 'echo "Environment setup for release: ${BELLE2_RELEASE}"'
 if len(env_vars['BELLE2_RELEASE_DIR']) > 0:
     print 'echo "Central release directory    : ${BELLE2_RELEASE_DIR}"'
-print 'echo "Local release directory      : ${BELLE2_LOCAL_DIR}"'
+if len(env_vars['BELLE2_LOCAL_DIR']) > 0:
+    print 'echo "Local release directory      : ${BELLE2_LOCAL_DIR}"'
 
 # check for geant4 and root and warn the user if they are missing
 need_externals = False
