@@ -208,7 +208,8 @@ if local_release:
     release = local_release
     setup_release(location)
     env_vars['BELLE2_LOCAL_DIR'] = location
-    env_vars['BELLE2_EXTERNALS_DIR'] = os.path.join(location, 'externals')
+    if os.path.isdir(os.path.join(location, 'externals')):
+        env_vars['BELLE2_EXTERNALS_DIR'] = os.path.join(location, 'externals')
     add_option('SCONSFLAGS', '-C ' + location)
 
 # export release version
