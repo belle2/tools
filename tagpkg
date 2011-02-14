@@ -67,33 +67,39 @@ if [ "${LASTTAG}" = "" ]; then
 fi
 
 # determine version numbers
-PATCH=`echo ${LASTTAG} | cut -c 8,9`
+declare -i PATCH
+if [ "`echo ${LASTTAG} | cut -c 8`" = "0" ]; then
+  PATCH=`echo ${LASTTAG} | cut -c 9`
+else
+  PATCH=`echo ${LASTTAG} | cut -c 8,9`
+fi
 if [ "${TAG}" = "patch" ]; then
-  PATCH=$[${PATCH}+1]
-  if [ ${PATCH} -lt 10 ]; then
-    PATCH="0${PATCH}"
-  fi
+  let PATCH+=1
 fi
-MINOR=`echo ${LASTTAG} | cut -c 5,6`
+declare -i MINOR
+if [ "`echo ${LASTTAG} | cut -c 5`" = "0" ]; then
+  MINOR=`echo ${LASTTAG} | cut -c 6`
+else
+  MINOR=`echo ${LASTTAG} | cut -c 5,6`
+fi
 if [ "${TAG}" = "minor" ]; then
-  MINOR=$[${MINOR}+1]
-  if [ ${MINOR} -lt 10 ]; then
-    MINOR="0${MINOR}"
-  fi
-  PATCH="00"
+  let MINOR+=1
+  let PATCH=0
 fi
-MAJOR=`echo ${LASTTAG} | cut -c 2,3`
+declare -i MAJOR
+if [ "`echo ${LASTTAG} | cut -c 2`" = "0" ]; then
+  MAJOR=`echo ${LASTTAG} | cut -c 3`
+else
+  MAJOR=`echo ${LASTTAG} | cut -c 2,3`
+fi
 if [ "${TAG}" = "major" ]; then
-  MAJOR=$[${MAJOR}+1]
-  if [ ${MAJOR} -lt 10 ]; then
-    MAJOR="0${MAJOR}"
-  fi
-  MINOR="00"
-  PATCH="00"
+  let MAJOR+=1
+  let MINOR=0
+  let PATCH=0
 fi
 
 # make tag
-TAG="v${MAJOR}-${MINOR}-${PATCH}"
+TAG=`printf "v%02d-%02d-%02d" ${MAJOR} ${MINOR} ${PATCH}`
 echo "committing tag ${TAG} of package ${PACKAGE}"
 svn copy --parents ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
 if [ "$?" == "0" ]; then
