@@ -5,8 +5,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "Usage: `basename $0` [files]"
   echo
-  echo "- The fixstyle tool formats the layout of C++ and python code."
-  echo "  It helps developers to achieve a common style of all Belle II software."
+  echo "- The checkstyle tool checks the layout of C++ and python code"
+  echo "  and reports changes that the fixstyle tool would apply."
   echo "- By default it checks all C++ and python files in the current directory and"
   echo "  its subfolders recursively."
   echo "- Individual files can be checked explicitly by giving them as argument."
@@ -46,25 +46,65 @@ ASTYLE="astyle \
 # set tools directory if unset
 BELLE2_TOOLS=${BELLE2_TOOLS:-`dirname $0`}
 
-# define functions for python code formatting
-function PythonTidy ()
+# count number of files that fail the check
+declare -i COUNT
+COUNT=0
+
+# define functions for C++ code checking
+function Astyle ()
 {
+  RESULT=1
   TMP=`mktemp`
-  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
+  TMP2=`mktemp`
+  ${ASTYLE} < $1 > $TMP 2> $TMP2
   if [ "$?" == 0 ]; then
-    if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
-      ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
-      echo "formatted $1"
+    if [ "`diff $1 $TMP | wc -l`" == "0" ]; then
+      RESULT=0
+    else
+      echo "$i:"
+      diff $1 $TMP
     fi
   else
-    echo "Formatting of $i failed"
+    echo "$i:"
+    cat $TMP2
   fi
   rm -f $TMP
+  COUNT+=$RESULT
 }
 
-# fix all C++ and python code below the current directory if no arguments are given
+# define functions for python code checking
+function PythonTidy ()
+{
+  RESULT=1
+  TMP=`mktemp`
+  TMP2=`mktemp`
+  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
+  if [ "$?" == 0 ]; then
+    ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
+    if [ "$?" == 0 ]; then
+      if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
+        RESULT=0
+      else
+        echo "$i:"
+        diff $1 $TMP2
+      fi
+    fi
+  else
+    echo "$i:"
+    cat $TMP2
+  fi
+  rm -f $TMP $TMP2
+  COUNT+=$RESULT
+}
+
+# check all C++ and python code below the current directory if no arguments are given
 if [ $# -lt 1 ]; then
-  ${ASTYLE} --recursive *.{h,cc}
+  for i in `find . -name \\*.h`; do
+    Astyle $i
+  done
+  for i in `find . -name \\*.cc`; do
+    Astyle $i
+  done
   for i in `find . -name \\*.py`; do
     PythonTidy $i
   done
@@ -76,10 +116,12 @@ else
     elif [ `echo $i| grep ".py$"` ]; then
       PythonTidy $i
     elif [ `echo $i| grep ".h$\|.cc$"` ]; then
-      ${ASTYLE} $i
+      Astyle $i
+      echo "r=$RETURN"
     else
-      echo "File of unknown type not formatted: $i"
+      echo "File of unknown type not checked: $i"
     fi
   done
 fi
 
+exit $COUNT
