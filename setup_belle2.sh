@@ -14,11 +14,20 @@ fi
 # set location of Belle II code repository
 export BELLE2_REPOSITORY=https://b2comp.kek.jp
 
-# define functions for release setup
+# define function for release setup
 function setuprel
 {
   tmp=`mktemp`
   ${BELLE2_TOOLS}/setuprel.py $* > $tmp
+  . $tmp
+  rm -f $tmp
+}
+
+# define function for option selection
+function setoption
+{
+  tmp=`mktemp`
+  ${BELLE2_TOOLS}/setoption.py $* > $tmp
   . $tmp
   rm -f $tmp
 }

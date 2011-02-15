@@ -36,8 +36,11 @@ setenv BELLE2_REPOSITORY https://b2comp.kek.jp
 
 # define alias for release setup
 set BELLE2_TMP=`mktemp`
-rm $BELLE2_TMP
-alias setuprel "${BELLE2_TOOLS}/setuprel.py $* > $BELLE2_TMP; source $BELLE2_TMP; rm -f $BELLE2_TMP; rehash"
+rm -f $BELLE2_TMP
+alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
+
+# define alias for option selection
+alias setoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setoption.py"
 
 # set scons library directory
 setenv SCONS_LIB_DIR ${BELLE2_TOOLS}/lib
