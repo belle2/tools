@@ -8,6 +8,10 @@ elif [ -f /etc/debian_version ]; then
   # Debian
   su -c "apt-get install subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev openssl-dev"
 
+elif [ -f /etc/SuSE-release ]; then
+  # OpenSUSE
+  su -c "yum install subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel" 
+
 else
   if [ ! -f /etc/redhat-release ]; then
     echo "Unknown linux distribution. Trying installation with yum..."
