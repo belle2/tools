@@ -32,7 +32,7 @@ if ( ! ${?VO_BELLE2_SW_DIR} ) then
 endif
 
 # set location of Belle II code repository
-setenv BELLE2_REPOSITORY https://b2comp.kek.jp
+setenv BELLE2_REPOSITORY https://ekpbelle2.physik.uni-karlsruhe.de
 
 # define alias for release setup
 set BELLE2_TMP=`mktemp`

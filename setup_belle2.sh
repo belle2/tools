@@ -12,7 +12,7 @@ if [ -z "${VO_BELLE2_SW_DIR}" ]; then
 fi
 
 # set location of Belle II code repository
-export BELLE2_REPOSITORY=https://b2comp.kek.jp
+export BELLE2_REPOSITORY=https://ekpbelle2.physik.uni-karlsruhe.de
 
 # define function for release setup
 function setuprel
