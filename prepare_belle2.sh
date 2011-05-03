@@ -2,22 +2,69 @@
 
 if [ -f /etc/lsb-release ]; then
   # Ubuntu
-  sudo apt-get install subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev"
+  CHECK_CMD="dpkg -s"
+  SU_CMD="sudo"
+  INSTALL_CMD="apt-get install"
 
 elif [ -f /etc/debian_version ]; then
   # Debian
-  su -c "apt-get install subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev openssl-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev"
+  CHECK_CMD="dpkg -s"
+  SU_CMD="su -c"
+  INSTALL_CMD="apt-get install"
 
 elif [ -f /etc/SuSE-release ]; then
   # OpenSUSE
-  su -c "yum install subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel" 
+  PACKAGES="subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel" 
+  CHECK_CMD="rpm -q"
+  SU_CMD="su -c"
+  INSTALL_CMD="yum install"
 
 else
   if [ ! -f /etc/redhat-release ]; then
     echo "Unknown linux distribution. Trying installation with yum..."
   fi
   # RH, SL, CentOS
-  su -c "yum install subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel"
+  PACKAGES="subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel"
+  CHECK_CMD="rpm -q"
+  SU_CMD="su -c"
+  INSTALL_CMD="yum install"
+fi
+TEXT="already"
+
+
+# check for missing packages
+MISSING_PACKAGES=""
+for PACKAGE in ${PACKAGES}; do
+  ${CHECK_CMD} ${PACKAGE} &> /dev/null
+  if [ "$?" != 0 ]; then
+    MISSING_PACKAGES="${MISSING_PACKAGES} ${PACKAGE}"
+  fi
+done
+
+
+# ask the user to install the missing packages
+if [ -n "${MISSING_PACKAGES}" ]; then
+  TEXT="now"
+  echo "The following packages are missing:${MISSING_PACKAGES}
+
+Please install them with the following command:
+
+  ${SU_CMD} \"${INSTALL_CMD}${MISSING_PACKAGES}\"
+
+You will need root access to run this command.
+"
+  read -p "Would you like to execute it now (y/n)? " -n 1 REPLY 
+  echo
+  if [ "$REPLY" = "y" ]; then
+    ${SU_CMD} "${INSTALL_CMD}${MISSING_PACKAGES}"
+    if [ "$?" != 0 ]; then
+      exit 1
+    fi
+  else
+    exit 1
+  fi
 fi
 
 
@@ -31,11 +78,13 @@ if [ -d ${HOME}/subversion ]; then
   fi
 fi
 
+
 # check svn version and download and install a new version if the available one is too old
 SVN_MAJOR_VERSION=`svn --version | head -1 | awk '{print $3}' | awk -F . '{print $1}'`
 SVN_MINOR_VERSION=`svn --version | head -1 | awk '{print $3}' | awk -F . '{print $2}'`
 if [ ${SVN_MAJOR_VERSION} -lt 2 ]; then
   if [ ${SVN_MINOR_VERSION} -lt 5 ]; then
+    TEXT="now"
     echo "**********************************************************"
     echo "* The installed svn version is too old.                  *"
     echo "* Downloading and compiling a new svn version...         *"
@@ -48,6 +97,15 @@ if [ ${SVN_MAJOR_VERSION} -lt 2 ]; then
     ./configure --prefix=${HOME}/subversion --with-ssl
     make
     make install
+    RESULT=$?
     rm -rf subversion-1.6.13.tar.gz subversion-deps-1.6.13.tar.gz subversion-1.6.13
+    if [ "$RESULT" != 0 ]; then
+      exit 1
+    fi
   fi
 fi
+
+echo "
+All software that is required to build the Belle II software is ${TEXT}
+installed on your system.
+"
