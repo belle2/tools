@@ -25,25 +25,37 @@ if len(sys.argv) > 2:
     sys.stderr.write('Usage: setuprel [release]\n')
     sys.exit(1)
 
-# if the release version is given as argument take it from there
+# if the MY_BELLE2_DIR environment variable is set use it as local release directory
+if os.environ.has_key('MY_BELLE2_DIR'):
+    os.chdir(os.environ['MY_BELLE2_DIR'])
+
+# if the release version is given as argument or environment variable take it from there
 local_release = None
+release = None
 if len(sys.argv) == 2:
     release = sys.argv[1]
+elif os.environ.has_key('MY_BELLE2_RELEASE'):
+    release = os.environ['MY_BELLE2_RELEASE']
+
+# if central release version given:
+if release:
+
+    # check whether the central release exists
+    if not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
+                         'releases', release)):
+        sys.stderr.write('Error: No central release %s found.\n' % release)
+        sys.exit(1)
 
     # check whether it matches the release in the current directory
     if os.path.isfile('.release'):
         local_release = open('.release').readline().strip()
 
         if local_release != release:
-            sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s). Ignoring the local version.\n'
+            sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s).\n'
                               % (release, local_release))
-
-            if not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
-                                 'releases', release)):
-                sys.stderr.write('Error: No central release %s found.\n'
-                                 % release)
-                sys.exit(1)
 else:
+
+# if no central release version given:
 
     # check whether we are in a release directory and take the release version from there
     if not os.path.isfile('.release'):
