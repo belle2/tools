@@ -118,6 +118,7 @@ def unsetup_release(location):
         env_vars['ROOTSYS'] = ''
     remove_path('PATH', os.path.join(root_dir, 'bin'))
     remove_path('LD_LIBRARY_PATH', os.path.join(root_dir, 'lib'))
+    remove_path('PYTHONPATH', os.path.join(root_dir, 'lib'))
     # release
     remove_path('PATH', os.path.join(location, 'bin', subdir))
     remove_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
@@ -140,6 +141,7 @@ def setup_release(location):
         env_vars['ROOTSYS'] = root_dir
     add_path('PATH', os.path.join(root_dir, 'bin'))
     add_path('LD_LIBRARY_PATH', os.path.join(root_dir, 'lib'))
+    add_path('PYTHONPATH', os.path.join(root_dir, 'lib'))
 
     # add release directory to path, library path, and python path
     add_path('PATH', os.path.join(location, 'bin', subdir))
