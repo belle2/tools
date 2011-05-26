@@ -157,7 +157,6 @@ def unsetup_old_release():
     env_vars['BELLE2_RELEASE_DIR'] = ''
     if os.environ.has_key('BELLE2_LOCAL_DIR'):
         unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
-        remove_option('SCONSFLAGS', '-C ' + os.environ['BELLE2_LOCAL_DIR'])
     env_vars['BELLE2_LOCAL_DIR'] = ''
     env_vars['BELLE2_EXTERNALS_DIR'] = ''
 
@@ -187,7 +186,6 @@ def setup_local_release(location):
     env_vars['BELLE2_LOCAL_DIR'] = location
     if os.path.isdir(os.path.join(location, 'externals')):
         env_vars['BELLE2_EXTERNALS_DIR'] = os.path.join(location, 'externals')
-    add_option('SCONSFLAGS', '-C ' + location)
 
 
 def export_environment():
