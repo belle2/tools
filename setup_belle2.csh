@@ -31,6 +31,16 @@ if ( ! ${?VO_BELLE2_SW_DIR} ) then
   setenv VO_BELLE2_SW_DIR `readlink -f "${BELLE2_TOOLS}/.."`
 endif
 
+# set top directory of external software
+if ( ! ${?BELLE2_EXTERNALS_TOPDIR} ) then
+  setenv BELLE2_EXTERNALS_TOPDIR ${VO_BELLE2_SW_DIR}/externals
+endif
+
+# set architecture, default option and sub directory name
+setenv BELLE2_ARCH `uname -s`_`uname -m`
+setenv BELLE2_OPTION debug
+setenv BELLE2_SUBDIR ${BELLE2_ARCH}/${BELLE2_OPTION}
+
 # set location of Belle II code repository
 setenv BELLE2_REPOSITORY https://ekpbelle2.physik.uni-karlsruhe.de
 

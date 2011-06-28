@@ -27,7 +27,7 @@ DIR=$1
 RELEASE=head
 if [ $# -gt 1 ]; then
   RELEASE=$2
-  svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE} &> /dev/null
+  svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE} > /dev/null
   if [ "$?" != "0" ]; then
     echo "Error: The release ${RELEASE} does not exist." 1>&2
     exit 1
@@ -45,15 +45,13 @@ echo ${RELEASE} > ${DIR}/.release
 # check out base directory and site-scons
 if [ "${RELEASE}" = "head" ]; then
   svn co --depth=empty ${BELLE2_REPOSITORY}/trunk/software ${DIR}
-  cd ${DIR}
-  svn up site_scons
-  ln -s site_scons/SConstruct .
 else
   svn co --depth=empty ${BELLE2_REPOSITORY}/releases/software/${RELEASE} ${DIR}
-  cd ${DIR}
-  svn up site_scons
-  ln -s site_scons/SConstruct .
 fi
+cd ${DIR}
+svn up .externals
+svn up site_scons
+ln -s site_scons/SConstruct .
 
 # inform user about successful completion
 echo "New local directory created for ${RELEASE} release: ${DIR}"

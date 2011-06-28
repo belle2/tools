@@ -79,24 +79,12 @@ if len(get_var('BELLE2_LOCAL_DIR')) > 0:
     print 'echo "Local release directory      : ${BELLE2_LOCAL_DIR}"'
 
 # check for geant4 and root and warn the user if they are missing
-need_externals = False
-if not os.path.isfile(os.path.join(get_var('BELLE2_LOCAL_DIR'), 'externals',
-                      'geant4', 'env.sh')):
-    if len(get_var('BELLE2_RELEASE_DIR')) == 0 \
-        or not os.path.isfile(os.path.join(get_var('BELLE2_RELEASE_DIR'),
-                              'externals', 'geant4', 'env.sh')):
-        need_externals = True
-        sys.stderr.write('Warning: geant4 installation is missing.\n')
-if not os.path.isfile(os.path.join(get_var('BELLE2_LOCAL_DIR'), 'externals',
-                      'root', 'bin', 'root.exe')):
-    if len(get_var('BELLE2_RELEASE_DIR')) == 0 \
-        or not os.path.isfile(os.path.join(get_var('BELLE2_RELEASE_DIR'),
-                              'externals', 'root', 'bin', 'root.exe')):
-        need_externals = True
-        sys.stderr.write('Warning: root installation is missing.\n')
-if need_externals:
-    if os.path.isdir(os.path.join(get_var('BELLE2_RELEASE_DIR'), 'externals')):
-        sys.stderr.write('-> Build externals: scons externals\n')
-    else:
-        sys.stderr.write('-> Install and build externals: addpkg externals; scons externals\n'
-                         )
+try:
+    extdir = get_var('BELLE2_EXTERNALS_DIR')
+    sys.path[:0] = [extdir]
+    from externals import check_externals
+    if not check_externals(extdir):
+        sys.stderr.write('-> Build the externals: cd %s; make\n' % extdir)
+except:
+    sys.stderr.write('Warning: Check of externals failed.\n')
+

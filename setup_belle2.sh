@@ -11,6 +11,16 @@ if [ -z "${VO_BELLE2_SW_DIR}" ]; then
   export VO_BELLE2_SW_DIR=$(readlink -f "${BELLE2_TOOLS}/..")
 fi
 
+# set top directory of external software
+if [ -z "${BELLE2_EXTERNALS_TOPDIR}" ]; then
+  export BELLE2_EXTERNALS_TOPDIR=${VO_BELLE2_SW_DIR}/externals
+fi
+
+# set architecture, default option and sub directory name
+export BELLE2_ARCH=`uname -s`_`uname -m`
+export BELLE2_OPTION=debug
+export BELLE2_SUBDIR=${BELLE2_ARCH}/${BELLE2_OPTION}
+
 # set location of Belle II code repository
 export BELLE2_REPOSITORY=https://ekpbelle2.physik.uni-karlsruhe.de
 
