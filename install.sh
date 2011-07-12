@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # prepare directory for source code of tools
-DIR=`pwd`
+DIR=$(readlink -f "`dirname $0`")
 if [ ! -d src ]; then
   mkdir src
 fi
