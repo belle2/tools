@@ -68,6 +68,17 @@ fi
 cd ${BELLE2_EXTERNALS_TOPDIR}
 svn co ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
 
+if [ "$?" != 0 ]; then
+  echo "\nError: The svn checkout of the externals failed." 1>&2
+  exit 2
+fi
+
 # build the externals
 cd ${VERSION}
 make 2>&1 | tee make.log
+
+if [ "$?" != 0 ]; then
+  echo "\nError: The compilation of the externals failed." 1>&2
+  echo "Please check the compilation log, try to fix the problem, and rerun make in ${BELLE2_EXTERNALS_TOPDIR}/${VERSION}." 1>&2
+  exit 3
+fi
