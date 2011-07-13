@@ -80,8 +80,8 @@ fi
 
 
 # check svn version and download and install a new version if the available one is too old
-SVN_MAJOR_VERSION=`svn --version | head -1 | awk '{print $3}' | awk -F . '{print $1}'`
-SVN_MINOR_VERSION=`svn --version | head -1 | awk '{print $3}' | awk -F . '{print $2}'`
+SVN_MAJOR_VERSION=`svn --version 2> /dev/null | head -1 | awk '{print $3}' | awk -F . '{print $1}'`
+SVN_MINOR_VERSION=`svn --version 2> /dev/null | head -1 | awk '{print $3}' | awk -F . '{print $2}'`
 if [ ${SVN_MAJOR_VERSION} -lt 2 ]; then
   if [ ${SVN_MINOR_VERSION} -lt 5 ]; then
     TEXT="now"

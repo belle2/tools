@@ -2,8 +2,8 @@
 
 # prepare directory for source code of tools
 DIR=$(readlink -f "`dirname $0`")
-if [ ! -d src ]; then
-  mkdir src
+if [ ! -d ${DIR}/src ]; then
+  mkdir ${DIR}/src
 fi
 
 # astyle
