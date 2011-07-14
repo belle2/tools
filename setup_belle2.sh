@@ -1,5 +1,5 @@
 # add tools directory to path
-export BELLE2_TOOLS=$(readlink -f "`dirname $BASH_SOURCE`")
+export BELLE2_TOOLS=$(readlink -f "`dirname ${BASH_SOURCE:-$0}`")
 if [ -n "${PATH}" ]; then
   export PATH=${BELLE2_TOOLS}:${PATH}
 else
