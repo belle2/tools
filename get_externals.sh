@@ -41,7 +41,7 @@ if [ -d ${DIR} ]; then
 fi
 
 # check whether the given version is available
-svn list ${BELLE2_REPOSITORY}/tags/externals/${VERSION} &> /dev/null
+svn list ${BELLE2_REPOSITORY}/tags/externals/${VERSION} > /dev/null
 if [ "$?" != "0" ]; then
   echo "Error: The externals version ${VERSION} does not exist." 1>&2
   exit 1
