@@ -44,6 +44,7 @@ if release or local_release:
 
 # set new compilation option
 set_var('BELLE2_OPTION', sys.argv[1])
+set_var('BELLE2_SUBDIR', '${BELLE2_ARCH}/${BELLE2_OPTION}')
 
 # update environment with new
 if release or local_release:
