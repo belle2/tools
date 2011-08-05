@@ -42,6 +42,15 @@ function setoption
   rm -f $tmp
 }
 
+# define function for externals option selection
+function setextoption
+{
+  tmp=`mktemp`
+  ${BELLE2_TOOLS}/setextoption.py $* > $tmp
+  . $tmp
+  rm -f $tmp
+}
+
 # set scons library directory
 export SCONS_LIB_DIR=${BELLE2_TOOLS}/lib
 

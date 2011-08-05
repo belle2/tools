@@ -52,6 +52,9 @@ alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
 # define alias for option selection
 alias setoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setoption.py"
 
+# define alias for externals option selection
+alias setextoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setextoption.py"
+
 # set scons library directory
 setenv SCONS_LIB_DIR ${BELLE2_TOOLS}/lib
 

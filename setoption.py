@@ -7,7 +7,7 @@ from setup_tools import get_var, set_var, unsetup_old_release, \
     update_environment, export_environment
 
 # allowed options
-options = ['debug', 'opt']
+options = ['debug', 'opt', 'intel']
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
@@ -18,6 +18,7 @@ Set up the environment for selected compiler options:
 
   debug : include debug symbols, no optimization
   opt   : turn on optimization (-O3), no debug symbols
+  intel : use the intel compiler
 
 """
                      % '|'.join(options))
@@ -26,6 +27,8 @@ Set up the environment for selected compiler options:
 # check arguments
 if len(sys.argv) != 2 or sys.argv[1] not in options:
     sys.stderr.write('Usage: setoption %s\n' % '|'.join(options))
+    sys.stderr.write('The current option is: %s\n'
+                     % os.environ.get('BELLE2_OPTION', ''))
     sys.exit(1)
 
 # get current setup variables
@@ -44,7 +47,7 @@ if release or local_release:
 
 # set new compilation option
 set_var('BELLE2_OPTION', sys.argv[1])
-set_var('BELLE2_SUBDIR', '${BELLE2_ARCH}/${BELLE2_OPTION}')
+set_var('BELLE2_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
 
 # update environment with new
 if release or local_release:

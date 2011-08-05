@@ -19,6 +19,9 @@ source_scripts = []
 
 def set_var(var, value):
     env_vars[var] = value
+    os.environ[var] = value
+    if len(value) == 0:
+        del os.environ[var]
 
 
 def get_var(var):
