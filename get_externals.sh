@@ -41,10 +41,12 @@ if [ -d ${DIR} ]; then
 fi
 
 # check whether the given version is available
-svn list ${BELLE2_REPOSITORY}/tags/externals/${VERSION} > /dev/null
-if [ "$?" != "0" ]; then
-  echo "Error: The externals version ${VERSION} does not exist." 1>&2
-  exit 1
+if [ "${VERSION}" != "development" ]; then
+  svn list ${BELLE2_REPOSITORY}/tags/externals/${VERSION} > /dev/null
+  if [ "$?" != "0" ]; then
+    echo "Error: The externals version ${VERSION} does not exist." 1>&2
+    exit 1
+  fi
 fi
 
 # check whether the externals top directory exists
@@ -66,7 +68,11 @@ fi
 
 # check out the selected version
 cd ${BELLE2_EXTERNALS_TOPDIR}
-svn co ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
+if [ "${VERSION}" != "development" ]; then
+  svn co ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
+else
+  svn co ${BELLE2_REPOSITORY}/trunk/externals development
+fi
 
 if [ "$?" != 0 ]; then
   echo "\nError: The svn checkout of the externals failed." 1>&2
