@@ -176,7 +176,7 @@ if xml_file_name and total_tests > 0:
             xml_file.write('>\n    <failure message="%s">\n    </failure>\n  </testcase>\n' % test[1])
         else:
             xml_file.write(' />\n')
-    xml_file.write('<testsuites>\n')
+    xml_file.write('</testsuites>\n')
     xml_file.close()
 
 # print summary and exit
