@@ -8,7 +8,10 @@ import subprocess
 import difflib
 
 
-def compare_log(template_file, log, diff_lines=0):
+tests = []
+
+
+def compare_log(template_file, log, diff_lines=10):
     """Compare the log output to the content of a template file"""
 
     if os.path.isfile(template_file):
@@ -31,20 +34,25 @@ def compare_log(template_file, log, diff_lines=0):
 def run_test(steering, release_dir):
     """Run the test for the given steering file"""
 
-    print 'Test: %s' % steering.lstrip(release_dir)
+    global tests
+    name = steering.lstrip(release_dir)
+    print 'Test: %s' % name
     process = subprocess.Popen(['basf2', steering], stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
     (out, err) = process.communicate()
     if process.returncode != 0:
         print ' -> FAILED'
+        tests.append([name, 'return code: %d' % process.returncode])
         return False
     else:
         if compare_log(steering[:-2] + 'out', out) \
             and compare_log(steering[:-2] + 'err', err):
             print ' -> passed'
+            tests.append([name, None])
             return True
         else:
             print ' -> FAILED  (logs differ)'
+            tests.append([name, 'logs differ'])
             return False
 
 
@@ -87,9 +95,10 @@ def process_top_dir(release_dir, processed_dirs):
     tests_passed = 0
     tests_failed = 0
 
+    global directories
     dirs = os.listdir(release_dir)
-    if len(sys.argv) > 1:
-        dirs = sys.argv[1:]
+    if len(directories) > 0:
+        dirs = directories
 
     exclude_dirs = [
         'build',
@@ -126,6 +135,13 @@ If no argument is given all tests are run.
 """)
     sys.exit(0)
 
+# check for xml option
+xml_file_name = None
+directories = sys.argv[1:]
+if len(sys.argv) >= 2 and sys.argv[1].startswith('--xml='):
+    xml_file_name = sys.argv[1].split('=', 1)[-1]
+    directories = sys.argv[2:]
+
 # check whether a release is set up
 if not (os.environ.has_key('BELLE2_LOCAL_DIR')
         or os.environ.has_key('BELLE2_RELEASE_DIR')):
@@ -146,8 +162,23 @@ if os.environ.has_key('BELLE2_RELEASE_DIR'):
                                        processed_dirs)
     tests_passed += passed
     tests_failed += failed
+total_tests = tests_passed + tests_failed
+
+# write xml output
+if xml_file_name and total_tests > 0:
+    xml_file = open(xml_file_name, 'w')
+    xml_file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    xml_file.write('<testsuites tests="%d" failures="%d">\n' %
+                   (total_tests, tests_failed))
+    for test in tests:
+        xml_file.write('  <testcase name="%s"' % (test[0]))
+        if test[1]:
+            xml_file.write('>\n    <failure message="%s">\n    </failure>\n  </testcase>\n' % test[1])
+        else:
+            xml_file.write(' />\n')
+    xml_file.write('<testsuites>\n')
+    xml_file.close()
 
 # print summary and exit
-print '\n %d out of %d tests failed' % (tests_failed, tests_failed
-        + tests_passed)
+print '\n %d out of %d tests failed' % (tests_failed, total_tests)
 sys.exit(tests_failed)
