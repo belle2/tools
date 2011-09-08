@@ -48,6 +48,8 @@ if release or local_release:
 # set new compilation option
 set_var('BELLE2_OPTION', sys.argv[1])
 set_var('BELLE2_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
+if not os.environ.has_key('BELLE2_EXTERNALS_OPTION'):
+    set_var('BELLE2_EXTERNALS_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
 
 # update environment with new
 if release or local_release:

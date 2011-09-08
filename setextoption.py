@@ -45,7 +45,7 @@ if extdir:
 # set new compilation option
 if sys.argv[1] == 'default':
     set_var('BELLE2_EXTERNALS_OPTION', '')
-    set_var('BELLE2_EXTERNALS_SUBDIR', '')
+    set_var('BELLE2_EXTERNALS_SUBDIR', '${BELLE2_SUBDIR}')
 else:
     set_var('BELLE2_EXTERNALS_OPTION', sys.argv[1])
     set_var('BELLE2_EXTERNALS_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
@@ -63,4 +63,4 @@ if extdir:
 export_environment()
 
 # inform user about successful completion
-print 'echo "Environment setup for externals option: ${BELLE2_EXTERNALS_OPTION:-default}"'
+print 'echo "Environment setup for externals option: %s"' % sys.argv[1]
