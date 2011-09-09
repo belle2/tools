@@ -75,3 +75,13 @@ rehash
 
 # inform user about successful setup
 echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
+
+# check for a newer version
+if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
+  if ( `svn status -u -q ${BELLE2_TOOLS} | cut -c 9 | grep \* | wc -l` != 0 ) then
+    echo
+    echo "WARNING: The version of the tools you are using is outdated."
+    echo "-------> Please update the tools and source the new setup_belle2.csh script."
+    echo
+  endif
+endif
