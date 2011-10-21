@@ -12,7 +12,7 @@ if [ ! -f ${DIR}/astyle ]; then
   svn export -r56 https://astyle.svn.sourceforge.net/svnroot/astyle/tags/1.23/AStyle astyle
   cd astyle/build/gcc
   make
- cp bin/astyle ${DIR}
+  cp bin/astyle ${DIR}
 fi
 
 # scons

@@ -13,6 +13,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "- If the -n option is used, only the changes that the fixstyle would apply"
   echo "  are printed. The files are not modified. The return code gives the number"
   echo "  of files that would be changed."
+  echo "- The -p option is equivalent to the -n option except that it uses the"
+  echo "  pep8 style checker for python code."
   echo
   exit 0
 fi
@@ -117,9 +119,27 @@ function PythonTidyCheck ()
   COUNT+=$RESULT
 }
 
+# define functions for pep8 checking
+function Pep8Check ()
+{
+  TMP=`mktemp`
+  ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
+  if [ "$?" != 0 ]; then
+    COUNT+=1
+    echo "$1:"
+    cat $TMP
+  fi
+  rm -f $TMP
+}
+
 
 # if run in check mode
-if [ "$1" = "-n" ]; then
+if [ "$1" = "-n" -o "$1" = "-p" ]; then
+
+  PYTHONCHECK=PythonTidyCheck
+  if [ "$1" = "-p" ]; then
+    PYTHONCHECK=Pep8Check
+  fi
   shift
 
   # check all C++ and python code below the current directory if no arguments are given
@@ -131,7 +151,7 @@ if [ "$1" = "-n" ]; then
       AstyleCheck $i
     done
     for i in `find . -name \\*.py`; do
-      PythonTidyCheck $i
+      $PYTHONCHECK $i
     done
 
   # check the specified files
@@ -140,7 +160,7 @@ if [ "$1" = "-n" ]; then
       if [ ! -e $i ]; then
         echo "The file $i does not exist"
       elif [ `echo $i| grep ".py$"` ]; then
-        PythonTidyCheck $i
+        $PYTHONCHECK $i
       elif [ `echo $i| grep ".h$\|.cc$"` ]; then
         AstyleCheck $i
       else

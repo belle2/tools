@@ -15,4 +15,4 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
 fi
 
 # call fixstyle in check mode
-fixstyle -n $*
+fixstyle -p $*
