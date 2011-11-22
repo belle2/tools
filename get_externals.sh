@@ -66,12 +66,15 @@ if [ ! -d ${BELLE2_EXTERNALS_TOPDIR} ]; then
 
 fi
 
+# accept the geant4_vmc svn server certificate
+echo p | svn list https://root.cern.ch/svn/geant4_vmc/ &> /dev/null 
+
 # check out the selected version
 cd ${BELLE2_EXTERNALS_TOPDIR}
 if [ "${VERSION}" != "development" ]; then
-  svn co ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
+  svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
 else
-  svn co ${BELLE2_REPOSITORY}/trunk/externals development
+  svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/trunk/externals development
 fi
 
 if [ "$?" != 0 ]; then
