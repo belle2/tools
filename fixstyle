@@ -26,7 +26,7 @@ if [ $? != 0 ]; then
   exit 1
 fi
 VERSION=`astyle -V 2>&1`
-if [ "${VERSION}" != "Artistic Style Version 1.23" ]; then
+if [ "${VERSION}" != "Artistic Style Version 2.02" ]; then
   echo "Wrong version of astyle. Execute the install.sh script in the ${BELLE2_TOOLS} directory." 1>&2
   exit 1
 fi
@@ -39,17 +39,20 @@ BELLE2_TOOLS=${BELLE2_TOOLS:-`dirname $0`}
 ASTYLE="astyle \
 --indent=spaces=2 \
 --convert-tabs \
---brackets=stroustrup \
+--style=stroustrup \
 --indent-switches \
 --indent-namespaces \
 --indent-preprocessor \
 --max-instatement-indent=60 \
 --min-conditional-indent=0 \
 --pad-oper \
+--pad-header \
 --unpad-paren \
 --keep-one-line-statements \
 --keep-one-line-blocks \
 --suffix=none \
+--align-pointer=type \
+--align-reference=type \
 --formatted"
 
 # define functions for python code formatting
@@ -191,7 +194,7 @@ else
       fi
     fi
 
-    ${ASTYLE} --recursive *.{h,cc}
+    ${ASTYLE} --recursive \*.{h,cc}
     for i in `find . -name \\*.py`; do
       PythonTidy $i
     done
