@@ -10,6 +10,8 @@ fi
 if [ ! -f ${DIR}/astyle ]; then
   cd ${DIR}/src
   svn export -r321 https://astyle.svn.sourceforge.net/svnroot/astyle/tags/2.02/AStyle astyle
+  cat astyle/src/ASLocalizer.cpp | sed "1c/\*" > ASLocalizer.cpp
+  mv ASLocalizer.cpp astyle/src/
   cd astyle/build/gcc
   make
   cp bin/astyle ${DIR}
