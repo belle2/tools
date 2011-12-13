@@ -32,6 +32,18 @@ if [ $# -eq 0 ]; then
 fi
 
 
+# check for geant4 and root setup
+if [ -n "${G4SYSTEM}" ]; then
+  echo "Geant4 setup detected." 1>&2
+  echo "Please build the externals in a shell where geant4 is not set up" 1>&2
+  exit 1
+fi
+if [ -n "${ROOTSYS}" ]; then
+  echo "Root setup detected." 1>&2
+  echo "Please build the externals in a shell where root is not set up" 1>&2
+  exit 1
+fi
+
 # check whether the given version is already installed
 VERSION=$1
 DIR=${BELLE2_EXTERNALS_TOPDIR}/${VERSION}
@@ -63,7 +75,6 @@ if [ ! -d ${BELLE2_EXTERNALS_TOPDIR} ]; then
   else
     exit 1
   fi
-
 fi
 
 # accept the geant4_vmc svn server certificate
