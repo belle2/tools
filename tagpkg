@@ -39,8 +39,8 @@ if [ "$?" = "0" ]; then
   echo "Error: Not at the trunk head. Use updatepkg head." 1>&2
   exit 1
 fi
-svn status -u -q --ignore-externals | grep -v "Status against revision" &> /dev/null
-if [ "$?" = "0" ]; then
+STATUS=`svn status -u -q --ignore-externals | wc -l`
+if [ "$STATUS" != "1" ]; then
   echo "Error: There are modified files." 1>&2
   exit 1
 fi
