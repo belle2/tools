@@ -2,7 +2,7 @@
 
 if [ -f /etc/lsb-release ]; then
   # Ubuntu
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   INSTALL_CMD="apt-get install"
