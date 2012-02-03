@@ -48,8 +48,11 @@ def add_path(path, entry):
     elif not env_vars[path]:
         env_vars[path] = [entry]
     elif isinstance(env_vars[path], str):
-        env_vars[path] = [entry, env_vars[path]]
+        if entry != env_vars[path]:
+            env_vars[path] = [entry, env_vars[path]]
     else:
+        while env_vars[path].count(entry) > 0:
+            env_vars[path].remove(entry)
         (env_vars[path])[:0] = [entry]
 
 
@@ -65,7 +68,8 @@ def remove_path(path, entry):
         if env_vars[path] == entry:
             env_vars[path] = []
     elif entry in env_vars[path]:
-        env_vars[path].remove(entry)
+        while env_vars[path].count(entry) > 0:
+            env_vars[path].remove(entry)
 
 
 def add_option(var, option):

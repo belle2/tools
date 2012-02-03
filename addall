@@ -1,0 +1,68 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [\"head\"]"
+  echo
+  echo "- This command adds the source code of all packages from the code"
+  echo "  repository to the local release directory."
+  echo "  It has to be called in the local release directory."
+  echo "- By default the source code corresponding to the version of the local"
+  echo "  release is obtained."
+  echo "- The latest code version can be obtained instead, if \"head\" is given"
+  echo "  as second argument."
+  echo
+  exit 0
+fi
+
+# check number of arguments
+if [ $# -gt 1 ]; then
+  echo "Usage: `basename $0` package [\"head\"]" 1>&2
+  exit 1
+fi
+
+# read arguments
+VERSION=release
+if [ $# -gt 0 ]; then
+  VERSION=$1
+  if [ "${VERSION}" != "head" ]; then
+    echo "Error: Invalid argument ${VERSION}." 1>&2
+    exit 1
+  fi
+fi
+
+# get list of packages
+if [ ! -f .release ]; then
+  echo "Error: Not in a release directory." 1>&2
+  exit 1
+fi
+RELEASE=`cat .release`
+if [ "${RELEASE}" = "head" ]; then
+  PACKAGES=`svn list ${BELLE2_REPOSITORY}/trunk/software/`
+else
+  PACKAGES=`svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/`
+fi
+
+# loop over packages
+for ENTRY in ${PACKAGES}; do
+  PACKAGE=`echo ${ENTRY} | grep "/$"`
+  if [ -n "${PACKAGE}" ]; then
+    PACKAGE=`echo ${PACKAGE} | sed "s;/$;;"`
+    if [ -d ${PACKAGE} ]; then
+      echo "Skipping ${PACKAGE} because it already exists."
+    else
+      if [ "${VERSION}" = "head" -a "${RELEASE}" != "head" ]; then
+        svn co ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${PACKAGE}
+	if [ "$?" == "0" ]; then
+	  echo "Added head version of ${PACKAGE}."
+	fi
+      else
+        svn up ${PACKAGE}
+	if [ "$?" == "0" ]; then
+	  echo "Added release version of ${PACKAGE}."
+	fi
+      fi
+    fi
+  fi
+done

@@ -15,6 +15,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  of files that would be changed."
   echo "- The -p option is equivalent to the -n option except that it uses the"
   echo "  pep8 style checker for python code."
+  echo "- The -c option is equivalent to the -n option for C++ code, but for python"
+  echo "  code it checks whether it follows either the PythonTidy or the pep8 style."
   echo
   exit 0
 fi
@@ -135,13 +137,44 @@ function Pep8Check ()
   rm -f $TMP
 }
 
+# define function for PythonTidy or pep8 checking
+function PythonTidyOrPep8Check ()
+{
+  RESULT=1
+  TMP=`mktemp`
+  TMP2=`mktemp`
+  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
+  if [ "$?" == 0 ]; then
+    ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
+    if [ "$?" == 0 ]; then
+      if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
+        RESULT=0
+      fi
+    fi
+  fi
+  rm -f $TMP $TMP2
+
+  if [ "$RESULT" == "1" ]; then
+    ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
+    if [ "$?" != 0 ]; then
+      COUNT+=1
+      echo "$1:"
+      cat $TMP
+    fi
+  fi
+  rm -f $TMP
+}
+
 
 # if run in check mode
-if [ "$1" = "-n" -o "$1" = "-p" ]; then
+if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-c" ]; then
 
   PYTHONCHECK=PythonTidyCheck
   if [ "$1" = "-p" ]; then
     PYTHONCHECK=Pep8Check
+  fi
+  if [ "$1" = "-c" ]; then
+    PYTHONCHECK=PythonTidyOrPep8Check
   fi
   shift
 

@@ -54,12 +54,6 @@ if [ "${TAG}" = "release" ]; then
     exit 1
   fi
   svn up ${PACKAGE}
-#  RELEASE=`cat .release`
-#  if [ "${RELEASE}" = "head" ]; then
-#    svn co ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${PACKAGE}
-#  else
-#    svn co ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/${PACKAGE} ${PACKAGE}
-#  fi
   if [ "$?" == "0" ]; then
     echo "Added release version of ${PACKAGE}."
   fi
