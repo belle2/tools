@@ -5,6 +5,11 @@ if [ -n "${PATH}" ]; then
 else
   export PATH=${BELLE2_TOOLS}
 fi
+if [ -n "${PYTHONPATH}" ]; then
+  export PYTHONPATH=${BELLE2_TOOLS}:${PYTHONPATH}
+else
+  export PYTHONPATH=${BELLE2_TOOLS}
+fi
 
 # set top directory of Belle II software installation
 if [ -z "${VO_BELLE2_SW_DIR}" ]; then
