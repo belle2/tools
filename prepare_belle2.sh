@@ -51,14 +51,14 @@ if [ -n "${MISSING_PACKAGES}" ]; then
 
 Please install them with the following command:
 
-  ${SU_CMD} \"${INSTALL_CMD}${MISSING_PACKAGES}\"
+  ${SU_CMD} ${INSTALL_CMD}${MISSING_PACKAGES}
 
 You will need root access to run this command.
 "
   read -p "Would you like to execute it now (y/n)? " -n 1 REPLY 
   echo
   if [ "$REPLY" = "y" ]; then
-    ${SU_CMD} "${INSTALL_CMD}${MISSING_PACKAGES}"
+    ${SU_CMD} ${INSTALL_CMD}${MISSING_PACKAGES}
     if [ "$?" != 0 ]; then
       exit 1
     fi
