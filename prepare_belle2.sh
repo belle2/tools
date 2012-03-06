@@ -2,21 +2,21 @@
 
 if [ -f /etc/lsb-release ]; then
   # Ubuntu
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libncurses-dev libreadline-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   INSTALL_CMD="apt-get install"
 
 elif [ -f /etc/debian_version ]; then
   # Debian
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses-dev libreadline-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
 
 elif [ -f /etc/SuSE-release ]; then
   # OpenSUSE
-  PACKAGES="subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel" 
+  PACKAGES="subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel ncurses-devel readline-devel" 
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
@@ -26,7 +26,7 @@ else
     echo "Unknown linux distribution. Trying installation with yum..."
   fi
   # RH, SL, CentOS
-  PACKAGES="subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel"
+  PACKAGES="subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel ncurses-devel readline-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
