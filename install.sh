@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # prepare directory for source code of tools
-DIR=$(readlink -f "`dirname $0`")
+DIR=`python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(dirname $0)`
 if [ ! -d ${DIR}/src ]; then
   mkdir ${DIR}/src
 fi
@@ -10,9 +10,13 @@ fi
 if [ ! -f ${DIR}/astyle ]; then
   cd ${DIR}/src
   svn export -r321 https://astyle.svn.sourceforge.net/svnroot/astyle/tags/2.02/AStyle astyle
-  cat astyle/src/ASLocalizer.cpp | sed "1c/\*" > ASLocalizer.cpp
-  mv ASLocalizer.cpp astyle/src/
-  cd astyle/build/gcc
+  if [ `uname`=Darwin ]; then
+    cd astyle/build/mac
+  else
+    cat astyle/src/ASLocalizer.cpp | sed "1c/\*" > ASLocalizer.cpp
+    mv ASLocalizer.cpp astyle/src/
+    cd astyle/build/gcc
+  fi
   make
   cp bin/astyle ${DIR}
 fi

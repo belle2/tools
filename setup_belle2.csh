@@ -17,7 +17,7 @@ else
   exit 1
 endif
 set DIRNAME=`dirname ${FILENAME}`
-setenv BELLE2_TOOLS `readlink -f "${DIRNAME}"`
+setenv BELLE2_TOOLS `python -c 'import os,sys;print os.path.realpath(sys.argv[1])' ${DIRNAME}`
 unset DIRNAME
 unset FILENAME
 if ( ${?PATH} ) then
@@ -33,7 +33,7 @@ endif
 
 # set top directory of Belle II software installation
 if ( ! ${?VO_BELLE2_SW_DIR} ) then
-  setenv VO_BELLE2_SW_DIR `readlink -f "${BELLE2_TOOLS}/.."`
+  setenv VO_BELLE2_SW_DIR `python -c 'import os,sys;print os.path.realpath(sys.argv[1])' ${BELLE2_TOOLS}/..`
 endif
 
 # set top directory of external software
@@ -52,7 +52,7 @@ setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_SUBDIR}
 setenv BELLE2_REPOSITORY https://ekpbelle2.physik.uni-karlsruhe.de
 
 # define alias for release setup
-set BELLE2_TMP=`mktemp`
+set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
 rm -f $BELLE2_TMP
 alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
 

@@ -1,5 +1,5 @@
 # add tools directory to path
-export BELLE2_TOOLS=$(readlink -f "`dirname ${BASH_SOURCE:-$0}`")
+export BELLE2_TOOLS=`python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(dirname ${BASH_SOURCE:-$0})`
 if [ -n "${PATH}" ]; then
   export PATH=${BELLE2_TOOLS}:${PATH}
 else
@@ -13,7 +13,7 @@ fi
 
 # set top directory of Belle II software installation
 if [ -z "${VO_BELLE2_SW_DIR}" ]; then
-  export VO_BELLE2_SW_DIR=$(readlink -f "${BELLE2_TOOLS}/..")
+  export VO_BELLE2_SW_DIR=`python -c 'import os,sys;print os.path.realpath(sys.argv[1])' ${BELLE2_TOOLS}/..`
 fi
 
 # set top directory of external software
@@ -34,7 +34,7 @@ export BELLE2_REPOSITORY=https://ekpbelle2.physik.uni-karlsruhe.de
 # define function for release setup
 function setuprel
 {
-  tmp=`mktemp`
+  tmp=`mktemp  /tmp/belle2_tmp.XXXX`
   ${BELLE2_TOOLS}/setuprel.py $* > $tmp
   . $tmp
   rm -f $tmp
@@ -43,7 +43,7 @@ function setuprel
 # define function for option selection
 function setoption
 {
-  tmp=`mktemp`
+  tmp=`mktemp /tmp/belle2_tmp.XXXX`
   ${BELLE2_TOOLS}/setoption.py $* > $tmp
   . $tmp
   rm -f $tmp
@@ -52,7 +52,7 @@ function setoption
 # define function for externals option selection
 function setextoption
 {
-  tmp=`mktemp`
+  tmp=`mktemp /tmp/belle2_tmp.XXXX`
   ${BELLE2_TOOLS}/setextoption.py $* > $tmp
   . $tmp
   rm -f $tmp

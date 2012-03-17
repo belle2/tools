@@ -1,6 +1,28 @@
 #!/bin/bash
 
-if [ -f /etc/lsb-release ]; then
+if [ `uname`=Darwin ]; then
+  # Mac OS
+  MISSING=""
+  which make > /dev/null 
+  if [ $? != 0 ]; then
+    MISSING="${MISSING}, XCode command line tools"
+  fi
+  for TOOL in cmake fink gfortran; do
+    which ${TOOL} > /dev/null
+    if [ $? != 0 ]; then
+      MISSING="${MISSING}, ${TOOL}"
+    fi
+  done
+  if [ "${MISSING}" != "" ]; then
+    echo "Please install the following:" `echo ${MISSING} | cut -c 2-`
+    exit 1
+  fi
+  PACKAGES="wget"
+  CHECK_CMD="dpkg -s"
+  SU_CMD="sudo"
+  INSTALL_CMD="fink install"
+
+elif [ -f /etc/lsb-release ]; then
   # Ubuntu
   PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libncurses-dev libreadline-dev"
   CHECK_CMD="dpkg -s"

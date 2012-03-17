@@ -10,6 +10,11 @@ shell = (subprocess.Popen(('ps -p %d -o comm=' % os.getppid()).split(),
          stdout=subprocess.PIPE).communicate()[0])[:-1]
 csh = shell in ['csh', 'tcsh']
 
+# determine library path environment variable
+lib_path_name = 'LD_LIBRARY_PATH'
+if os.uname()[0] == 'Darwin':
+    lib_path_name = 'DYLD_LIBRARY_PATH'
+
 # dictionary for envionment variables
 env_vars = {}
 
@@ -102,7 +107,7 @@ def unsetup_release(location):
 
     # remove release directory to path, library path, and python path
     remove_path('PATH', os.path.join(location, 'bin', subdir))
-    remove_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
+    remove_path(lib_path_name, os.path.join(location, 'lib', subdir))
     remove_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
 
 
@@ -113,7 +118,7 @@ def setup_release(location):
 
     # add release directory to path, library path, and python path
     add_path('PATH', os.path.join(location, 'bin', subdir))
-    add_path('LD_LIBRARY_PATH', os.path.join(location, 'lib', subdir))
+    add_path(lib_path_name, os.path.join(location, 'lib', subdir))
     add_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
 
 
