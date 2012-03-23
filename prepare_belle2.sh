@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ `uname`=Darwin ]; then
+if [ `uname` = Darwin ]; then
   # Mac OS
   MISSING=""
   which make > /dev/null 
