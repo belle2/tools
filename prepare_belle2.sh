@@ -31,7 +31,7 @@ elif [ -f /etc/lsb-release ]; then
 
 elif [ -f /etc/debian_version ]; then
   # Debian
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses-dev libreadline-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses-dev libreadline-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
@@ -84,7 +84,11 @@ You will need root access to run this command.
   read -p "Would you like to execute it now (y/n)? " -n 1 REPLY 
   echo
   if [ "$REPLY" = "y" ]; then
-    ${SU_CMD} ${INSTALL_MISSING}
+    if [ "${SU_CMD}" != "sudo" ]; then
+      ${SU_CMD} "${INSTALL_CMD}${MISSING_PACKAGES}"
+    else
+      ${SU_CMD} ${INSTALL_MISSING}
+    fi
     if [ "$?" != 0 ]; then
       exit 1
     fi
