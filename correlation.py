@@ -7,6 +7,7 @@ import gv
 
 
 class Graph:
+
     """
     A class for generating a correlation diagram that illustrates
     the data flow and relations between data objects
@@ -35,9 +36,8 @@ class Graph:
         @return: the url pointing to the doxygen documentation of the class
         """
 
-        return 'http://ekpbelle2.physik.uni-karlsruhe.de' \
-               '/internal/software/development/classBelle2_1_1' + \
-               name.replace('::', '_1_1') + '.html'
+        return 'http://ekpbelle2.physik.uni-karlsruhe.de/internal/software/development/classBelle2_1_1' \
+            + name.replace('::', '_1_1') + '.html'
 
     def data(self, name):
         """
@@ -86,7 +86,12 @@ class Graph:
         gv.setv(edge, 'constraint', 'false')
         return edge
 
-    def module(self, name, input_data, output_data):
+    def module(
+        self,
+        name,
+        input_data,
+        output_data,
+        ):
         """
         Creates a node for a module
         @type  name: string
@@ -111,6 +116,28 @@ class Graph:
         self.output_lists.append(output_data)
         return node
 
+    def generate(self, file_name=None):
+        """
+        Creates an image of the correation diagram and the html code
+        that includes it
+        @type  file_name: string
+        @param file_name: the base file name; default is the graph name
+        @return: the html code
+        """
+
+        if not file_name:
+            file_name = self.file_name
+
+        gv.layout(self.graph, 'dot')
+        gv.render(self.graph, 'png', file_name + '.png')
+
+        html = '<div align="center">\n'
+        html += '<img src="%s.png" border="0" usemap="#%s"/>\n' % (file_name,
+                self.name)
+        html += gv.renderdata(self.graph, 'cmapx')
+        html += '</div>\n'
+        return html
+
     def write(self, file_name=None):
         """
         Creates an image and an html page for the correation diagram
@@ -121,14 +148,17 @@ class Graph:
         if not file_name:
             file_name = self.file_name
 
-        gv.layout(self.graph, 'dot')
-        gv.render(self.graph, 'png', file_name + '.png')
-
         html = open(file_name + '.html', 'w')
-        html.write('<html>\n<head>\n<title>%s</title>\n</head>\n' % self.name)
-        html.write('<body>\n<div align="center">\n')
-        html.write('<img src="%s.png" border="0" usemap="#%s"/>\n' %
-                   (file_name, self.name))
-        html.write(gv.renderdata(self.graph, 'cmapx'))
-        html.write('</div></body>\n</html>\n')
+        html.write('''<html>
+<head>
+<title>%s</title>
+</head>
+''' % self.name)
+        html.write('<body>\n')
+        html.write(self.generate(file_name))
+        html.write('''</body>
+</html>
+''')
         html.close()
+
+
