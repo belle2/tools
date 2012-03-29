@@ -16,12 +16,13 @@ base_name = os.path.splitext(os.path.basename(sys.argv[1]))[0]
 index = 0
 
 for entry in correlation_diagram_re.findall(content):
+    indent = len(entry.lstrip('\n')) - len(entry.lstrip('\n '))
     file_name = base_name
     if index > 0:
         file_name += '_' + str(index)
     graph = Graph(file_name)
     try:
-        exec entry
+        exec entry.replace('\n' + ' ' * indent, '\n')
     except Exception, exception:
         sys.stderr.write('Error in %s: %s\n' % (sys.argv[1], str(exception)))
         continue
