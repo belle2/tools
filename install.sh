@@ -10,7 +10,7 @@ fi
 if [ ! -f ${DIR}/astyle ]; then
   cd ${DIR}/src
   svn export -r321 https://astyle.svn.sourceforge.net/svnroot/astyle/tags/2.02/AStyle astyle
-  if [ `uname`=Darwin ]; then
+  if [ `uname` = Darwin ]; then
     cd astyle/build/mac
   else
     cat astyle/src/ASLocalizer.cpp | sed "1c/\*" > ASLocalizer.cpp
