@@ -28,6 +28,8 @@ fi
 # list available versions if no argument is given
 if [ $# -eq 0 ]; then
   svn list ${BELLE2_REPOSITORY}/tags/externals | sed "s;/$;;g"
+  REVISION=`svn list --verbose --depth=empty ${BELLE2_REPOSITORY}/trunk/externals | awk '{print $1}'`
+  echo "development (revision ${REVISION})"
   exit 0
 fi
 
