@@ -3,18 +3,20 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [version]"
+  echo "Usage: `basename $0` [version [system]]"
   echo
   echo "- This command installs the given version of the externals in the"
   echo "  directory given by the environment variable BELLE2_EXTERNALS_TOPDIR."
+  echo "- If the operating system is specified it tries to install the"
+  echo "  corresponding precompiled binary version."
   echo "- If no version is given it lists the available externals versions."
   echo
   exit 0
 fi
 
 # check number of arguments
-if [ $# -gt 1 ]; then
-  echo "Usage: `basename $0` [version]" 1>&2
+if [ $# -gt 2 ]; then
+  echo "Usage: `basename $0` [version [system]]" 1>&2
   exit 1
 fi
 
@@ -34,18 +36,6 @@ if [ $# -eq 0 ]; then
 fi
 
 
-# check for geant4 and root setup
-if [ -n "${G4SYSTEM}" ]; then
-  echo "Geant4 setup detected." 1>&2
-  echo "Please build the externals in a shell where geant4 is not set up" 1>&2
-  exit 1
-fi
-if [ -n "${ROOTSYS}" ]; then
-  echo "Root setup detected." 1>&2
-  echo "Please build the externals in a shell where root is not set up" 1>&2
-  exit 1
-fi
-
 # check whether the given version is already installed
 VERSION=$1
 DIR=${BELLE2_EXTERNALS_TOPDIR}/${VERSION}
@@ -63,7 +53,7 @@ if [ "${VERSION}" != "development" ]; then
   fi
 fi
 
-# check whether the externals top directory exists
+# check whether the externals top directory exists and cd to it
 if [ ! -d ${BELLE2_EXTERNALS_TOPDIR} ]; then
   echo "The externals top directory ${BELLE2_EXTERNALS_TOPDIR} does not exist."
   read -p "Would you like to create it (y/n)? " -n 1 REPLY 
@@ -78,16 +68,43 @@ if [ ! -d ${BELLE2_EXTERNALS_TOPDIR} ]; then
     exit 1
   fi
 fi
+cd ${BELLE2_EXTERNALS_TOPDIR}
+
+# check for geant4 and root setup
+if [ -n "${G4SYSTEM}" ]; then
+  echo "Geant4 setup detected." 1>&2
+  echo "Please build the externals in a shell where geant4 is not set up" 1>&2
+  exit 1
+fi
+if [ -n "${ROOTSYS}" ]; then
+  echo "Root setup detected." 1>&2
+  echo "Please build the externals in a shell where root is not set up" 1>&2
+  exit 1
+fi
 
 # accept the geant4_vmc svn server certificate
 echo p | svn list https://root.cern.ch/svn/geant4_vmc/ &> /dev/null 
 
 # check out the selected version
-cd ${BELLE2_EXTERNALS_TOPDIR}
-if [ "${VERSION}" != "development" ]; then
-  svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
-else
+if [ "${VERSION}" = "development" ]; then
   svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/trunk/externals development
+else
+
+  # try the binary version if the operating system is given
+  if [ $# -gt 1 ]; then
+    wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_$2.tgz | tar xz
+    RESULT=$?
+    if [ "${RESULT}" = "0" ]; then
+      exit 0
+    fi
+  fi
+
+  # next try the externals source tarball and then the checkout from the svn repository
+  wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_src.tgz | tar xz
+  RESULT=$?
+  if [ "${RESULT}" -ne "0" ]; then
+    svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
+  fi
 fi
 
 if [ "$?" != 0 ]; then

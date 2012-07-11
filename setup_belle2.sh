@@ -35,6 +35,7 @@ export BELLE2_REPOSITORY=https://ekpbelle2.physik.uni-karlsruhe.de
 function setuprel
 {
   tmp=`mktemp  /tmp/belle2_tmp.XXXX`
+  rm -f $tmp
   ${BELLE2_TOOLS}/setuprel.py $* > $tmp
   . $tmp
   rm -f $tmp
@@ -44,6 +45,7 @@ function setuprel
 function setoption
 {
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
+  rm -f $tmp
   ${BELLE2_TOOLS}/setoption.py $* > $tmp
   . $tmp
   rm -f $tmp
@@ -53,6 +55,7 @@ function setoption
 function setextoption
 {
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
+  rm -f $tmp
   ${BELLE2_TOOLS}/setextoption.py $* > $tmp
   . $tmp
   rm -f $tmp
