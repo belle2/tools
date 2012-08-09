@@ -10,6 +10,9 @@ fi
 if [ ! -f ${DIR}/astyle ]; then
   cd ${DIR}/src
   svn export -r321 https://astyle.svn.sourceforge.net/svnroot/astyle/tags/2.02/AStyle astyle
+  if [ "$?" != "0" ]; then
+    wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/astyle_2.02.tgz | tar xz
+  fi
   if [ `uname` = Darwin ]; then
     cd astyle/build/mac
   else
@@ -24,9 +27,11 @@ fi
 # scons
 if [ ! -f ${DIR}/scons ]; then
   cd ${DIR}/src
-  svn export --username guest --password guest --non-interactive -r4725 http://scons.tigris.org/svn/scons/tags/1.3.0 scons
+  wget -O - --tries=3 http://downloads.sourceforge.net/project/scons/scons/2.2.0/scons-2.2.0.tar.gz | tar xz
+  if [ "$?" != "0" ]; then
+    wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/scons-2.2.0.tar.gz | tar xz
+  fi
+  mv scons-2.2.0 scons
   cd scons
-  python bootstrap.py build/scons
-  cd build/scons
   python setup.py install --no-version-script --install-scripts=${DIR} --install-data=${DIR}/share --install-lib=${DIR}/lib
 fi
