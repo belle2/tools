@@ -8,6 +8,7 @@ import subprocess
 import math
 import datetime
 import ROOT
+ROOT.gROOT.SetBatch()
 from optparse import OptionParser
 
 
@@ -171,7 +172,6 @@ def collect_histos(dir, packages, index):
                         packages[entry][basename][name][index] = {}
                         for leaf in obj.GetListOfLeaves():
                             packages[entry][basename][name][index][leaf.GetName()] = leaf.GetValue()
-                            print leaf.GetName(), leaf.GetValue()
 
 
 def collect_previous_histos(packages, versions):
@@ -339,7 +339,6 @@ versions = ['current']
 collect_histos(output_dir, packages, 0)
 collect_previous_histos(packages, versions)
 indices = create_indices(versions)
-print packages
 
 # create plots and html file
 if len(packages.keys()) > 0:
