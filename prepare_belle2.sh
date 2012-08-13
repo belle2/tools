@@ -24,14 +24,14 @@ if [ `uname` = Darwin ]; then
 
 elif [ -f /etc/lsb-release ]; then
   # Ubuntu
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libncurses-dev libreadline-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libncurses-dev libreadline-dev lsb-release"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   INSTALL_CMD="apt-get install"
 
 elif [ -f /etc/debian_version ]; then
   # Debian
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses-dev libreadline-dev"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses-dev libreadline-dev lsb-release"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
