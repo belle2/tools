@@ -92,7 +92,7 @@ else
 
   # try the binary version if the operating system is given
   if [ $# -gt 1 ]; then
-    wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_$2.tgz | tar xz
+    wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_$2.tgz | tar xz
     RESULT=$?
     if [ "${RESULT}" = "0" ]; then
       exit 0
@@ -100,7 +100,7 @@ else
   fi
 
   # next try the externals source tarball and then the checkout from the svn repository
-  wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_src.tgz | tar xz
+  wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_src.tgz | tar xz
   RESULT=$?
   if [ "${RESULT}" -ne "0" ]; then
     svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
