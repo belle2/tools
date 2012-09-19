@@ -287,16 +287,16 @@ def make_plots(html, packages, versions, indices):
                         can.Divide(nSplit, nSplit)
 
                     # draw histograms
-                    option = ''
+                    option = histo.GetOption()
                     for index in range(len(indices)):
                         histo = plots[indices[index]]
                         if histo:
                             if split:
                                 can.cd(index+1)
-                                histo.DrawCopy()
+                                histo.DrawCopy(option)
                             else:
                                 histo.DrawCopy(option)
-                                option = 'same'
+                                option = 'same ' + option
 
                     # save image
                     filename = '%s_%s_%s.png' % (package, basename, name)
