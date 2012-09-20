@@ -287,10 +287,10 @@ def make_plots(html, packages, versions, indices):
                         can.Divide(nSplit, nSplit)
 
                     # draw histograms
-                    option = histo.GetOption()
                     for index in range(len(indices)):
                         histo = plots[indices[index]]
                         if histo:
+                            option = histo.GetOption()
                             if split:
                                 can.cd(index+1)
                                 histo.DrawCopy(option)
