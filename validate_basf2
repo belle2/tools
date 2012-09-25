@@ -56,7 +56,7 @@ def process_dir(dir, output_subdir):
     os.chdir(out_dir)
 
     # execute steering files
-    for steering in glob.glob(os.path.join(dir, '*.py')):
+    for steering in sorted(glob.glob(os.path.join(dir, '*.py'))):
         print 'Running: %s' % steering
         process = subprocess.Popen(['basf2', steering], stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
@@ -65,7 +65,7 @@ def process_dir(dir, output_subdir):
             print ' -> FAILED'
             print out
             
-    for macro in glob.glob(os.path.join(dir, '*.C')):
+    for macro in sorted(glob.glob(os.path.join(dir, '*.C'))):
         print 'Running: %s' % macro
         process = subprocess.Popen(['root', '-b', '-q', macro], stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
