@@ -36,7 +36,7 @@ class Graph:
         @return: the url pointing to the doxygen documentation of the class
         """
 
-        return 'http://ekpbelle2.physik.uni-karlsruhe.de/internal/software/development/classBelle2_1_1' \
+        return 'https://belle2.cc.kek.jp/internal/software/development/classBelle2_1_1' \
             + name.replace('::', '_1_1') + '.html'
 
     def data(self, name):

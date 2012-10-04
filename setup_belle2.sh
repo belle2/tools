@@ -29,7 +29,7 @@ export BELLE2_EXTERNALS_OPTION=debug
 export BELLE2_EXTERNALS_SUBDIR=${BELLE2_SUBDIR}
 
 # set location of Belle II code repository
-export BELLE2_REPOSITORY=https://ekpbelle2.physik.uni-karlsruhe.de
+export BELLE2_REPOSITORY=https://belle2.cc.kek.jp/svn
 
 # define function for release setup
 function setuprel

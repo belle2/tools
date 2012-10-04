@@ -49,7 +49,7 @@ setenv BELLE2_EXTERNALS_OPTION debug
 setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_SUBDIR}
 
 # set location of Belle II code repository
-setenv BELLE2_REPOSITORY https://ekpbelle2.physik.uni-karlsruhe.de
+setenv BELLE2_REPOSITORY https://belle2.cc.kek.jp/svn
 
 # define alias for release setup
 set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
