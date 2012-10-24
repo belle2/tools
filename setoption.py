@@ -47,9 +47,24 @@ if release or local_release:
 
 # set new compilation option
 set_var('BELLE2_OPTION', sys.argv[1])
-set_var('BELLE2_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
+set_var('BELLE2_SUBDIR', os.path.join(os.environ.get('BELLE2_ARCH'),
+        sys.argv[1]))
 if not os.environ.has_key('BELLE2_EXTERNALS_OPTION'):
-    set_var('BELLE2_EXTERNALS_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
+    set_var('BELLE2_EXTERNALS_SUBDIR',
+            os.path.join(os.environ.get('BELLE2_ARCH'), sys.argv[1]))
+    if os.environ.has_key('BELLE2_EXTERNALS_DIR'):
+        extdir = os.environ.get('BELLE2_EXTERNALS_DIR')
+        try:
+            sys.path[:0] = [extdir]
+            from externals import check_externals
+            if not check_externals(extdir):
+                sys.stderr.write('''Warning: The externals installation is incomplete.
+-> Try: cd %s; make
+'''
+                                 % extdir)
+        except:
+            sys.stderr.write('Warning: Check of externals at %s failed.\n'
+                             % extdir)
 
 # update environment with new
 if release or local_release:

@@ -84,7 +84,10 @@ try:
     sys.path[:0] = [extdir]
     from externals import check_externals
     if not check_externals(extdir):
-        sys.stderr.write('-> Build the externals: cd %s; make\n' % extdir)
+        sys.stderr.write('''Warning: The externals installation is incomplete.
+-> Try: cd %s; make
+'''
+                         % extdir)
 except:
     sys.stderr.write('Warning: Check of externals failed.\n')
 

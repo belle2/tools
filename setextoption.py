@@ -45,17 +45,23 @@ if extdir:
 # set new compilation option
 if sys.argv[1] == 'default':
     set_var('BELLE2_EXTERNALS_OPTION', '')
-    set_var('BELLE2_EXTERNALS_SUBDIR', '${BELLE2_SUBDIR}')
+    set_var('BELLE2_EXTERNALS_SUBDIR', os.environ.get('BELLE2_SUBDIR'))
 else:
     set_var('BELLE2_EXTERNALS_OPTION', sys.argv[1])
-    set_var('BELLE2_EXTERNALS_SUBDIR', '${BELLE2_ARCH}/%s' % sys.argv[1])
+    set_var('BELLE2_EXTERNALS_SUBDIR',
+            os.path.join(os.environ.get('BELLE2_ARCH'), sys.argv[1]))
 
 # update environment with new externals option
 if extdir:
     try:
         sys.path[:0] = [extdir]
-        from externals import setup_externals
+        from externals import setup_externals, check_externals
         setup_externals(extdir)
+        if not check_externals(extdir):
+            sys.stderr.write('''Warning: The externals installation is incomplete.
+-> Try: cd %s; make
+'''
+                             % extdir)
     except:
         sys.stderr.write('Warning: Setup of externals at %s failed.\n'
                          % extdir)
