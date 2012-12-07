@@ -3,7 +3,7 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [-n] [files]"
+  echo "Usage: `basename $0` [-n|-p|-c] [files]"
   echo
   echo "- The fixstyle tool formats the layout of C++ and python code."
   echo "  It helps developers to achieve a common style of all Belle II software."
@@ -60,17 +60,21 @@ ASTYLE="astyle \
 # define functions for python code formatting
 function PythonTidy ()
 {
-  TMP=`mktemp`
-  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
-  if [ "$?" == 0 ]; then
-    if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
-      ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
-      echo "formatted $1"
-    fi
+  if [ -L $1 ]; then
+    echo "skipping symbolic link $1"
   else
-    echo "Formatting of $i failed"
+    TMP=`mktemp`
+    ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
+    if [ "$?" == 0 ]; then
+      if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
+        ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
+        echo "formatted $1"
+      fi
+    else
+      echo "Formatting of $i failed"
+    fi
+    rm -f $TMP
   fi
-  rm -f $TMP
 }
 
 
@@ -81,88 +85,96 @@ COUNT=0
 # define functions for C++ code checking
 function AstyleCheck ()
 {
-  RESULT=1
-  TMP=`mktemp`
-  TMP2=`mktemp`
-  ${ASTYLE} < $1 > $TMP 2> $TMP2
-  if [ "$?" == 0 ]; then
-    if [ "`diff $1 $TMP | wc -l`" == "0" ]; then
-      RESULT=0
+  if [ ! -L $1 ]; then
+    RESULT=1
+    TMP=`mktemp`
+    TMP2=`mktemp`
+    ${ASTYLE} < $1 > $TMP 2> $TMP2
+    if [ "$?" == 0 ]; then
+      if [ "`diff $1 $TMP | wc -l`" == "0" ]; then
+        RESULT=0
+      else
+        echo "$1:"
+        diff $1 $TMP
+      fi
     else
-      echo "$1:"
-      diff $1 $TMP
+      cat $TMP2
     fi
-  else
-    cat $TMP2
+    rm -f $TMP $TMP2
+    COUNT+=$RESULT
   fi
-  rm -f $TMP $TMP2
-  COUNT+=$RESULT
 }
 
 # define functions for python code checking
 function PythonTidyCheck ()
 {
-  RESULT=1
-  TMP=`mktemp`
-  TMP2=`mktemp`
-  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
-  if [ "$?" == 0 ]; then
-    ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
+  if [ ! -L $1 ]; then
+    RESULT=1
+    TMP=`mktemp`
+    TMP2=`mktemp`
+    ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
     if [ "$?" == 0 ]; then
-      if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
-        RESULT=0
-      else
-        echo "$1:"
-        diff $1 $TMP2
+      ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
+      if [ "$?" == 0 ]; then
+        if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
+          RESULT=0
+        else
+          echo "$1:"
+          diff $1 $TMP2
+        fi
       fi
+    else
+      echo "$1:"
+      cat $TMP2
     fi
-  else
-    echo "$1:"
-    cat $TMP2
+    rm -f $TMP $TMP2
+    COUNT+=$RESULT
   fi
-  rm -f $TMP $TMP2
-  COUNT+=$RESULT
 }
 
 # define functions for pep8 checking
 function Pep8Check ()
 {
-  TMP=`mktemp`
-  ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
-  if [ "$?" != 0 ]; then
-    COUNT+=1
-    echo "$1:"
-    cat $TMP
-  fi
-  rm -f $TMP
-}
-
-# define function for PythonTidy or pep8 checking
-function PythonTidyOrPep8Check ()
-{
-  RESULT=1
-  TMP=`mktemp`
-  TMP2=`mktemp`
-  ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
-  if [ "$?" == 0 ]; then
-    ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
-    if [ "$?" == 0 ]; then
-      if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
-        RESULT=0
-      fi
-    fi
-  fi
-  rm -f $TMP $TMP2
-
-  if [ "$RESULT" == "1" ]; then
+  if [ ! -L $1 ]; then
+    TMP=`mktemp`
     ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
     if [ "$?" != 0 ]; then
       COUNT+=1
       echo "$1:"
       cat $TMP
     fi
+    rm -f $TMP
   fi
-  rm -f $TMP
+}
+
+# define function for PythonTidy or pep8 checking
+function PythonTidyOrPep8Check ()
+{
+  if [ ! -L $1 ]; then
+    RESULT=1
+    TMP=`mktemp`
+    TMP2=`mktemp`
+    ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
+    if [ "$?" == 0 ]; then
+      ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
+      if [ "$?" == 0 ]; then
+        if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
+          RESULT=0
+        fi
+      fi
+    fi
+    rm -f $TMP $TMP2
+
+    if [ "$RESULT" == "1" ]; then
+      ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
+      if [ "$?" != 0 ]; then
+        COUNT+=1
+        echo "$1:"
+        cat $TMP
+      fi
+    fi
+    rm -f $TMP
+  fi
 }
 
 
@@ -237,6 +249,8 @@ else
     for i in $*; do
       if [ ! -e $i ]; then
         echo "The file $i does not exist"
+      elif [ -L $i ]; then
+        echo "skipping symbolic link $1"
       elif [ `echo $i| grep ".py$"` ]; then
         PythonTidy $i
       elif [ `echo $i| grep ".h$\|.cc$"` ]; then
