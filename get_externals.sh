@@ -70,23 +70,33 @@ if [ ! -d ${BELLE2_EXTERNALS_TOPDIR} ]; then
 fi
 cd ${BELLE2_EXTERNALS_TOPDIR}
 
-# check for geant4 and root setup
-if [ -n "${G4SYSTEM}" ]; then
-  echo "Geant4 setup detected." 1>&2
-  echo "Please build the externals in a shell where geant4 is not set up" 1>&2
-  exit 1
-fi
-if [ -n "${ROOTSYS}" ]; then
-  echo "Root setup detected." 1>&2
-  echo "Please build the externals in a shell where root is not set up" 1>&2
+# check whether we can write to the externals directory
+if [ ! -w ${BELLE2_EXTERNALS_TOPDIR} ]; then
+  echo "Error: No write permissions to the directory ${BELLE2_EXTERNALS_TOPDIR}." 1>&2
   exit 1
 fi
 
-# accept the geant4_vmc svn server certificate
-echo p | svn list https://root.cern.ch/svn/geant4_vmc/ &> /dev/null 
+function CheckBuildEnvironment ()
+{
+  # check for geant4 and root setup
+  if [ -n "${G4SYSTEM}" ]; then
+    echo "Geant4 setup detected." 1>&2
+    echo "Please build the externals in a shell where geant4 is not set up" 1>&2
+    exit 1
+  fi
+  if [ -n "${ROOTSYS}" ]; then
+    echo "Root setup detected." 1>&2
+    echo "Please build the externals in a shell where root is not set up" 1>&2
+    exit 1
+  fi
+
+  # accept the geant4_vmc svn server certificate
+  echo p | svn list https://root.cern.ch/svn/geant4_vmc/ &> /dev/null 
+}
 
 # check out the selected version
 if [ "${VERSION}" = "development" ]; then
+  CheckBuildEnvironment
   svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/trunk/externals development
 else
 
@@ -100,6 +110,7 @@ else
   fi
 
   # next try the externals source tarball and then the checkout from the svn repository
+  CheckBuildEnvironment
   wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_src.tgz | tar xz
   RESULT=$?
   if [ "${RESULT}" -ne "0" ]; then
