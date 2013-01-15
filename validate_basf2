@@ -7,6 +7,7 @@ import glob
 import subprocess
 import math
 import datetime
+import shutil
 import ROOT
 ROOT.gROOT.SetBatch()
 from optparse import OptionParser
@@ -14,7 +15,8 @@ from optparse import OptionParser
 
 results_dir = 'results'
 output_dir = os.path.join(results_dir, 'current')
-n_previous = 3
+reference_dir = os.path.join(results_dir, 'reference')
+n_previous = 2
 previous = []
 directories = []
 html_dir = 'html'
@@ -30,7 +32,7 @@ def parse_arguments():
 Run basf2 validation tests of the given packages or sub-directories.
 If no argument is given all validation tests are run.'''
     parser = OptionParser(usage=usage)
-    parser.add_option('-n', type='int', dest='nPrevious', help='number of previous versions', default=3)
+    parser.add_option('-n', type='int', dest='nPrevious', help='number of previous versions', default=2)
     parser.add_option('-p', action='append', dest='previous', help='name of previous version')
     (options, directories) = parser.parse_args()
 
@@ -48,10 +50,15 @@ If no argument is given all validation tests are run.'''
 def process_dir(dir, output_subdir):
     """Execute validation tests in the given directory"""
 
-    # go to the output directory
+    # make sure the output directory and reference directory exist
     out_dir = os.path.join(output_dir, output_subdir)
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
+    ref_dir = os.path.join(reference_dir, output_subdir)
+    if not os.path.exists(ref_dir):
+        os.makedirs(ref_dir)
+
+    # go to the output directory
     cur_dir = os.getcwd()
     os.chdir(out_dir)
 
@@ -64,7 +71,8 @@ def process_dir(dir, output_subdir):
         if process.returncode != 0:
             print ' -> FAILED'
             print out
-            
+
+    # execute root macros
     for macro in sorted(glob.glob(os.path.join(dir, '*.C'))):
         print 'Running: %s' % macro
         process = subprocess.Popen(['root', '-b', '-q', macro], stdout=subprocess.PIPE,
@@ -76,6 +84,10 @@ def process_dir(dir, output_subdir):
 
     # restore working directory
     os.chdir(cur_dir)
+
+    # copy reference plots
+    for reference in sorted(glob.glob(os.path.join(dir, '*.root'))):
+        shutil.copy2(reference, ref_dir)
 
 
 def process_top_dir(release_dir, processed_dirs):
@@ -179,6 +191,8 @@ def collect_previous_histos(packages, versions):
 
     dirs = os.listdir(results_dir)
     dirs.remove('current')
+    if 'reference' in dirs:
+        dirs.remove('reference')
     dirs.sort(key=lambda x:os.stat(os.path.join(results_dir, x)).st_mtime, reverse=True)
     for entry in dirs:
         dir_entry = os.path.join(results_dir, entry)
@@ -193,18 +207,46 @@ def create_indices(versions):
 
     global n_previous, previous
 
-    if n_previous >= len(versions):
-        n_previous = len(versions)-1
+    # make sure the number of displayed versions does not exceed the available number
+    if n_previous > len(versions)-2:
+        n_previous = len(versions)-2
+    indices = range(n_previous+2)
+
+    # add those versions, that are explicitly requested and are not already included in the first n_previous ones
     for version in previous:
-        if version in versions[:n_previous+1]:
+        if version in versions[n_previous+2]:
             previous.remove(version)
-    indices = range(n_previous+1)
     for version in previous:
         indices.append(versions.index(version))
 
     return indices
 
     
+def get_styles(index):
+    '''Get line and fill style for the given index'''
+    
+    line_styles = [ROOT.TAttLine(ROOT.kBlack,     1, 3),
+                   ROOT.TAttLine(ROOT.kRed,       2, 3),
+                   ROOT.TAttLine(ROOT.kBlue,      3, 2),
+                   ROOT.TAttLine(ROOT.kGreen+2,   1, 2),
+                   ROOT.TAttLine(ROOT.kYellow+2,  1, 2),
+                   ROOT.TAttLine(ROOT.kMagenta+2, 1, 2),
+                   ROOT.TAttLine(ROOT.kCyan+2,    1, 2),
+                   ROOT.TAttLine(ROOT.kOrange+7,  1, 2),
+                   ROOT.TAttLine(ROOT.kRed+2,     1, 2)
+                   ]
+    fill_styles = [ROOT.TAttFill(ROOT.kGray,  1001),
+                   ROOT.TAttFill(ROOT.kWhite, 0)
+                   ]
+    n_styles = len(line_styles)
+    if index < n_styles:
+        line_index = index
+    else:
+        line_index = 2 + ((index - n_styles) % (n_styles - 2))
+    fill_index = min(index, len(fill_styles)-1)
+    return (line_styles[line_index], fill_styles[fill_index])
+
+
 def create_html(packages, versions, indices):
     '''Create a html file and write header information'''
     
@@ -233,7 +275,7 @@ def create_html(packages, versions, indices):
 ''' % datetime.datetime.now().ctime())
     menu.write('<p>\n<b>Legend:</b>\n<ul>\n')
     for index in range(len(indices)):
-        menu.write('<li style="color:%s">%s</li>\n' % (ROOT.gROOT.GetColor(index+1).AsHexString(), versions[indices[index]]))
+        menu.write('<li style="color:%s">%s</li>\n' % (ROOT.gROOT.GetColor(get_styles(index)[0].GetLineColor()).AsHexString(), versions[indices[index]]))
     menu.write('</ul>\n</p><br>\n\n')
     for package in packages.keys():
         menu.write('<p><h3><a target="plots" href="validation_plots.html#%s">%s</a></h3>\n<ul>\n' % (package, package))
@@ -269,12 +311,16 @@ def make_plots(html, packages, versions, indices):
                     histo = plots[indices[index]]
                     if histo:
                         if isinstance(histo, ROOT.TH1):
-                            histo.SetLineColor(index+1)
-                            if index == 0:
-                                histo.SetLineWidth(2*histo.GetLineWidth())
-                            histo.SetStats(0)
+                            (line_style, fill_style) = get_styles(index)
+                            histo.SetLineColor(line_style.GetLineColor())
+                            histo.SetLineWidth(line_style.GetLineWidth())
+                            histo.SetLineStyle(line_style.GetLineStyle())
+                            histo.SetFillColor(fill_style.GetFillColor())
+                            histo.SetFillStyle(fill_style.GetFillStyle())
                             if histo.InheritsFrom('TH2') or histo.InheritsFrom('TH3'):
                                 split = True
+                            elif index != 1:
+                                histo.SetStats(0)
                         else:
                             ntuple = True
                             variables = histo.keys()
@@ -286,17 +332,32 @@ def make_plots(html, packages, versions, indices):
                         nSplit = int(math.sqrt(len(indices)-1)) + 1
                         can.Divide(nSplit, nSplit)
 
-                    # draw histograms
-                    for index in range(len(indices)):
-                        histo = plots[indices[index]]
-                        if histo:
-                            option = histo.GetOption()
-                            if split:
-                                can.cd(index+1)
-                                histo.DrawCopy(option)
-                            else:
-                                histo.DrawCopy(option)
-                                option = 'same ' + option
+                        # draw histograms, one per sub-panel
+                        for index in range(len(indices)):
+                            histo = plots[indices[index]]
+                            if histo:
+                                pad = can.cd(index+1)
+                                histo.DrawCopy(histo.GetOption())
+                                pad.Update()
+                                title = pad.GetListOfPrimitives().FindObject('title')
+                                if title:
+                                    title.SetTextColor(get_styles(index)[0].GetLineColor())
+
+                    else:
+                        # draw histograms: first the reference, then others in reverse order
+                        drawn = False
+                        if plots[1]:
+                            plots[1].DrawCopy()
+                            drawn = True
+                            
+                        for index in [0] + range(len(indices)-1, 0, -1):
+                            histo = plots[indices[index]]
+                            if histo:
+                                if not drawn:
+                                    histo.DrawCopy()
+                                    drawn = True
+                                else:
+                                    histo.DrawCopy("SAME")
 
                     # save image
                     filename = '%s_%s_%s.png' % (package, basename, name)
@@ -309,7 +370,7 @@ def make_plots(html, packages, versions, indices):
                     for var in variables:
                         html.write('<th>%s</th>' % var)
                     for index in range(len(indices)):
-                        html.write('</tr>\n<tr><td align=right style="color:%s">%s</td>' % (ROOT.gROOT.GetColor(index+1).AsHexString(), versions[indices[index]]))
+                        html.write('</tr>\n<tr><td align=right style="color:%s">%s</td>' % (ROOT.gROOT.GetColor(get_styles(index)[0].GetLineColor()).AsHexString(), versions[indices[index]]))
                         for var in variables:
                             values = plots[indices[index]]
                             if values:
@@ -335,8 +396,9 @@ run_validations()
 
 # collect output histograms
 packages = {}  # dictionary of packages -> dictionary of root files -> dictionary of histograms -> array[version]
-versions = ['current']
-collect_histos(output_dir, packages, 0)
+versions = ['reference', 'current']
+collect_histos(reference_dir, packages, 0)
+collect_histos(output_dir, packages, 1)
 collect_previous_histos(packages, versions)
 indices = create_indices(versions)
 
