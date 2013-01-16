@@ -10,22 +10,28 @@ import datetime
 import shutil
 import ROOT
 ROOT.gROOT.SetBatch()
+ROOT.gStyle.SetOptStat(1110)
+ROOT.gStyle.SetOptFit(101)
 from optparse import OptionParser
 
 
+# directory names
 results_dir = 'results'
 output_dir = os.path.join(results_dir, 'current')
 reference_dir = os.path.join(results_dir, 'reference')
+html_dir = 'html'
+
+# arguments
 n_previous = 2
 previous = []
 directories = []
-html_dir = 'html'
+basf2_options = []
 
 
 def parse_arguments():
     '''Parse the command line arguments'''
     
-    global n_previous, previous, directories
+    global n_previous, previous, directories, basf2_options
 
     usage = '''usage: %prog [options] [packages]
 
@@ -34,11 +40,14 @@ If no argument is given all validation tests are run.'''
     parser = OptionParser(usage=usage)
     parser.add_option('-n', type='int', dest='nPrevious', help='number of previous versions', default=2)
     parser.add_option('-p', action='append', dest='previous', help='name of previous version')
+    parser.add_option('-o', action='append', dest='basf2_options', help='options that are passed to the validation jobs')
     (options, directories) = parser.parse_args()
 
     n_previous = options.nPrevious
     if options.previous != None:
         previous = options.previous
+    if options.basf2_options != None:
+        basf2_options = options.basf2_options
 
     # check whether a release is set up
     if not (os.environ.has_key('BELLE2_LOCAL_DIR')
@@ -49,6 +58,8 @@ If no argument is given all validation tests are run.'''
 
 def process_dir(dir, output_subdir):
     """Execute validation tests in the given directory"""
+
+    global basf2_options
 
     # make sure the output directory and reference directory exist
     out_dir = os.path.join(output_dir, output_subdir)
@@ -65,7 +76,7 @@ def process_dir(dir, output_subdir):
     # execute steering files
     for steering in sorted(glob.glob(os.path.join(dir, '*.py'))):
         print 'Running: %s' % steering
-        process = subprocess.Popen(['basf2', steering], stdout=subprocess.PIPE,
+        process = subprocess.Popen(['basf2'] + basf2_options + [steering], stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
         (out, err) = process.communicate()
         if process.returncode != 0:
@@ -247,6 +258,18 @@ def get_styles(index):
     return (line_styles[line_index], fill_styles[fill_index])
 
 
+def compare_histos(ref, cmp):
+    '''Compare a histogram to a reference and return a color indicating deviations'''
+
+    if ref and cmp:
+        pvalue = ref.Chi2Test(cmp)
+        if pvalue < 0.01:
+            return ROOT.kRed
+        elif pvalue < 1:
+            return ROOT.kOrange
+    return ROOT.kWhite
+
+
 def create_html(packages, versions, indices):
     '''Create a html file and write header information'''
     
@@ -302,6 +325,7 @@ def make_plots(html, packages, versions, indices):
                 plots = packages[package][basename][name]
 
                 # prepare histograms
+                histo = None
                 split = False
                 ntuple = False
                 variables = []
@@ -325,9 +349,21 @@ def make_plots(html, packages, versions, indices):
                             ntuple = True
                             variables = histo.keys()
 
+                if not histo:
+                    continue
+
                 if not ntuple:
                     # create canvas
                     can = ROOT.TCanvas()
+
+                    # compare current and reference histograms
+                    if plots[0] and plots[1]:
+                        pvalue = plots[0].Chi2Test(plots[1])
+                        if pvalue < 0.01:
+                            can.SetFillColor(ROOT.kRed)
+                        elif pvalue < 1:
+                            can.SetFillColor(ROOT.kOrange)
+
                     if split:
                         nSplit = int(math.sqrt(len(indices)-1)) + 1
                         can.Divide(nSplit, nSplit)
@@ -338,7 +374,9 @@ def make_plots(html, packages, versions, indices):
                             if histo:
                                 pad = can.cd(index+1)
                                 histo.DrawCopy(histo.GetOption())
+                                pad.SetFrameFillColor(ROOT.kWhite)
                                 pad.Update()
+                                pad.GetFrame().SetFillColor(ROOT.kWhite)
                                 title = pad.GetListOfPrimitives().FindObject('title')
                                 if title:
                                     title.SetTextColor(get_styles(index)[0].GetLineColor())
@@ -349,6 +387,9 @@ def make_plots(html, packages, versions, indices):
                         if plots[1]:
                             plots[1].DrawCopy()
                             drawn = True
+                            can.Update()
+                            can.GetFrame().SetFillColor(ROOT.kWhite)
+
                             
                         for index in [0] + range(len(indices)-1, 0, -1):
                             histo = plots[indices[index]]
@@ -374,9 +415,15 @@ def make_plots(html, packages, versions, indices):
                         for var in variables:
                             values = plots[indices[index]]
                             if values:
-                                html.write('<td align=right>%g</td>' % values[var])
+                                if plots[0] and values[var] != plots[0][var]:
+                                    html.write('<td align=right bgcolor="%s">%g</td>' % (ROOT.gROOT.GetColor(ROOT.kOrange).AsHexString(), values[var]))
+                                else:
+                                    html.write('<td align=right>%g</td>' % values[var])
                             else:
-                                html.write('<td>n/a</td>')
+                                if plots[0]:
+                                    html.write('<td bgcolor="%s">n/a</td>' % ROOT.gROOT.GetColor(ROOT.kOrange).AsHexString())
+                                else:
+                                    html.write('<td>n/a</td>')
                         html.write('<br>\n')
                     html.write('</tr></table>\n')
 
