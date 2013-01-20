@@ -325,7 +325,7 @@ def make_plots(html, packages, versions, indices):
                 plots = packages[package][basename][name]
 
                 # prepare histograms
-                histo = None
+                empty = True
                 split = False
                 ntuple = False
                 variables = []
@@ -334,6 +334,7 @@ def make_plots(html, packages, versions, indices):
                         plots.append(None)
                     histo = plots[indices[index]]
                     if histo:
+                        empty = False
                         if isinstance(histo, ROOT.TH1):
                             (line_style, fill_style) = get_styles(index)
                             histo.SetLineColor(line_style.GetLineColor())
@@ -349,7 +350,7 @@ def make_plots(html, packages, versions, indices):
                             ntuple = True
                             variables = histo.keys()
 
-                if not histo:
+                if empty:
                     continue
 
                 if not ntuple:
