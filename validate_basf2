@@ -8,10 +8,6 @@ import subprocess
 import math
 import datetime
 import shutil
-import ROOT
-ROOT.gROOT.SetBatch()
-ROOT.gStyle.SetOptStat(1110)
-ROOT.gStyle.SetOptFit(101)
 from optparse import OptionParser
 
 
@@ -445,6 +441,12 @@ def close_html(html):
 # parse command line arguments and run validation tests
 parse_arguments()
 run_validations()
+
+# initialize root
+import ROOT
+ROOT.gROOT.SetBatch()
+ROOT.gStyle.SetOptStat(1110)
+ROOT.gStyle.SetOptFit(101)
 
 # collect output histograms
 packages = {}  # dictionary of packages -> dictionary of root files -> dictionary of histograms -> array[version]
