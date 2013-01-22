@@ -364,6 +364,8 @@ def make_plots(html, packages, versions, indices):
                             can.SetFillColor(ROOT.kRed)
                         elif pvalue < 1:
                             can.SetFillColor(ROOT.kOrange)
+                        if pvalue < 1:
+                            sys.stderr.write('Deviation from reference: p = %.4f for %s/%s/%s (%s)\n' % (pvalue, package, basename, name, plots[1].GetTitle()))
 
                     if split:
                         nSplit = int(math.sqrt(len(indices)-1)) + 1
@@ -418,6 +420,8 @@ def make_plots(html, packages, versions, indices):
                             if values:
                                 if plots[0] and values[var] != plots[0][var]:
                                     html.write('<td align=right bgcolor="%s">%g</td>' % (ROOT.gROOT.GetColor(ROOT.kOrange).AsHexString(), values[var]))
+                                    if index == 1:
+                                        sys.stderr.write('Deviation from reference: %.3g != %.3g for %s/%s/%s/%s\n' % (values[var], plots[0][var], package, basename, name, var))
                                 else:
                                     html.write('<td align=right>%g</td>' % values[var])
                             else:
