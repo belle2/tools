@@ -45,7 +45,7 @@ endif
 setenv BELLE2_ARCH `uname -s`_`uname -m`
 setenv BELLE2_OPTION debug
 setenv BELLE2_SUBDIR ${BELLE2_ARCH}/${BELLE2_OPTION}
-setenv BELLE2_EXTERNALS_OPTION debug
+setenv BELLE2_EXTERNALS_OPTION opt
 setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_SUBDIR}
 
 # set location of Belle II code repository
