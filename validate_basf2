@@ -45,6 +45,12 @@ If no argument is given all validation tests are run.'''
     if options.basf2_options != None:
         basf2_options = options.basf2_options
 
+    # remove trailing slashes from directory names
+    for index in range(len(directories)):
+        entry = directories[index]
+        if entry.endswith('/'):
+            directories[index] = entry[:-1]
+
     # check whether a release is set up
     if not (os.environ.has_key('BELLE2_LOCAL_DIR')
             or os.environ.has_key('BELLE2_RELEASE_DIR')):
