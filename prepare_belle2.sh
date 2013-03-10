@@ -143,43 +143,6 @@ You will need root access to run this command.
 fi
 
 
-# set up svn if it is installed in the home directory
-if [ -d ${HOME}/subversion ]; then
-  export PATH=${HOME}/subversion/bin:$PATH
-  if [ -n "${LD_LIBRARY_PATH}" ]; then
-    export LD_LIBRARY_PATH=${HOME}/subversion/lib:${LD_LIBRARY_PATH}
-  else
-    export LD_LIBRARY_PATH=${HOME}/subversion/lib
-  fi
-fi
-
-
-# check svn version and download and install a new version if the available one is too old
-SVN_MAJOR_VERSION=`svn --version 2> /dev/null | head -1 | awk '{print $3}' | awk -F . '{print $1}'`
-SVN_MINOR_VERSION=`svn --version 2> /dev/null | head -1 | awk '{print $3}' | awk -F . '{print $2}'`
-if [ ${SVN_MAJOR_VERSION} -lt 2 ]; then
-  if [ ${SVN_MINOR_VERSION} -lt 5 ]; then
-    TEXT="now"
-    echo "**********************************************************"
-    echo "* The installed svn version is too old.                  *"
-    echo "* Downloading and compiling a new svn version...         *"
-    echo "**********************************************************"
-    wget http://subversion.tigris.org/downloads/subversion-1.6.13.tar.gz
-    wget http://subversion.tigris.org/downloads/subversion-deps-1.6.13.tar.gz
-    tar xzf subversion-1.6.13.tar.gz
-    tar xzf subversion-deps-1.6.13.tar.gz
-    cd subversion-1.6.13
-    ./configure --prefix=${HOME}/subversion --with-ssl
-    make
-    make install
-    RESULT=$?
-    rm -rf subversion-1.6.13.tar.gz subversion-deps-1.6.13.tar.gz subversion-1.6.13
-    if [ "$RESULT" != 0 ]; then
-      exit 1
-    fi
-  fi
-fi
-
 echo "
 All software that is required to build the Belle II software is ${TEXT}
 installed on your system.
