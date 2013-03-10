@@ -208,7 +208,11 @@ def export_environment():
         if csh:
             print 'source %s > /dev/null' % csh_script
         else:
-            print 'source %s > /dev/null' % sh_script
+            # cd to script directory because of geant4 setup issue with zsh
+            (path, script) = os.path.split(sh_script)
+            print 'cd %s' % path
+            print 'source %s > /dev/null' % script
+            print 'cd - > /dev/null'
 
 
 def update_environment(release, local_release, local_dir):
