@@ -1,0 +1,28 @@
+#
+# wrapper to source either setup_belle2.sh or setup_belle2.csh
+#
+
+# sh type shells
+test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && . `python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(dirname ${BASH_SOURCE:-$0})`/setup_belle2.sh
+test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && return
+
+# tcsh shell
+set COMMAND=`echo $_`
+if ( "${COMMAND}" != "" ) then
+  set FILENAME=`echo ${COMMAND} | awk '{print $2}'`
+else if ( $?BELLE2_TOOLS ) then
+  set FILENAME=${BELLE2_TOOLS}/setup_belle2
+else if ( $?VO_BELLE2_SW_DIR ) then
+  set FILENAME=${VO_BELLE2_SW_DIR}/tools/setup_belle2
+else if ( -f ${HOME}/tools/setup_belle2 ) then
+  set FILENAME=${HOME}/tools/setup_belle2
+else if ( -f tools/setup_belle2 ) then
+  set FILENAME=tools/setup_belle2
+else if ( -f setup_belle2 ) then
+  set FILENAME=setup_belle2
+else
+  echo "No tools folder found"
+  exit 1
+endif
+source `dirname ${FILENAME}`/setup_belle2.csh
+
