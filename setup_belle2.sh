@@ -26,7 +26,7 @@ export BELLE2_ARCH=`uname -s`_`uname -m`
 export BELLE2_OPTION=debug
 export BELLE2_SUBDIR=${BELLE2_ARCH}/${BELLE2_OPTION}
 export BELLE2_EXTERNALS_OPTION=opt
-export BELLE2_EXTERNALS_SUBDIR=${BELLE2_SUBDIR}
+export BELLE2_EXTERNALS_SUBDIR=${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
 
 # set location of Belle II code repository
 export BELLE2_REPOSITORY=https://belle2.cc.kek.jp/svn

@@ -46,7 +46,7 @@ setenv BELLE2_ARCH `uname -s`_`uname -m`
 setenv BELLE2_OPTION debug
 setenv BELLE2_SUBDIR ${BELLE2_ARCH}/${BELLE2_OPTION}
 setenv BELLE2_EXTERNALS_OPTION opt
-setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_SUBDIR}
+setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
 
 # set location of Belle II code repository
 setenv BELLE2_REPOSITORY https://belle2.cc.kek.jp/svn
