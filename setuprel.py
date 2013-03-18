@@ -9,15 +9,39 @@ from setup_tools import get_var, unsetup_old_release, update_environment
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
 Usage: setuprel [release]
-    
-- To set up the environment for a local copy of the Belle II software,
-  execute the setuprel command in the local release directoy.
-- If a centrally installed release with the same version as the local one
-  exists, it is set up, too.
-- A particular version of a central release can be set up explicitly
-  by giving the release version as argument.
+
+This command sets up the environment for a local and/or central release
+of the Belle II software.
+
+-> Local (+ central) release setup:
+
+  Execute the setuprel command in the local release directory. If a centrally
+  installed release with the same version as the local one exists, it is set
+  up, too. (If a release version is given as argument this is used as version
+  for the central release instead of the one matching the local release.)
+
+-> Central release setup (without a local release):
+
+  Execute the setuprel command outside a local release directory with the
+  central release version as argument.
 
 """)
+
+    releases = []
+    releases_topdir = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases')
+    if os.path.isdir(releases_topdir):
+        for entry in os.listdir(releases_topdir):
+            if entry.find('.') < 0 and not os.path.isfile(entry):
+                releases.append(entry)
+
+    if len(releases) > 0:
+        sys.stderr.write('  The following releases are available:\n')
+        for rel in releases:
+            sys.stderr.write('    %s\n' % rel)
+    else:
+        sys.stderr.write('  There are no central releases available.\n')
+    sys.stderr.write('\n')
+
     sys.exit(0)
 
 # check number of arguments
