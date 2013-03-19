@@ -210,9 +210,12 @@ def export_environment():
         else:
             # cd to script directory because of geant4 setup issue with zsh
             (path, script) = os.path.split(sh_script)
+            print 'SAVEPWD=$OLDPWD'
             print 'cd %s' % path
             print 'source %s > /dev/null' % script
             print 'cd - > /dev/null'
+            print 'OLDPWD=$SAVEPWD'
+            print 'unset SAVEPWD'
 
 
 def update_environment(release, local_release, local_dir):
