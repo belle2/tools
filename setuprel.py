@@ -102,7 +102,12 @@ if len(get_var('BELLE2_RELEASE_DIR')) > 0:
 if len(get_var('BELLE2_LOCAL_DIR')) > 0:
     print 'echo "Local release directory      : ${BELLE2_LOCAL_DIR}"'
 
-# check for geant4 and root and warn the user if they are missing
+# set the build option if a .option file exists in the local release directory
+if os.path.isfile('.option'):
+    build_option = open('.option').readline().strip()
+    print 'setoption %s' % build_option
+
+# check the externals and warn the user if the check fails
 try:
     extdir = get_var('BELLE2_EXTERNALS_DIR')
     sys.path[:0] = [extdir]
