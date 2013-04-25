@@ -56,11 +56,17 @@ for ENTRY in ${PACKAGES}; do
         svn co ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${PACKAGE}
 	if [ "$?" == "0" ]; then
 	  echo "Added head version of ${PACKAGE}."
+        else
+          echo "ERROR: check out of ${PACKAGE} failed. Aborting..." 1>&2
+          exit 1
 	fi
       else
         svn up ${PACKAGE}
 	if [ "$?" == "0" ]; then
 	  echo "Added release version of ${PACKAGE}."
+        else
+          echo "ERROR: check out of ${PACKAGE} failed. Aborting..." 1>&2
+          exit 1
 	fi
       fi
     fi
