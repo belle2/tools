@@ -35,3 +35,16 @@ if [ ! -f ${DIR}/scons ]; then
   cd scons
   python setup.py install --no-version-script --install-scripts=${DIR} --install-data=${DIR}/share --install-lib=${DIR}/lib
 fi
+
+# gcc
+if [ ! -d ${DIR}/gcc ]; then
+  cd ${DIR}/src
+  wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/gcc-4.7.3-contrib.tgz | tar xz
+  cd gcc
+  mkdir -p build
+  cd build
+  ../src/configure --disable-multilib --prefix=${DIR}/gcc --enable-languages=c,c++,fortran 
+  NPROCESSES=`grep "physical id.*0" /proc/cpuinfo 2> /dev/null | wc -l`
+  make -j ${NPROCESSES}
+  make install
+fi
