@@ -46,7 +46,10 @@ if [ ! -d ${DIR}/gcc ]; then
   ../src/configure --disable-multilib --prefix=${DIR}/gcc --enable-languages=c,c++,fortran 
   NPROCESSES=`grep "physical id.*0" /proc/cpuinfo 2> /dev/null | wc -l`
   if [ "${NPROCESSES}" = "0" ]; then
-    NPROCESSES=1
+    NPROCESSES=`grep processor /proc/cpuinfo 2> /dev/null | wc -l`
+    if [ "${NPROCESSES}" = "0" ]; then
+      NPROCESSES=1
+    fi
   fi
   make -j ${NPROCESSES}
   make install
