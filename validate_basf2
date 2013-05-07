@@ -78,6 +78,7 @@ def process_dir(dir, output_subdir):
     # execute steering files
     for steering in sorted(glob.glob(os.path.join(dir, '*.py'))):
         print 'Running: %s' % steering
+        sys.stdout.flush()
         process = subprocess.Popen(['basf2'] + basf2_options + [steering], stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
         (out, err) = process.communicate()
@@ -88,6 +89,7 @@ def process_dir(dir, output_subdir):
     # execute root macros
     for macro in sorted(glob.glob(os.path.join(dir, '*.C'))):
         print 'Running: %s' % macro
+        sys.stdout.flush()
         process = subprocess.Popen(['root', '-b', '-q', macro], stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT)
         (out, err) = process.communicate()
