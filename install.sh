@@ -49,12 +49,12 @@ fi
 if [ ! -d ${DIR}/binutils ]; then
   cd ${DIR}/src
   if [ ! -d ${DIR}/src/binutils/src ]; then
-    wget -O - --tries=3 http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.gz | tar xz
+    wget -O - --tries=3 http://ftp.gnu.org/gnu/binutils/binutils-2.23.1.tar.gz | tar xz
     if [ "$?" != "0" ]; then
-      wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/binutils-2.23.2.tar.gz | tar xz
+      wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/binutils-2.23.1.tar.gz | tar xz
     fi
     mkdir binutils
-    mv binutils-2.23.2 binutils/src
+    mv binutils-2.23.1 binutils/src
   fi
   mkdir -p binutils/build
   cd binutils/build
