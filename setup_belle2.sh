@@ -64,16 +64,8 @@ function setextoption
 # set scons library directory
 export SCONS_LIB_DIR=${BELLE2_TOOLS}/lib
 
-# setup own binutils and gcc
+# setup own gcc
 if [ -z "${BELLE2_SYSTEM_COMPILER}" ]; then
-  if [ -f ${BELLE2_TOOLS}/binutils/bin/ld ]; then
-    export PATH=${BELLE2_TOOLS}/binutils/bin:${PATH}
-    if [ -n "${LD_LIBRARY_PATH}" ]; then
-      export LD_LIBRARY_PATH=${BELLE2_TOOLS}/binutils/lib:${BELLE2_TOOLS}/binutils/lib64:${LD_LIBRARY_PATH}
-    else
-      export LD_LIBRARY_PATH=${BELLE2_TOOLS}/binutils/lib:${BELLE2_TOOLS}/binutils/lib64
-    fi
-  fi
   if [ -f ${BELLE2_TOOLS}/gcc/bin/gcc ]; then
     export PATH=${BELLE2_TOOLS}/gcc/bin:${PATH}
     if [ -n "${LD_LIBRARY_PATH}" ]; then

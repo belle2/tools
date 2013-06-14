@@ -46,7 +46,7 @@ if [ "${NPROCESSES}" = "0" ]; then
 fi
 
 # binutils
-if [ ! -d ${DIR}/binutils ]; then
+if [ ! -f ${DIR}/gcc/bin/ld ]; then
   cd ${DIR}/src
   if [ ! -d ${DIR}/src/binutils/src ]; then
     wget -O - --tries=3 http://ftp.gnu.org/gnu/binutils/binutils-2.23.1.tar.gz | tar xz
@@ -58,20 +58,13 @@ if [ ! -d ${DIR}/binutils ]; then
   fi
   mkdir -p binutils/build
   cd binutils/build
-  ../src/configure --disable-multilib --with-sysroot --enable-shared --prefix=${DIR}/binutils
-  make -j ${NPROCESSES}
-  make install
-fi
-
-export PATH=${DIR}/binutils/bin:${PATH}
-if [ -n "${LD_LIBRARY_PATH}" ]; then
-  export LD_LIBRARY_PATH=${DIR}/binutils/lib:${DIR}/binutils/lib64:${LD_LIBRARY_PATH}
-else
-  export LD_LIBRARY_PATH=${DIR}/binutils/lib:${DIR}/binutils/lib64
+  ../src/configure --disable-multilib --enable-shared --prefix=${DIR}/gcc
+  make tooldir=${DIR}/gcc -j ${NPROCESSES}
+  make tooldir=${DIR}/gcc install
 fi
 
 # gcc
-if [ ! -d ${DIR}/gcc ]; then
+if [ ! -f ${DIR}/gcc/bin/gcc ]; then
   cd ${DIR}/src
   if [ ! -d ${DIR}/src/gcc/src ]; then
     wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/gcc-4.7.3-contrib.tgz | tar xz
