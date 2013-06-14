@@ -65,8 +65,16 @@ alias setextoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setextopti
 # set scons library directory
 setenv SCONS_LIB_DIR ${BELLE2_TOOLS}/lib
 
-# setup own gcc
+# setup own binutils and gcc
 if ( ! ${?BELLE2_SYSTEM_COMPILER} ) then
+  if ( -f ${BELLE2_TOOLS}/binutils/bin/ld ) then
+    setenv PATH ${BELLE2_TOOLS}/binutils/bin:${PATH}
+    if ( ${?LD_LIBRARY_PATH} ) then
+      setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/binutils/lib:${BELLE2_TOOLS}/binutils/lib64:${LD_LIBRARY_PATH}
+    else
+      setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/binutils/lib:${BELLE2_TOOLS}/binutils/lib64
+    endif
+  endif
   if ( -f ${BELLE2_TOOLS}/gcc/bin/gcc ) then
     setenv PATH ${BELLE2_TOOLS}/gcc/bin:${PATH}
     if ( ${?LD_LIBRARY_PATH} ) then

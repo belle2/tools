@@ -36,21 +36,50 @@ if [ ! -f ${DIR}/scons ]; then
   python setup.py install --no-version-script --install-scripts=${DIR} --install-data=${DIR}/share --install-lib=${DIR}/lib
 fi
 
+# determine number of cores
+NPROCESSES=`grep "physical id.*0" /proc/cpuinfo 2> /dev/null | wc -l`
+if [ "${NPROCESSES}" = "0" ]; then
+  NPROCESSES=`grep processor /proc/cpuinfo 2> /dev/null | wc -l`
+  if [ "${NPROCESSES}" = "0" ]; then
+    NPROCESSES=1
+  fi
+fi
+
+# binutils
+if [ ! -d ${DIR}/binutils ]; then
+  cd ${DIR}/src
+  if [ ! -d ${DIR}/src/binutils/src ]; then
+    wget -O - --tries=3 http://ftp.gnu.org/gnu/binutils/binutils-2.23.2.tar.gz | tar xz
+    if [ "$?" != "0" ]; then
+      wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/binutils-2.23.2.tar.gz | tar xz
+    fi
+    mkdir binutils
+    mv binutils-2.23.2 binutils/src
+  fi
+  mkdir -p binutils/build
+  cd binutils/build
+  ../src/configure --disable-multilib --with-sysroot --enable-shared --prefix=${DIR}/binutils
+  make -j ${NPROCESSES}
+  make install
+fi
+
+export PATH=${DIR}/binutils/bin:${PATH}
+if [ -n "${LD_LIBRARY_PATH}" ]; then
+  export LD_LIBRARY_PATH=${DIR}/binutils/lib:${DIR}/binutils/lib64:${LD_LIBRARY_PATH}
+else
+  export LD_LIBRARY_PATH=${DIR}/binutils/lib:${DIR}/binutils/lib64
+fi
+
 # gcc
 if [ ! -d ${DIR}/gcc ]; then
   cd ${DIR}/src
-  wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/gcc-4.7.3-contrib.tgz | tar xz
+  if [ ! -d ${DIR}/src/gcc/src ]; then
+    wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/gcc-4.7.3-contrib.tgz | tar xz
+  fi
   cd gcc
   mkdir -p build
   cd build
   ../src/configure --disable-multilib --prefix=${DIR}/gcc --enable-languages=c,c++,fortran 
-  NPROCESSES=`grep "physical id.*0" /proc/cpuinfo 2> /dev/null | wc -l`
-  if [ "${NPROCESSES}" = "0" ]; then
-    NPROCESSES=`grep processor /proc/cpuinfo 2> /dev/null | wc -l`
-    if [ "${NPROCESSES}" = "0" ]; then
-      NPROCESSES=1
-    fi
-  fi
   make -j ${NPROCESSES}
   make install
 fi
