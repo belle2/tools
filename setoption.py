@@ -7,7 +7,7 @@ from setup_tools import get_var, set_var, unsetup_old_release, \
     update_environment, export_environment
 
 # allowed options
-options = ['debug', 'opt', 'intel']
+options = ['debug', 'opt', 'intel', 'clang']
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
@@ -19,6 +19,7 @@ Set up the environment for selected compiler options:
   debug : include debug symbols, no optimization
   opt   : turn on optimization (-O3), no debug symbols
   intel : use the intel compiler
+  clang : use clang (LLVM)
 
 """
                      % '|'.join(options))
@@ -49,22 +50,6 @@ if release or local_release:
 set_var('BELLE2_OPTION', sys.argv[1])
 set_var('BELLE2_SUBDIR', os.path.join(os.environ.get('BELLE2_ARCH'),
         sys.argv[1]))
-if not os.environ.has_key('BELLE2_EXTERNALS_OPTION'):
-    set_var('BELLE2_EXTERNALS_SUBDIR',
-            os.path.join(os.environ.get('BELLE2_ARCH'), sys.argv[1]))
-    if os.environ.has_key('BELLE2_EXTERNALS_DIR'):
-        extdir = os.environ.get('BELLE2_EXTERNALS_DIR')
-        try:
-            sys.path[:0] = [extdir]
-            from externals import check_externals
-            if not check_externals(extdir):
-                sys.stderr.write('''Warning: The externals installation is incomplete.
--> Try: cd %s; make
-'''
-                                 % extdir)
-        except:
-            sys.stderr.write('Warning: Check of externals at %s failed.\n'
-                             % extdir)
 
 # update environment with new
 if release or local_release:
