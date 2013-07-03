@@ -135,6 +135,11 @@ def unsetup_old_release():
         unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
     env_vars['BELLE2_LOCAL_DIR'] = ''
 
+    # analysis
+    if os.environ.has_key('BELLE2_ANALYSIS_DIR'):
+        unsetup_release(os.environ['BELLE2_ANALYSIS_DIR'])
+    env_vars['BELLE2_ANALYSIS_DIR'] = ''
+
     # externals
     if os.environ.has_key('BELLE2_EXTERNALS_DIR'):
         try:
@@ -221,15 +226,15 @@ def export_environment():
 
 
 def update_environment(release, local_release, local_dir):
-    """update the environment for the given central and local release"""
+    """update the environment for the given central and local release or analysis"""
 
     env_vars['BELLE2_EXTERNALS_VERSION'] = ''
 
     # add the new central release to the environment
     setup_central_release(release)
 
-    # take care of the local release
-    if local_release:
+    # take care of the local release or analysis
+    if local_release and local_release != 'analysis':
         release = local_release
         setup_local_release(local_dir)
 
@@ -259,6 +264,10 @@ def update_environment(release, local_release, local_dir):
         except:
             sys.stderr.write('Warning: Setup of externals at %s failed.\n'
                              % extdir)
+
+    if local_release == 'analysis':
+        setup_release(local_dir)
+        env_vars['BELLE2_ANALYSIS_DIR'] = local_dir
 
     # setup environment for the release, including the externals
     export_environment()

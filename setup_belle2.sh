@@ -34,9 +34,19 @@ export BELLE2_REPOSITORY=https://belle2.cc.kek.jp/svn
 # define function for release setup
 function setuprel
 {
-  tmp=`mktemp  /tmp/belle2_tmp.XXXX`
+  tmp=`mktemp /tmp/belle2_tmp.XXXX`
   rm -f $tmp
   ${BELLE2_TOOLS}/setuprel.py $* > $tmp
+  . $tmp
+  rm -f $tmp
+}
+
+# define function for analysis setup
+function setupana
+{
+  tmp=`mktemp /tmp/belle2_tmp.XXXX`
+  rm -f $tmp
+  ${BELLE2_TOOLS}/setupana.py $* > $tmp
   . $tmp
   rm -f $tmp
 }

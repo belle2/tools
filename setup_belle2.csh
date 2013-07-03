@@ -56,6 +56,9 @@ set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
 rm -f $BELLE2_TMP
 alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
 
+# define alias for analysis setup
+alias setupana "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setupana.py"
+
 # define alias for option selection
 alias setoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setoption.py"
 
