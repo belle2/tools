@@ -62,23 +62,26 @@ ASTYLE="${ASTYLE_TOOL} \
 --align-reference=type \
 --formatted"
 
-# define functions for python code formatting
+# define function for python code formatting
 function PythonTidy ()
 {
   if [ -L $1 ]; then
     echo "skipping symbolic link $1"
   else
-    TMP=`mktemp`
-    ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
-    if [ "$?" == 0 ]; then
-      if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
-        ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
-        echo "formatted $1"
+    ${BELLE2_TOOLS}/pep8.py $1 >& /dev/null
+    if [ "$?" != 0 ]; then
+      TMP=`mktemp`
+      ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
+      if [ "$?" == 0 ]; then
+        if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
+          ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
+          echo "formatted $1"
+        fi
+      else
+        echo "Formatting of $i failed"
       fi
-    else
-      echo "Formatting of $i failed"
+      rm -f $TMP
     fi
-    rm -f $TMP
   fi
 }
 
@@ -87,7 +90,7 @@ function PythonTidy ()
 declare -i COUNT
 COUNT=0
 
-# define functions for C++ code checking
+# define function for C++ code checking
 function AstyleCheck ()
 {
   if [ ! -L $1 ]; then
@@ -110,7 +113,7 @@ function AstyleCheck ()
   fi
 }
 
-# define functions for python code checking
+# define function for PythonTidy checking
 function PythonTidyCheck ()
 {
   if [ ! -L $1 ]; then
@@ -137,7 +140,7 @@ function PythonTidyCheck ()
   fi
 }
 
-# define functions for pep8 checking
+# define function for pep8 checking
 function Pep8Check ()
 {
   if [ ! -L $1 ]; then
