@@ -222,15 +222,20 @@ def create_indices(versions):
 
     global n_previous, previous
 
-    # make sure the number of displayed versions does not exceed the available number
-    if n_previous > len(versions)-2:
-        n_previous = len(versions)-2
-    indices = range(n_previous+2)
-
-    # add those versions, that are explicitly requested and are not already included in the first n_previous ones
-    for version in previous:
-        if version in versions[n_previous+2]:
-            previous.remove(version)
+    # add reference, current, and n_previous versions
+    indices = [0, 1]
+    index = 1
+    while len(indices)-2 < n_previous:
+        index += 1
+        # make sure the number of displayed versions does not exceed the available number
+        if index >= len(versions):
+            break
+        # exclude explicitly requested versions
+        if versions[index] in previous:
+            continue
+        indices.append(index)
+        
+    # add those versions, that are explicitly requested
     for version in previous:
         indices.append(versions.index(version))
 
