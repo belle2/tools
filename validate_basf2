@@ -427,7 +427,9 @@ def make_plots(html, packages, versions, indices):
                         for var in variables:
                             values = plots[indices[index]]
                             if values:
-                                if plots[0] and values[var] != plots[0][var]:
+                                if not values.has_key(var):
+                                    html.write('<td>n/a</td>')
+                                elif plots[0] and values[var] != plots[0][var]:
                                     html.write('<td align=right bgcolor="%s">%g</td>' % (ROOT.gROOT.GetColor(ROOT.kOrange).AsHexString(), values[var]))
                                     if index == 1:
                                         sys.stderr.write('Deviation from reference: %.3g != %.3g for %s/%s/%s/%s\n' % (values[var], plots[0][var], package, basename, name, var))
