@@ -54,13 +54,10 @@ if extdir:
         from externals import setup_externals, check_externals
         setup_externals(extdir)
         if not check_externals(extdir):
-            sys.stderr.write('''Warning: The externals installation is incomplete.
--> Try: cd %s; make
-'''
+            sys.stderr.write('Error: Check of externals at %s failed.\n'
                              % extdir)
     except:
-        sys.stderr.write('Warning: Setup of externals at %s failed.\n'
-                         % extdir)
+        sys.stderr.write('Error: Setup of externals at %s failed.\n' % extdir)
 
 export_environment()
 

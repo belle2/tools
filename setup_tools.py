@@ -262,7 +262,7 @@ def update_environment(release, local_release, local_dir):
             from externals import setup_externals
             setup_externals(extdir)
         except:
-            sys.stderr.write('Warning: Setup of externals at %s failed.\n'
+            sys.stderr.write('Error: Setup of externals at %s failed.\n'
                              % extdir)
 
     if local_release == 'analysis':
