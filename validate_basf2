@@ -199,6 +199,8 @@ def collect_histos(dir, packages, index):
                         packages[entry][basename][name][index] = {}
                         for leaf in obj.GetListOfLeaves():
                             packages[entry][basename][name][index][leaf.GetName()] = leaf.GetValue()
+                        packages[entry][basename][name][index]['Description'] = obj.GetAlias('Description')
+                        packages[entry][basename][name][index]['Check'] = obj.GetAlias('Check')
 
 
 def collect_previous_histos(packages, versions):
@@ -416,15 +418,47 @@ def make_plots(html, packages, versions, indices):
                     filename = '%s_%s_%s.png' % (package, basename, name)
                     can.Print(os.path.join(html_dir, '%s.png' % filename))
                     can.Print(os.path.join(html_dir, '%s.eps' % filename))
-                    html.write('<a href="%s.eps"><img src="%s.png"></a><br>\n' % (filename, filename))
+                    html.write('<table cellspacing="10"><tr><td>\n')
+                    html.write('<a href="%s.eps"><img src="%s.png"></a></td>\n<td>\n' % (filename, filename))
+
+                    if not plots[1]:
+                        html.write('<i><b style="color:red">No current plot!</b></i><br><br>\n');
+                    if not plots[0]:
+                        html.write('<i style="color:red">No reference plot</o><br><br>\n');
+
+                    description = None
+                    if plots[1] and plots[1].FindObject('Description'):
+                        description = plots[1].FindObject('Description').GetTitle()
+                    if not description and plots[0] and plots[0].FindObject('Description'):
+                        description = plots[0].FindObject('Description').GetTitle()
+                    if not description:
+                        html.write('<b style="color:red">No description</b><br><br>\n');
+                    else:
+                        html.write('<b>Description:</b><br>\n%s<br><br>\n' % description);
+
+                    check = None
+                    if plots[1] and plots[1].FindObject('Check'):
+                        check = plots[1].FindObject('Check').GetTitle()
+                    if not check and plots[0] and plots[0].FindObject('Check'):
+                        check = plots[0].FindObject('Check').GetTitle()
+                    if not check:
+                        html.write('<b style="color:red">No check</b><br>\n');
+                    else:
+                        html.write('<i><b>Check:</b><br>\n%s</i><br>\n' % check);
+
+                    html.write('</td></tr></table><br>\n')
 
                 else:
+                    html.write('<table cellspacing="10"><tr><td valign="top">\n')
                     html.write('<table border=1>\n<tr><th>%s</th>' % name)
                     for var in variables:
-                        html.write('<th>%s</th>' % var)
+                        if var not in ['Description', 'Check']:
+                            html.write('<th>%s</th>' % var)
                     for index in range(len(indices)):
                         html.write('</tr>\n<tr><td align=right style="color:%s">%s</td>' % (ROOT.gROOT.GetColor(get_styles(index)[0].GetLineColor()).AsHexString(), versions[indices[index]]))
                         for var in variables:
+                            if var in ['Description', 'Check']:
+                                continue
                             values = plots[indices[index]]
                             if values:
                                 if not values.has_key(var):
@@ -441,7 +475,34 @@ def make_plots(html, packages, versions, indices):
                                 else:
                                     html.write('<td>n/a</td>')
                         html.write('<br>\n')
-                    html.write('</tr></table>\n')
+                    html.write('</tr></table></td>\n<td><br>')
+
+                    if not plots[1]:
+                        html.write('<i><b style="color:red">No current data!</b></i><br><br>\n');
+                    if not plots[0]:
+                        html.write('<i style="color:red">No reference data</o><br><br>\n');
+
+                    description = None
+                    if plots[1] and plots[1]['Description']:
+                        description = plots[1]['Description']
+                    if not description and plots[0] and plots[0]['Description']:
+                        description = plots[0]['Description']
+                    if not description:
+                        html.write('<b style="color:red">No description</b><br><br>\n');
+                    else:
+                        html.write('<b>Description:</b><br>\n%s<br><br>\n' % description);
+
+                    check = None
+                    if plots[1] and plots[1]['Check']:
+                        check = plots[1]['Check']
+                    if not check and plots[0] and plots[0]['Check']:
+                        check = plots[0]['Check']
+                    if not check:
+                        html.write('<b style="color:red">No check</b><br>\n');
+                    else:
+                        html.write('<i><b>Check:</b><br>\n%s</i><br>\n' % check);
+
+                    html.write('</td></tr></table><br>\n')
 
 
 def close_html(html):
