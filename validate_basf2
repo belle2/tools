@@ -186,6 +186,8 @@ def collect_histos(dir, packages, index):
             for key in root_file.GetListOfKeys():
                 name = key.GetName()
                 obj = root_file.Get(name)
+                if not obj:
+                    continue
                 if obj.InheritsFrom('TH1') or obj.InheritsFrom('TNtuple'):
                     if name not in packages[entry][basename].keys():
                         packages[entry][basename][name] = []
@@ -311,9 +313,9 @@ def create_html(packages, versions, indices):
     for index in range(len(indices)):
         menu.write('<li style="color:%s">%s</li>\n' % (ROOT.gROOT.GetColor(get_styles(index)[0].GetLineColor()).AsHexString(), versions[indices[index]]))
     menu.write('</ul>\n</p><br>\n\n')
-    for package in packages.keys():
+    for package in sorted(packages.keys()):
         menu.write('<p><h3><a target="plots" href="validation_plots.html#%s">%s</a></h3>\n<ul>\n' % (package, package))
-        for basename in packages[package].keys():
+        for basename in sorted(packages[package].keys()):
             menu.write('<li><a target="plots" href="validation_plots.html#%s_%s">%s</a></li>\n' % (package, basename, basename))
         menu.write('</ul></p>\n\n')
     menu.write('</body>\n</html>\n')
@@ -328,11 +330,11 @@ def make_plots(html, packages, versions, indices):
     '''Create the plots and add them to the html page'''
     
     # produce plots
-    for package in packages.keys():
+    for package in sorted(packages.keys()):
         html.write('<br><a name="%s"><h2>%s</h2></a>\n' % (package, package))
-        for basename in packages[package].keys():
+        for basename in sorted(packages[package].keys()):
             html.write('<a name="%s_%s"><h3>%s</h3></a>\n' % (package, basename, basename))
-            for name in packages[package][basename].keys():
+            for name in sorted(packages[package][basename].keys()):
                 plots = packages[package][basename][name]
 
                 # prepare histograms
