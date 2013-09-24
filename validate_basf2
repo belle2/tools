@@ -482,7 +482,7 @@ def make_plots(html, packages, versions, indices):
                     if not plots[1]:
                         html.write('<i><b style="color:red">No current data!</b></i><br><br>\n');
                     if not plots[0]:
-                        html.write('<i style="color:red">No reference data</o><br><br>\n');
+                        html.write('<i style="color:red">No reference data</i><br><br>\n');
 
                     description = None
                     if plots[1] and plots[1]['Description']:
