@@ -45,6 +45,12 @@ if [ "$STATUS" != "1" ]; then
   exit 1
 fi
 
+# determine revision of previous tag
+DIFFREV=`svn log ${BELLE2_REPOSITORY}/tags/software/${PACKAGE} 2>/dev/null | head -2 | tail -1 | awk '{print $1}'`
+if [ "${DIFFREV}" = "" ]; then
+  DIFFREV=r1
+fi
+
 # read arguments
 TAG=patch
 if [ $# -gt 0 ]; then
@@ -104,4 +110,10 @@ echo "committing tag ${TAG} of package ${PACKAGE}"
 svn copy --parents ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
 if [ "$?" == "0" ]; then
   echo "Committed tag ${TAG} of ${PACKAGE}."
+else
+  exit 1
 fi
+
+# report changes
+echo "The changes with respect to the previous tag are:"
+svn log -${DIFFREV}:HEAD ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}
