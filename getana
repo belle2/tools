@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` directory [username]"
+  echo
+  echo "- This command checks out the analysis code at the given"
+  echo "  directory name in svn."
+  echo "  It also prepares the build system."
+  echo "- The optional second argument can be used to specify an svn user"
+  echo "  name if it differs from the local user name."
+  echo
+  exit 0
+fi
+
+# check number of arguments
+if [ $# -lt 1 -o $# -gt 2 ]; then
+  echo "Usage: `basename $0` directory [username]" 1>&2
+  exit 1
+fi
+
+# read arguments
+DIR=$1
+LOCAL_DIR=`basename ${DIR}`
+if [ -d ${LOCAL_DIR} ]; then
+  echo "Error: The directory ${LOCAL_DIR} already exists." 1>&2
+  exit 1
+fi
+USERNAME=$USER
+if [ $# -gt 1 ]; then
+  USERNAME=$2
+fi
+SVNDIR=/user/${USERNAME}/${DIR}
+if [ `echo ${DIR} | cut -c 1` = "/" ]; then
+  SVNDIR=${DIR}
+fi
+
+
+# verify that the svn directory exists and is an analysis directory
+svn list ${BELLE2_REPOSITORY}${SVNDIR} >& /dev/null
+if [ "$?" != "0" ]; then
+  echo "Error: The svn directory ${SVNDIR} does not exist." 1>&2
+  exit 1
+fi
+RELEASE=`svn cat ${BELLE2_REPOSITORY}${SVNDIR}/.analysis 2> /dev/null`
+if [ "$?" != "0" ]; then
+  echo "Error: The svn directory ${SVNDIR} is not an analysis directory." 1>&2
+  exit 1
+fi
+
+# check whether the release exists
+if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
+  echo "Error: The central release ${RELEASE} required by this analysis does not exist." 1>&2
+  exit 1
+fi
+
+# check out the analysis directory
+svn co ${BELLE2_REPOSITORY}${SVNDIR} ${LOCAL_DIR}
+if [ "$?" != "0" ]; then
+  echo "Error: The checkout of the analysis directory ${SVNDIR} failed." 1>&2
+  exit 1
+fi
+
+# get site-scons
+pushd . > /dev/null
+cd ${LOCAL_DIR}
+RELEASE=`cat .analysis`
+ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
+ln -s site_scons/SConstruct .
+popd > /dev/null
+
+# inform user about successful completion
+echo "Analysis ${SVNDIR} for release ${RELEASE} checked out at: ${DIR}"
+echo "-> change to the new directory and set up the environment: cd ${DIR}; setupana"
