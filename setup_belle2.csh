@@ -80,6 +80,16 @@ if ( ! ${?BELLE2_SYSTEM_COMPILER} ) then
   endif
 endif
 
+# setup own python
+if ( ! ${?BELLE2_SYSTEM_PYTHON} ) then
+  if ( -f ${BELLE2_TOOLS}/virtualenv/bin/activate ) then
+    setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
+    set _SAVE_PROMPT="$prompt"
+    source ${BELLE2_TOOLS}/virtualenv/bin/activate.csh
+    set prompt="$_SAVE_PROMPT"
+  endif
+endif
+
 # make PATH changes active
 rehash
 

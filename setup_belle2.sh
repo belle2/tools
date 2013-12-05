@@ -86,6 +86,14 @@ if [ -z "${BELLE2_SYSTEM_COMPILER}" ]; then
   fi
 fi
 
+# setup own python
+if [ -z "${BELLE2_SYSTEM_PYTHON}" ]; then\
+  if [ -f ${BELLE2_TOOLS}/virtualenv/bin/activate ]; then
+    export LD_LIBRARY_PATH=${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
+    VIRTUAL_ENV_DISABLE_PROMPT=1 source ${BELLE2_TOOLS}/virtualenv/bin/activate
+  fi
+fi
+
 # inform user about successful setup
 echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 

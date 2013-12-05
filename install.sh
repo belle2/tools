@@ -70,3 +70,44 @@ if [ ! -f ${DIR}/gcc/bin/gcc ]; then
   make -j ${NPROCESSES}
   make install
 fi
+
+# setup gcc
+if [ -z "${BELLE2_SYSTEM_COMPILER}" ]; then
+  export PATH=${DIR}/gcc/bin:${PATH}
+  if [ -n "${LD_LIBRARY_PATH}" ]; then
+    export LD_LIBRARY_PATH=${DIR}/gcc/lib:${DIR}/gcc/lib64:${LD_LIBRARY_PATH}
+  else
+    export LD_LIBRARY_PATH=${DIR}/gcc/lib:${DIR}/gcc/lib64
+  fi
+fi
+
+# python
+if [ ! -f ${DIR}/python/bin/python ]; then
+  cd ${DIR}/src
+  if [ ! -d ${DIR}/src/python ]; then
+    wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/Python-2.7.6.tgz | tar xz
+  fi
+  cd python
+  ./configure --enable-shared --prefix=${DIR}/python
+  make -j ${NPROCESSES}
+  make install
+fi
+export LD_LIBRARY_PATH=${DIR}/python/lib:${LD_LIBRARY_PATH}
+
+# virtualenv
+if [ ! -f ${DIR}/python/bin/virtualenv ]; then
+  cd ${DIR}/src
+  if [ ! -d ${DIR}/src/virtualenv ]; then
+    wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/virtualenv-1.10.1.tar.gz | tar xz
+  fi
+  cd virtualenv
+  ../../python/bin/python setup.py install --prefix=${DIR}/python
+fi
+
+# create virtualenv
+if [ ! -f ${DIR}/virtualenv/bin/activate ]; then
+  cd ${DIR}
+  python/bin/virtualenv virtualenv
+  python/bin/virtualenv --relocatable virtualenv
+  sed -i "s;/local/scratch/tkuhr/tools;\${BELLE2_TOOLS};g" virtualenv/bin/activate*
+fi
