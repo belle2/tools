@@ -109,5 +109,5 @@ if [ ! -f ${DIR}/virtualenv/bin/activate ]; then
   cd ${DIR}
   python/bin/virtualenv virtualenv
   python/bin/virtualenv --relocatable virtualenv
-  sed -i "s;/local/scratch/tkuhr/tools;\${BELLE2_TOOLS};g" virtualenv/bin/activate*
+  sed -i "s;${DIR};\${BELLE2_TOOLS};g" virtualenv/bin/activate*
 fi
