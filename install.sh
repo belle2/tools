@@ -88,11 +88,17 @@ if [ ! -f ${DIR}/python/bin/python ]; then
     wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/Python-2.7.6.tgz | tar xz
   fi
   cd python
-  ./configure --enable-shared --prefix=${DIR}/python
+  UCS=`python -c 'import sys;print "ucs4" if sys.maxunicode > 65535 else "ucs2"'`
+  ./configure --enable-shared --enable-unicode=${UCS} --prefix=${DIR}/python
   make -j ${NPROCESSES}
   make install
 fi
 export LD_LIBRARY_PATH=${DIR}/python/lib:${LD_LIBRARY_PATH}
+if [ -n "${PYTHONPATH}" ]; then
+  export PYTHONPATH=${DIR}/python/lib/python2.7:${PYTHONPATH}
+else
+  export PYTHONPATH=${DIR}/python/lib/python2.7
+fi
 
 # virtualenv
 if [ ! -f ${DIR}/python/bin/virtualenv ]; then

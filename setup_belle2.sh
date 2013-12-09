@@ -90,6 +90,7 @@ fi
 if [ -z "${BELLE2_SYSTEM_PYTHON}" ]; then\
   if [ -f ${BELLE2_TOOLS}/virtualenv/bin/activate ]; then
     export LD_LIBRARY_PATH=${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
+    export PYTHONPATH=${BELLE2_TOOLS}/python/lib/python2.7:${PYTHONPATH}
     VIRTUAL_ENV_DISABLE_PROMPT=1 source ${BELLE2_TOOLS}/virtualenv/bin/activate
   fi
 fi
