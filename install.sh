@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# check whether the tools are already set up
+if [ -n "${BELLE2_TOOLS}" ]; then
+  echo "ERROR: Please run the install.sh script in a shell where the tools are NOT set up."
+  exit 1
+fi
+
 # prepare directory for source code of tools
 DIR=`python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(dirname $0)`
 if [ ! -d ${DIR}/src ]; then
@@ -88,7 +94,7 @@ if [ ! -f ${DIR}/python/bin/python ]; then
     wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/Python-2.7.6.tgz | tar xz
   fi
   cd python
-  UCS=`python -c 'import sys;print "ucs4" if sys.maxunicode > 65535 else "ucs2"'`
+  UCS=`python -c 'import sys;ucs = {};ucs[True] = "ucs4";ucs[False] = "ucs2";print ucs[sys.maxunicode > 65535]'`
   ./configure --enable-shared --enable-unicode=${UCS} --prefix=${DIR}/python
   make -j ${NPROCESSES}
   make install
