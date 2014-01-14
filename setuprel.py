@@ -3,7 +3,7 @@
 
 import sys
 import os
-from setup_tools import get_var, unsetup_old_release, update_environment
+from setup_tools import get_var, unsetup_old_release, update_environment, csh
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
@@ -94,6 +94,40 @@ unsetup_old_release()
 
 # add the new release
 update_environment(release, local_release, os.getcwd())
+
+# check for the right python version
+if not os.access(os.path.join(get_var('BELLE2_EXTERNALS_DIR'), 'Makefile'),
+                 os.F_OK):
+    ext_version = get_var('BELLE2_EXTERNALS_DIR').rsplit(os.sep)[-1]
+    require_system_python = ext_version < 'v00-05-00'
+    own_python = sys.executable == os.path.join(os.environ['BELLE2_TOOLS'],
+            'virtualenv', 'bin', 'python')
+    if require_system_python and own_python:
+        sys.stderr.write('ERROR: The externals version of this release requires the system version of python.\n'
+                         )
+        sys.stderr.write(' ==> Start a new shell and setup the tools with the following command:\n'
+                         )
+        if csh:
+            sys.stderr.write(' setenv BELLE2_SYSTEM_PYTHON 1\n')
+            sys.stderr.write(' source %s/setup_belle2\n'
+                             % os.environ['BELLE2_TOOLS'])
+        else:
+            sys.stderr.write(' BELLE2_SYSTEM_PYTHON=1 source %s/setup_belle2\n'
+                              % os.environ['BELLE2_TOOLS'])
+        sys.exit(1)
+    elif not require_system_python and not own_python:
+        sys.stderr.write('ERROR: The externals version of this release requires the python version from the tools.\n'
+                         )
+        sys.stderr.write(' ==> Start a new shell and setup the tools with the following commands:\n'
+                         )
+        if csh:
+            sys.stderr.write(' unsetenv BELLE2_SYSTEM_PYTHON\n')
+            sys.stderr.write(' source %s/setup_belle2\n'
+                             % os.environ['BELLE2_TOOLS'])
+        else:
+            sys.stderr.write(' unset BELLE2_SYSTEM_PYTHON; source %s/setup_belle2\n'
+                              % os.environ['BELLE2_TOOLS'])
+        sys.exit(1)
 
 # inform user about successful completion
 print 'echo "Environment setup for release: ${BELLE2_RELEASE}"'
