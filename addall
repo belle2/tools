@@ -39,10 +39,11 @@ if [ ! -f .release ]; then
 fi
 RELEASE=`cat .release`
 if [ "${RELEASE}" = "head" ]; then
-  PACKAGES=`svn list ${BELLE2_REPOSITORY}/trunk/software/`
+  URL=${BELLE2_REPOSITORY}/trunk/software/
 else
-  PACKAGES=`svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/`
+  URL=${BELLE2_REPOSITORY}/releases/software/${RELEASE}/
 fi
+PACKAGES=`svn list ${URL} | grep -v "daq/\|eutel/"`
 
 # loop over packages
 for ENTRY in ${PACKAGES}; do
