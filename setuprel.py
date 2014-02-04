@@ -87,6 +87,10 @@ else:
         sys.exit(1)
 
     local_release = open('.release').readline().strip()
+    if len(local_release) == 0:
+        sys.stderr.write('Error: The .release file is empty.\n')
+        sys.exit(1)
+
     release = local_release
 
 # remove old release from the environment
