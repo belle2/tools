@@ -123,3 +123,13 @@ if [ ! -f ${DIR}/virtualenv/bin/activate ]; then
   python/bin/virtualenv --relocatable virtualenv
   sed -i "s;${DIR};\${BELLE2_TOOLS};g" virtualenv/bin/activate*
 fi
+
+# install some python packages
+BELLE2_TOOLS=${DIR} .  ${DIR}/virtualenv/bin/activate
+for PYPKG in numpy==1.8.0 ipython==1.1.0 pep8==1.4.6 pep8ify==0.0.11; do
+  PYSTR=`echo ${PYPKG} | awk -F = '{print $1" ("$NF")"}'`
+  PYEXISTS=`pip list | grep "${PYSTR}" |wc -l`
+  if [ "${PYEXISTS}" == 0 ]; then
+     pip install ${PYPKG}
+  fi
+done
