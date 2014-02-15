@@ -62,13 +62,16 @@ ASTYLE="${ASTYLE_TOOL} \
 --align-reference=type \
 --formatted"
 
+# pep8 command
+PEP8="pep8 --ignore=E501"
+
 # define function for python code formatting
 function PythonTidy ()
 {
   if [ -L $1 ]; then
     echo "skipping symbolic link $1"
   else
-    ${BELLE2_TOOLS}/pep8.py $1 >& /dev/null
+    ${PEP8} $1 >& /dev/null
     if [ "$?" != 0 ]; then
       TMP=`mktemp`
       ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
@@ -145,7 +148,7 @@ function Pep8Check ()
 {
   if [ ! -L $1 ]; then
     TMP=`mktemp`
-    ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
+    ${PEP8} $1 > $TMP 2> /dev/null
     if [ "$?" != 0 ]; then
       COUNT+=1
       echo "$1:"
@@ -174,7 +177,7 @@ function PythonTidyOrPep8Check ()
     rm -f $TMP $TMP2
 
     if [ "$RESULT" == "1" ]; then
-      ${BELLE2_TOOLS}/pep8.py $1 > $TMP 2> /dev/null
+      ${PEP8} $1 > $TMP 2> /dev/null
       if [ "$?" != 0 ]; then
         COUNT+=1
         echo "$1:"
