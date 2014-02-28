@@ -25,7 +25,7 @@ if [ `uname` = Darwin ]; then
 
 elif [ -f /etc/lsb-release ]; then
   # Ubuntu
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libncurses5-dev libreadline-dev lsb-release unzip"
+  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
   OPTIONALS="libglu1-mesa-dev libglew1.5-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
