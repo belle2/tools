@@ -133,3 +133,6 @@ for PYPKG in numpy==1.8.0 ipython==1.1.0 pep8==1.4.6 pep8ify==0.0.11; do
      pip install ${PYPKG}
   fi
 done
+
+# remove pep8.pyc
+rm -f ${DIR}/pep8.pyc
