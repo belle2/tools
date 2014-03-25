@@ -98,6 +98,7 @@ if [ ! -f ${DIR}/python/bin/python ]; then
   ./configure --enable-shared --enable-unicode=${UCS} --prefix=${DIR}/python
   make -j ${NPROCESSES}
   make install
+  sed -i "s;#!${DIR}/python/bin/python;#!/usr/bin/env python;" ${DIR}/python/bin/*
 fi
 export LD_LIBRARY_PATH=${DIR}/python/lib:${LD_LIBRARY_PATH}
 if [ -n "${PYTHONPATH}" ]; then
@@ -125,6 +126,8 @@ if [ ! -f ${DIR}/virtualenv/bin/activate ]; then
 fi
 
 # install some python packages
+PATH=${DIR}/python/bin:${PATH}
+LD_LIBRARY_PATH=${DIR}/python/lib:${LD_LIBRARY_PATH}
 BELLE2_TOOLS=${DIR} .  ${DIR}/virtualenv/bin/activate
 for PYPKG in numpy==1.8.0 ipython==1.1.0 pep8==1.4.6 pep8ify==0.0.11; do
   PYSTR=`echo ${PYPKG} | awk -F = '{print $1" ("$NF")"}'`

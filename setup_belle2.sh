@@ -89,8 +89,10 @@ fi
 # setup own python
 if [ -z "${BELLE2_SYSTEM_PYTHON}" ]; then\
   if [ -f ${BELLE2_TOOLS}/virtualenv/bin/activate ]; then
+    export PATH=${BELLE2_TOOLS}/python/bin:${PATH}
     export LD_LIBRARY_PATH=${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
     VIRTUAL_ENV_DISABLE_PROMPT=1 source ${BELLE2_TOOLS}/virtualenv/bin/activate
+    export PYTHONHOME=${BELLE2_TOOLS}/python
   fi
 fi
 

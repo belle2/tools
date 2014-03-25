@@ -83,10 +83,12 @@ endif
 # setup own python
 if ( ! ${?BELLE2_SYSTEM_PYTHON} ) then
   if ( -f ${BELLE2_TOOLS}/virtualenv/bin/activate ) then
+    setenv PATH ${BELLE2_TOOLS}/python/bin:${PATH}
     setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
     set _SAVE_PROMPT="$prompt"
     source ${BELLE2_TOOLS}/virtualenv/bin/activate.csh
     set prompt="$_SAVE_PROMPT"
+    setenv PYTHONHOME ${BELLE2_TOOLS}/python
   endif
 endif
 
