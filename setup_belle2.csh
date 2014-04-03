@@ -88,7 +88,6 @@ if ( ! ${?BELLE2_SYSTEM_PYTHON} ) then
     set _SAVE_PROMPT="$prompt"
     source ${BELLE2_TOOLS}/virtualenv/bin/activate.csh
     set prompt="$_SAVE_PROMPT"
-    setenv PYTHONHOME ${BELLE2_TOOLS}/python
   endif
 endif
 
