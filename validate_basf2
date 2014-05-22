@@ -9,6 +9,280 @@ import math
 import datetime
 import shutil
 from optparse import OptionParser
+from argparse import ArgumentParser
+
+# classes:
+# Package
+#   PlotFile
+#     contact
+#     Directory
+#       Plot/Ntuple
+# DataFile
+#   description
+#   contact
+
+class Configuration:
+    """The configuration parameters of the validation"""
+
+    def __init__(self):
+        """Set default values of configuration parameters"""
+
+        self.results_dir = 'results'
+        self.output_dir = os.path.join(self.results_dir, 'current')
+        self.reference_dir = os.path.join(self.results_dir, 'reference')
+        self.html_dir = 'html'
+        self.n_previous = 2
+        self.previous = []
+        self.selections = []
+        self.options = []
+        self.scale = 1
+        self.levels = ['release', 'production', 'plotting', 'display']
+        self.level = 1
+
+
+class Script:
+    """The representation of a validation script"""
+
+    def __init__(self, name, local, levels):
+        self.name = name
+        self.local = local
+        self.level = -1
+        script_path = self.name.split(os.sep)
+        level = script_path[script_path.index('validation') + 1]
+        if level in levels[:-2]:
+            self.level = levels.index(level)
+        self.selected = False
+        self.dependent = []
+
+    def mark_selected(self, selections, level):
+        """Checks whether this script and any of its dependent ones matches the selection"""
+        
+        # check for file name in selections
+        short_name = self.name.replace('validation' + os.sep, '', 1)
+        if self.name in selections or short_name in selections:
+            self.selected = True
+        if self.name + '+' in selections or short_name + '+' in selections:
+            self.selected = True
+            self.mark_dependent()
+        if self.name + '-' in selections or short_name + '-' in selections:
+            self.mark_dependent()
+
+        # check for (parent) directory name in selections if the level is selected
+        if (abs(self.level) >= level):
+            for path_size in range(len(self.name.split(os.sep))-1):
+                path = self.name.rsplit(os.sep, path_size+1)[0]
+                short_path = path.replace('validation' + os.sep, '', 1)
+                if len(short_path) == 0:
+                    short_path = path
+                if path in selections or short_path in selections:
+                    self.selected = True
+                if path + '+' in selections or short_path + '+' in selections:
+                    self.selected = True
+                    self.mark_dependent()
+                if path + '-' in selections or short_path + '-' in selections:
+                    self.mark_dependent()
+
+        # recursively mark selected dependent scripts
+        for script in self.dependent:
+            script.mark_selected(selections, level)
+
+    def mark_dependent(self):
+        for script in self.dependent:
+            script.selected = True
+            script.mark_dependent()
+            
+    def dump(self, prefix = ''):
+        """Print the name of the script and of its dependent scripts"""
+
+        selected = ' '
+        if self.selected:
+            selected = '*'
+        central = ' '
+        if not self.local:
+            central = '+'
+        print '%s%s%s%s %d' % (selected, prefix, self.name, central, self.level)
+        for script in self.dependent:
+            script.dump(prefix + '  ')
+
+
+class Validation:
+    """The main validation class"""
+
+    def __init__(self):
+        """Default constructor"""
+
+        ## The directory of the local and central release
+        self.base_dir = {True: os.environ.get('BELLE2_LOCAL_DIR', None), False: os.environ.get('BELLE2_RELEASE_DIR', None)}
+
+        ## The list of file names of scripts in the local and central release directory
+        self.script_files = {True: [], False: []}
+
+        ## The (top level) release validation scripts
+        self.release_scripts = []
+
+        ## The (top level) non-release validation scripts
+        self.scripts = []
+
+        ## The configuration parameters
+        self.config = Configuration()
+
+    def parse_arguments(self):
+        """Parse the command line arguments and set the configuration parameters"""
+
+        description = '''Run basf2 validation tests of the given selections. The selections can have the following format:
+
+DIR  : all scripts in the given directory are executed
+FILE : the given script is executed
++DIR/FILE : in addition all dependent scripts are executed
+-DIR/FILE : only the dependent scripts are executed
+
+If no argument is given all validation tests are executed.'''
+        parser = ArgumentParser(description=description)
+        parser.add_argument('-n', type=int, dest='nPrevious', help='number of previous versions', default=2)
+        parser.add_argument('-p', action='append', dest='previous', help='name of previous version')
+        parser.add_argument('-o', action='append', dest='options', help='options that are passed to the basf2 validation jobs')
+        parser.add_argument('-s', type=float, dest='scale', help='scale factor for number of produced events', default=1)
+        parser.add_argument('-l', choices=self.config.levels, dest='level', help='level of validation to be executed', default=self.config.levels[self.config.level])
+        parser.add_argument('selections', help='selections of directories and script files', nargs='*')
+        arguments = parser.parse_args()
+
+        n_previous = arguments.nPrevious
+        if arguments.previous != None:
+            self.config.previous = arguments.previous
+        if arguments.options != None:
+            self.config.options = arguments.options
+        if arguments.scale != None:
+            self.config.scale = arguments.scale
+        self.config.level = self.config.levels.index(arguments.level)
+        self.config.selections = arguments.selections
+
+        # check whether a release is set up
+        if not (self.base_dir[True] or self.base_dir[False]):
+            sys.stderr.write('Error: no release is set up.\n')
+            sys.exit(-1)
+
+    def collect_scripts(self):
+        """Fill self.script_files with all script file names"""
+
+        for local in [True, False]:
+            if not self.base_dir[local]:
+                continue
+            cur_dir = os.getcwd()
+            os.chdir(self.base_dir[local])
+            if os.path.isdir('validation'):
+                self.collect_package_scripts('validation', local)
+            for package_dir in glob.glob(os.path.join('*', 'validation')):
+                self.collect_package_scripts(package_dir, local)
+            os.chdir(cur_dir)
+            
+    def collect_package_scripts(self, dir, local):
+        """Add all script file names of the given directory to self.script_files"""
+
+        for subdir in self.config.levels[:-2]:
+            for extension in ['*.py', '*.C', os.path.join('*', '*.py'), os.path.join('*', '*.C')]:
+                for script_file in sorted(glob.glob(os.path.join(dir, subdir, extension))):
+                    if local or script_file not in self.script_files[True]:
+                        self.script_files[local].append(script_file)
+        for extension in ['*.py', '*.C']:
+            for script_file in sorted(glob.glob(os.path.join(dir, extension))):
+                if local or script_file not in self.script_files[True]:
+                    self.script_files[local].append(script_file)
+
+    def build_dependencies(self):
+        """Fill the dependency tree structure in self.scripts based on the file names in self.script_files"""
+
+        # first get the top level scripts in the release, production, and plotting directories
+        for local in [True, False]:
+            scripts = [] + self.script_files[local]
+            for script_file in scripts:
+                script_path = script_file.split(os.sep)
+                if script_path[0] != 'validation':
+                    script_path[0:1] = []
+                script_list = self.scripts
+                if script_path[1] == 'release':
+                    script_list = self.release_scripts
+                if len(script_path) == 3:
+                    script = Script(script_file, local, self.config.levels)
+                    script_list.append(script)
+                    self.script_files[local].remove(script_file)
+                    self.find_dependent(script)
+
+        # then get the scripts in the main validation directory (for backward compatibility)
+        scripts = sorted(self.script_files[True] + self.script_files[False])
+        validation_script = None
+        for extension in ['.py', '.C']:
+            for script_file in scripts:
+                script_path = script_file.split(os.sep)
+                if script_path[0] == 'validation' and script_file.endswith(extension) and len(script_path) == 2:
+                    local = script_file in self.script_files[True]
+                    script = Script(script_file, local, self.config.levels)
+                    if validation_script:
+                        validation_script.dependent.append(script)
+                    else:
+                        self.scripts.append(script)
+                    validation_script = script
+                    self.script_files[local].remove(script_file)
+                    
+        # and the scripts in the main package validation directory (for backward compatibility)
+        parent_script = validation_script
+        package_scripts = {}
+        for extension in ['.py', '.C']:
+            for script_file in scripts:
+                script_path = script_file.split(os.sep)
+                if script_path[0] != 'validation' and script_file.endswith(extension) and len(script_path) == 3:
+                    local = script_file in self.script_files[True]
+                    script = Script(script_file, local, self.config.levels)
+                    if script_path[0] not in package_scripts.keys():
+                        package_scripts[script_path[0]] = validation_script
+                    parent_script = package_scripts[script_path[0]]
+                    if parent_script:
+                        parent_script.dependent.append(script)
+                    else:
+                        self.scripts.append(script)
+                    package_scripts[script_path[0]] = script
+                    self.script_files[local].remove(script_file)                        
+                    
+        if len(self.script_files[True]) > 0:
+            print 'Warning: The following scripts in the local release directory have unmatched dependencies:', ','.join(self.script_files[True])
+        if len(self.script_files[False]) > 0:
+            print 'Warning: The following scripts in the central release directory have unmatched dependencies:', ','.join(self.script_files[False])
+
+
+    def find_dependent(self, parent_script):
+        """Extract all dependent scripts from self.script_files"""
+
+        package = parent_script.name.split(os.sep)[0]
+        name = os.path.splitext(os.path.basename(parent_script.name))[0]
+        for local in [True, False]:
+            scripts = [] + self.script_files[local]
+            for script_file in scripts:
+                script_path = script_file.split(os.sep)
+                if script_path[0] != 'validation':
+                    script_path[1:2] = []
+                if len(script_path) == 4 and script_path[-2] == name:
+                    if package == 'validation' or script_path[0] == package:
+                        script = Script(script_file, local, self.config.levels)
+                        parent_script.dependent.append(script)
+                        self.script_files[local].remove(script_file)
+                        self.find_dependent(script)
+        
+    def run_scripts(self):
+        """Execute the validation scripts"""
+
+#        for script in self.release_scripts:
+#            print script.name
+
+        for script in self.scripts:
+#            print script.name
+            selected = script.mark_selected(self.config.selections, self.config.level)
+            script.dump()
+
+validation = Validation()
+validation.parse_arguments()
+validation.collect_scripts()
+validation.build_dependencies()
+validation.run_scripts()
+sys.exit(0)
 
 
 # directory names
@@ -20,14 +294,14 @@ html_dir = 'html'
 # arguments
 n_previous = 2
 previous = []
-directories = []
+selections = []
 basf2_options = []
-
+scale = 1
 
 def parse_arguments():
     '''Parse the command line arguments'''
     
-    global n_previous, previous, directories, basf2_options
+    global n_previous, previous, selections, basf2_options, scale
 
     usage = '''usage: %prog [options] [packages]
 
@@ -37,19 +311,22 @@ If no argument is given all validation tests are run.'''
     parser.add_option('-n', type='int', dest='nPrevious', help='number of previous versions', default=2)
     parser.add_option('-p', action='append', dest='previous', help='name of previous version')
     parser.add_option('-o', action='append', dest='basf2_options', help='options that are passed to the validation jobs')
-    (options, directories) = parser.parse_args()
+    parser.add_option('-s', type='int', dest='scale', help='scale factor for number of produced events', default=1)
+    (options, selections) = parser.parse_args()
 
     n_previous = options.nPrevious
     if options.previous != None:
         previous = options.previous
     if options.basf2_options != None:
         basf2_options = options.basf2_options
+    if options.scale != None:
+        scale = options.scale
 
     # remove trailing slashes from directory names
-    for index in range(len(directories)):
-        entry = directories[index]
+    for index in range(len(selections)):
+        entry = selections[index]
         if entry.endswith('/'):
-            directories[index] = entry[:-1]
+            selections[index] = entry[:-1]
 
     # check whether a release is set up
     if not (os.environ.has_key('BELLE2_LOCAL_DIR')
@@ -108,11 +385,7 @@ def process_dir(dir, output_subdir):
 def process_top_dir(release_dir, processed_dirs):
     """Loop over folders in the top release directory"""
 
-    global directories
     dirs = os.listdir(release_dir)
-    if len(directories) > 0:
-        dirs = directories
-
     exclude_dirs = [
         'build',
         'include',
@@ -140,9 +413,14 @@ def run_validations():
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    # build dependency tree
+    # validation / packges
+    # release / production / plotting
+    # script dependencies
+
     # process local or central validation directory
     processed_dirs = []
-    if len(directories) == 0 or 'validation' in directories:
+    if len(selections) == 0 or 'validation' in selections:
         if os.environ.has_key('BELLE2_LOCAL_DIR'):
             validation_dir = os.path.join(os.environ['BELLE2_LOCAL_DIR'], 'validation')
             if os.path.isdir(validation_dir):
@@ -167,10 +445,10 @@ def collect_histos(dir, packages, index):
     if not os.path.isdir(dir):
         return
 
-    global directories
+    global selections
     dirs = os.listdir(dir)
-    if len(directories) > 0:
-        dirs = directories
+    if len(selections) > 0:
+        dirs = selections
 
     for entry in dirs:
         dir_entry = os.path.join(dir, entry)

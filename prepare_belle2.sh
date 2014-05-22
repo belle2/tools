@@ -23,6 +23,14 @@ if [ `uname` = Darwin ]; then
   SU_CMD="sudo"
   INSTALL_CMD="fink install"
 
+elif [ -f /etc/SuSE-release ]; then
+  # OpenSUSE
+  PACKAGES="subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel ncurses-devel readline-devel" 
+  OPTIONALS="mesa-libGL-devel glew-devel"
+  CHECK_CMD="rpm -q"
+  SU_CMD="su -c"
+  INSTALL_CMD="yum install"
+
 elif [ -f /etc/lsb-release ]; then
   # Ubuntu
   PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
@@ -38,14 +46,6 @@ elif [ -f /etc/debian_version ]; then
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
-
-elif [ -f /etc/SuSE-release ]; then
-  # OpenSUSE
-  PACKAGES="subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel ncurses-devel readline-devel" 
-  OPTIONALS="mesa-libGL-devel glew-devel"
-  CHECK_CMD="rpm -q"
-  SU_CMD="su -c"
-  INSTALL_CMD="yum install"
 
 else
   if [ ! -f /etc/redhat-release ]; then

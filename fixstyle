@@ -265,7 +265,7 @@ else
       elif [ `echo $i| grep "\.py$"` ]; then
         PythonTidy $i
       elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
-        echo ${ASTYLE} $i
+        ${ASTYLE} $i
       else
         echo "File of unknown type not formatted: $i"
       fi
