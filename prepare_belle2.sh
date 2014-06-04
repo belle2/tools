@@ -25,15 +25,15 @@ if [ `uname` = Darwin ]; then
 
 elif [ -f /etc/SuSE-release ]; then
   # OpenSUSE
-  PACKAGES="subversion make gcc gcc-c++ libgfortran45 binutils patch wget python-devel libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel ncurses-devel readline-devel" 
+  PACKAGES="subversion make gcc gcc-c++ binutils patch wget python libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel ncurses-devel readline-devel" 
   OPTIONALS="mesa-libGL-devel glew-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
 
-elif [ -f /etc/lsb-release ]; then
+elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
   # Ubuntu
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
+  PACKAGES="subversion make gcc g++ binutils patch wget python libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
   OPTIONALS="libglu1-mesa-dev libglew1.5-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
@@ -41,7 +41,7 @@ elif [ -f /etc/lsb-release ]; then
 
 elif [ -f /etc/debian_version ]; then
   # Debian
-  PACKAGES="subversion make gcc g++ gfortran binutils patch wget python-dev libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release"
+  PACKAGES="subversion make gcc g++ binutils patch wget python libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
   OPTIONALS="libglu1-mesa-dev libglew1.5-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
@@ -52,7 +52,7 @@ else
     echo "Unknown linux distribution. Trying installation with yum..."
   fi
   # RH, SL, CentOS
-  PACKAGES="subversion make gcc gcc-c++ gcc-gfortran binutils patch wget python-devel libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel ncurses-devel readline-devel"
+  PACKAGES="subversion make gcc gcc-c++ binutils patch wget python libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel ncurses-devel readline-devel"
   OPTIONALS="mesa-libGL-devel glew-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
@@ -138,7 +138,7 @@ You will need root access to run this command.
       exit 1
     fi
   else
-    exit 1
+    exit 0
   fi
 fi
 
