@@ -35,7 +35,8 @@ def run_test(steering, release_dir):
     """Run the test for the given steering file"""
 
     global tests
-    name = steering.lstrip(release_dir)
+    name = steering[len(release_dir):]
+    name = name.lstrip('/')
     print 'Test: %s' % name
     process = subprocess.Popen(['basf2', steering], stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
