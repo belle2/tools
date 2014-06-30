@@ -5,6 +5,7 @@ import sys
 import os
 import pwd
 import subprocess
+import datetime
 
 # check for help option
 if len(sys.argv) != 2 or sys.argv[1] in ['--help', '-h', '-?']:
@@ -88,34 +89,32 @@ param_types = {
     }
 sys.stdout.write("""Please enter the module parameters one by one.
 Enter an empty name to finish the list of module parameters.
-The possible parameter types are:
+The following key words for parameter types can be used:
 i for int, d for double, s for string, b for bool.
-Add a v before the type letter for vectors
+Add a v before the type letter for vectors.
+All other strings will be taken directly as type names.
 """)
 while True:
     sys.stdout.write('  Name            : ')
     param_name = sys.stdin.readline().strip('\n')
     if param_name == '':
         break
-    while True:
-        sys.stdout.write('    Type          : ')
-        param_type = sys.stdin.readline().strip('\n')
-        if param_type in param_types.keys():
-            break
-        sys.stdout.write('*** Invalid type, use one of: %s\n'
-                         % ', '.join(param_types.keys()))
+    sys.stdout.write('    Type          : ')
+    param_type = sys.stdin.readline().strip('\n')
+    if param_type in param_types.keys():
+        param_type = param_types[param_type]
     sys.stdout.write('    Description   : ')
     param_desc = sys.stdin.readline().strip('\n')
     param_def = ''
-    if len(param_type) == 1:
+    if param_type.find('<') < 0:
         sys.stdout.write('    Default [none]: ')
         param_def = sys.stdin.readline().strip('\n')
-        if param_type == 's':
+        if param_type == 'std::string':
             if not param_def.startswith('"'):
                 param_def = '"' + param_def + '"'
             param_def = 'std::string(' + param_def + ')'
     params_header = params_header + '    %s m_%s;  /**< %s */\n' \
-        % (param_types[param_type], param_name, param_desc)
+        % (param_type, param_name, param_desc)
     if param_def == '':
         params_src = params_src + '  addParam("%s", m_%s, "%s");\n' \
             % (param_name, param_name, param_desc)
@@ -297,7 +296,7 @@ WARNING: The header files for the following classes were not found:
 f = open(header, 'w')
 f.write("""/**************************************************************************
  * BASF2 (Belle Analysis Framework 2)                                     *
- * Copyright(C) 2013 - Belle II Collaboration                             *
+ * Copyright(C) %d - Belle II Collaboration                             *
  *                                                                        *
  * Author: The Belle II Collaboration                                     *
  * Contributors: %-50s       *
@@ -312,11 +311,6 @@ f.write("""/********************************************************************
 %s
 
 namespace Belle2 {
-  /**
-   * \\addtogroup modules
-   * @{ %sModule @}
-   */
-
   /**
    * %s
    *
@@ -339,21 +333,21 @@ namespace Belle2 {
 
 #endif /* %sMODULE_H */
 """
-        % (  # copyright
+        % (  # year
+             # copyright
              # include guards
              # include statements
-             # doxygen group
              # doxygen comments
              # class name
              # constructor
              # methods
              # parameters and datastore objects
              # include guards comment
+    datetime.datetime.now().year,
     author,
     module.upper(),
     module.upper(),
     includes_header,
-    module,
     short_desc,
     '   * '.join(long_desc),
     module,
