@@ -213,7 +213,7 @@ def export_environment():
         if csh:
             # cd to script directory because of geant4 setup issue with csh
             (path, script) = os.path.split(csh_script)
-            print 'set SAVEOLDPWD=$OLDPWD'
+            print 'set SAVEOLDPWD=$owd'
             print 'set SAVEPWD=$PWD'
             print 'cd %s' % path
             print 'source %s > /dev/null' % script
