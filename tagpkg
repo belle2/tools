@@ -34,13 +34,13 @@ if [ "$?" != "0" ]; then
 fi
 
 # check whether we are at the head of the trunk and there are no changes
-svn info -R | grep URL | grep -v ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
+svn info -R | grep ^URL | grep -v ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
 if [ "$?" = "0" ]; then
   echo "Error: Not at the trunk head. Use updatepkg head." 1>&2
   exit 1
 fi
-STATUS=`svn status -u -q --ignore-externals | wc -l`
-if [ "$STATUS" != "1" ]; then
+STATUS=`svn status -u -q --ignore-externals --xml |grep "item=\"modified\"" | wc -l`
+if [ "$STATUS" != "0" ]; then
   echo "Error: There are modified files." 1>&2
   exit 1
 fi
