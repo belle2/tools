@@ -144,28 +144,18 @@ while True:
         io_required = 'optional'
     sys.stdout.write('    Branch name [default]: ')
     io_branch = sys.stdin.readline().strip('\n')
-    sys.stdout.write('    Variable name [none] : ')
+    sys.stdout.write('    Variable name        : ')
     io_name = sys.stdin.readline().strip('\n')
-    if io_name == '':
-        if io_branch == '':
-            init_src = init_src + '  Store%s<%s>::%s();\n' % (io_type,
-                    io_class, io_required)
-        else:
-            init_src = init_src + '  Store%s<%s>::%s("%s");\n' % (io_type,
-                    io_class, io_required, io_branch)
-        src_includes.append('Store%s' % io_type)
-        src_includes.append(io_class)
-    else:
-        sys.stdout.write('    Description          : ')
-        io_desc = sys.stdin.readline().strip('\n')
-        init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
-            % (io_type, io_class, io_name, io_desc)
-        header_includes.append('Store%s' % io_type)
-        header_includes.append(io_class)
-        if io_branch != '':
-            ctor_src = ctor_src + ', m_%s("%s")' % (io_name, io_branch)
-        io_required = io_required[0].upper() + io_required[1:]
-        init_src = init_src + '  m_%s.is%s();\n' % (io_name, io_required)
+    sys.stdout.write('    Description          : ')
+    io_desc = sys.stdin.readline().strip('\n')
+    init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
+        % (io_type, io_class, io_name, io_desc)
+    header_includes.append('Store%s' % io_type)
+    header_includes.append(io_class)
+    if io_branch != '':
+        ctor_src = ctor_src + ', m_%s("%s")' % (io_name, io_branch)
+    io_required = io_required[0].upper() + io_required[1:]
+    init_src = init_src + '  m_%s.is%s();\n' % (io_name, io_required)
 
 sys.stdout.write('Please enter the output data types:\n')
 while True:
@@ -177,34 +167,24 @@ while True:
     io_type = 'Array'
     if sys.stdin.readline().strip('\n') == 'n':
         io_type = 'ObjPtr'
-    sys.stdout.write('    Persistent (y/n) [y] : ')
-    io_persistent = 'Persistent'
+    sys.stdout.write('    Write out (y/n) [y]  : ')
+    io_storeFlag = ''
     if sys.stdin.readline().strip('\n') == 'n':
-        io_persistent = 'Transient'
+        io_storeFlag = 'DataStore::c_DontWriteOut'
     sys.stdout.write('    Branch name [default]: ')
     io_branch = sys.stdin.readline().strip('\n')
-    sys.stdout.write('    Variable name [none] : ')
+    sys.stdout.write('    Variable name        : ')
     io_name = sys.stdin.readline().strip('\n')
-    if io_name == '':
-        if io_branch == '':
-            init_src = init_src + '  Store%s<%s>::register%s();\n' % (io_type,
-                    io_class, io_persistent)
-        else:
-            init_src = init_src + '  Store%s<%s>::register%s("%s");\n' \
-                % (io_type, io_class, io_persistent, io_branch)
-        src_includes.append('Store%s' % io_type)
-        src_includes.append(io_class)
-    else:
-        sys.stdout.write('    Description          : ')
-        io_desc = sys.stdin.readline().strip('\n')
-        init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
-            % (io_type, io_class, io_name, io_desc)
-        header_includes.append('Store%s' % io_type)
-        header_includes.append(io_class)
-        if io_branch != '':
-            ctor_src = ctor_src + ', m_%s("%s")' % (io_name, io_branch)
-        init_src = init_src + '  m_%s.registerAs%s();\n' % (io_name,
-                io_persistent)
+    sys.stdout.write('    Description          : ')
+    io_desc = sys.stdin.readline().strip('\n')
+    init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
+        % (io_type, io_class, io_name, io_desc)
+    header_includes.append('Store%s' % io_type)
+    header_includes.append(io_class)
+    if io_branch != '':
+        ctor_src = ctor_src + ', m_%s("%s")' % (io_name, io_branch)
+    init_src = init_src + '  m_%s.registerInDataStore(%s);\n' % (io_name,
+             io_storeFlag)
 
 # get module methods
 methods_header = ''
@@ -219,14 +199,15 @@ for method in [
     'terminate',
     'destructor',
     ]:
-    sys.stdout.write('  %-10s (y/n) [n]: ' % method)
-    selected = sys.stdin.readline().strip('\n') == 'y'
-    if selected:
-        sys.stdout.write('    description       : ')
-        method_desc = sys.stdin.readline().strip('\n')
-    elif method == 'initialize' and init_src != '':
+    if method == 'initialize' and init_src != '':
         selected = True
         method_desc = 'Register input and output data'
+    else:
+        sys.stdout.write('  %-10s (y/n) [n]: ' % method)
+        selected = sys.stdin.readline().strip('\n') == 'y'
+        if selected:
+            sys.stdout.write('    description       : ')
+            method_desc = sys.stdin.readline().strip('\n')
     if selected:
         if method == 'destructor':
             methods_header = '''    /** %s */
@@ -275,6 +256,8 @@ if os.environ.has_key('BELLE2_RELEASE_DIR'):
 for release_dir in release_dirs:
     include_dir = os.path.join(release_dir, 'include')
     for (root, dirs, files) in os.walk(include_dir):
+        if 'genfit' in root:
+            continue
         for name in files:
             if name in header_includes:
                 includes_header = includes_header + '#include <%s>\n' \
