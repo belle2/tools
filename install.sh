@@ -67,7 +67,7 @@ fi
 if [ ! -f ${DIR}/gcc/bin/gcc ]; then
   cd ${DIR}/src
   if [ ! -d ${DIR}/src/gcc/src ]; then
-    wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/gcc-4.7.3-contrib.tgz | tar xz
+    wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/gcc-4.7.3-contrib.tgz | tar xz
   fi
   cd gcc
   mkdir -p build
@@ -91,7 +91,7 @@ fi
 if [ ! -f ${DIR}/python/bin/python ]; then
   cd ${DIR}/src
   if [ ! -d ${DIR}/src/python ]; then
-    wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/Python-2.7.6.tgz | tar xz
+    wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/Python-2.7.6.tgz | tar xz
   fi
   cd python
   UCS=`python -c 'import sys;ucs = {};ucs[True] = "ucs4";ucs[False] = "ucs2";print ucs[sys.maxunicode > 65535]'`
@@ -111,7 +111,7 @@ fi
 if [ ! -f ${DIR}/python/bin/virtualenv ]; then
   cd ${DIR}/src
   if [ ! -d ${DIR}/src/virtualenv ]; then
-    wget -O - --tries=3 --no-check-certificate --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/virtualenv-1.10.1.tar.gz | tar xz
+    wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/virtualenv-1.10.1.tar.gz | tar xz
   fi
   cd virtualenv
   ../../python/bin/python setup.py install --prefix=${DIR}/python
