@@ -267,8 +267,8 @@ def update_environment(release, local_release, local_dir):
 
         env_vars['BELLE2_EXTERNALS_DIR'] = extdir
         try:
-            import externals
             sys.path[:0] = [extdir]
+            import externals
             # previously we may have imported unsetup_externals() from the old version,
             # force reload of module from new file here
             reload(externals)
@@ -276,6 +276,7 @@ def update_environment(release, local_release, local_dir):
         except:
             sys.stderr.write('Error: Setup of externals at %s failed.\n'
                              % extdir)
+            raise
 
     if local_release == 'analysis':
         setup_release(local_dir)
