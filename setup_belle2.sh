@@ -35,8 +35,7 @@ export BELLE2_REPOSITORY=https://belle2.cc.kek.jp/svn
 function setuprel
 {
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  rm -f $tmp
-  ${BELLE2_TOOLS}/setuprel.py $* > $tmp
+  ${BELLE2_TOOLS}/setuprel.py $* >> $tmp
   . $tmp
   rm -f $tmp
 }
@@ -45,8 +44,7 @@ function setuprel
 function setupana
 {
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  rm -f $tmp
-  ${BELLE2_TOOLS}/setupana.py $* > $tmp
+  ${BELLE2_TOOLS}/setupana.py $* >> $tmp
   . $tmp
   rm -f $tmp
 }
@@ -55,8 +53,7 @@ function setupana
 function setoption
 {
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  rm -f $tmp
-  ${BELLE2_TOOLS}/setoption.py $* > $tmp
+  ${BELLE2_TOOLS}/setoption.py $* >> $tmp
   . $tmp
   rm -f $tmp
 }
@@ -65,8 +62,7 @@ function setoption
 function setextoption
 {
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  rm -f $tmp
-  ${BELLE2_TOOLS}/setextoption.py $* > $tmp
+  ${BELLE2_TOOLS}/setextoption.py $* >> $tmp
   . $tmp
   rm -f $tmp
 }
@@ -101,7 +97,7 @@ echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 # check for a newer version
 if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  svn status -u -q --non-interactive ${BELLE2_TOOLS} > $tmp 2> /dev/null
+  svn status -u -q --non-interactive ${BELLE2_TOOLS} >> $tmp 2> /dev/null
   if [ $? != 0 ]; then
     echo
     echo "Warning: Could not access svn in non-interactive mode."
