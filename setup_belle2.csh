@@ -97,6 +97,17 @@ rehash
 # inform user about successful setup
 echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 
+# check python version
+python -c 'import sys; assert(sys.hexversion>0x02070600)' >& /dev/null
+if ( $? != 0 ) then
+  echo "Warning: Your Python version is too old, basf2 will not work properly." 
+  if ( ! ${?BELLE2_SYSTEM_PYTHON} ) then
+    echo "         Please run ${BELLE2_TOOLS}/install.sh to install a newer version, then source setup_belle2 again." 
+  else
+    echo "         Please unset BELLE2_SYSTEM_PYTHON and source setup_belle2 again." 
+  endif
+endif
+
 # check for a newer version
 if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
   (svn status -u -q --non-interactive ${BELLE2_TOOLS} > ${BELLE2_TMP}) >& /dev/null

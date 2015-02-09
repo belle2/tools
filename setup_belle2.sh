@@ -83,7 +83,7 @@ if [ -z "${BELLE2_SYSTEM_COMPILER}" ]; then
 fi
 
 # setup own python
-if [ -z "${BELLE2_SYSTEM_PYTHON}" ]; then\
+if [ -z "${BELLE2_SYSTEM_PYTHON}" ]; then
   if [ -f ${BELLE2_TOOLS}/virtualenv/bin/activate ]; then
     export PATH=${BELLE2_TOOLS}/python/bin:${PATH}
     export LD_LIBRARY_PATH=${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
@@ -93,6 +93,16 @@ fi
 
 # inform user about successful setup
 echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
+
+# check python version
+if ! python -c 'import sys; assert(sys.hexversion>0x02070600)' 2> /dev/null; then
+  echo "Warning: Your Python version is too old, basf2 will not work properly." 
+  if [ -z "${BELLE2_SYSTEM_PYTHON}" ]; then
+    echo "         Please run ${BELLE2_TOOLS}/install.sh to install a newer version, then source setup_belle2 again." 
+  else
+    echo "         Please unset BELLE2_SYSTEM_PYTHON and source setup_belle2 again." 
+  fi
+fi
 
 # check for a newer version
 if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
