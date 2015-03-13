@@ -3,7 +3,7 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [-n|-p|-c] [files]"
+  echo "Usage: `basename $0` [-n|-p [-d command]] [files]"
   echo
   echo "- The fixstyle tool formats the layout of C++ and python code."
   echo "  It helps developers to achieve a common style of all Belle II software."
@@ -13,13 +13,16 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "- If the -n option is used, only the changes that the fixstyle would apply"
   echo "  are printed. The files are not modified. The return code gives the number"
   echo "  of files that would be changed."
-  echo "- The -p option is equivalent to the -n option except that it uses the"
-  echo "  pep8 style checker for python code."
-  echo "- The -c option is equivalent to the -n option for C++ code, but for python"
-  echo "  code it checks whether it follows either the PythonTidy or the pep8 style."
+  echo "- The -p option is equivalent to the -n option except that it reports the"
+  echo "  pep8 output instead of the code changes."
+  echo "- The -d option can be used to specify the diff command that is called to"
+  echo "  report changes. Has to be given after the -n or -p option."
   echo
   exit 0
 fi
+
+# set tools directory if unset
+BELLE2_TOOLS=${BELLE2_TOOLS:-`dirname $0`}
 
 # check astyle and its version
 ASTYLE_TOOL=${BELLE2_TOOLS}/astyle
@@ -33,13 +36,10 @@ if [ ! -f "${ASTYLE_TOOL}" ]; then
   fi
 fi
 VERSION=`${ASTYLE_TOOL} -V 2>&1`
-if [ "${VERSION}" != "Artistic Style Version 2.03" ]; then
+if [ "${VERSION}" != "Artistic Style Version 2.05.1" ]; then
   echo "Wrong version of astyle. Execute the install.sh script in the ${BELLE2_TOOLS} directory." 1>&2
   exit 1
 fi
-
-# set tools directory if unset
-BELLE2_TOOLS=${BELLE2_TOOLS:-`dirname $0`}
 
 
 # astyle command
@@ -60,40 +60,25 @@ ASTYLE="${ASTYLE_TOOL} \
 --suffix=none \
 --align-pointer=type \
 --align-reference=type \
+--max-code-length=132 \
 --formatted"
 
-# pep8 command
-PEP8="pep8 --ignore=E501"
+# autopep8 command
+AUTOPEP8CHECK="autopep8 --aggressive --aggressive --max-line-length=132"
+AUTOPEP8="${AUTOPEP8CHECK} --in-place"
 
-# define function for python code formatting
-function PythonTidy ()
-{
-  if [ -L $1 ]; then
-    echo "skipping symbolic link $1"
-  else
-    ${PEP8} $1 >& /dev/null
-    if [ "$?" != 0 ]; then
-      TMP=`mktemp`
-      ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP
-      if [ "$?" == 0 ]; then
-        if [ "`diff $1 $TMP | wc -l`" != "0" ]; then
-          ${BELLE2_TOOLS}/PythonTidy.py $TMP $1
-          echo "formatted $1"
-        fi
-      else
-        echo "Formatting of $i failed"
-      fi
-      rm -f $TMP
-    fi
-  fi
-}
+# pep8 command
+PEP8="pep8 --max-line-length=132"
+
+# diff command
+DIFF="diff -u"
 
 
 # count number of files that fail the check
 declare -i COUNT
 COUNT=0
 
-# define function for C++ code checking
+# define function for C++ code style checking
 function AstyleCheck ()
 {
   if [ ! -L $1 ]; then
@@ -106,7 +91,7 @@ function AstyleCheck ()
         RESULT=0
       else
         echo "$1:"
-        diff $1 $TMP
+        ${DIFF} $1 $TMP
       fi
     else
       cat $TMP2
@@ -116,26 +101,22 @@ function AstyleCheck ()
   fi
 }
 
-# define function for PythonTidy checking
-function PythonTidyCheck ()
+# define function for python code checking
+function Autopep8Check ()
 {
   if [ ! -L $1 ]; then
     RESULT=1
     TMP=`mktemp`
     TMP2=`mktemp`
-    ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
+    ${AUTOPEP8CHECK} $1 > $TMP 2> $TMP2
     if [ "$?" == 0 ]; then
-      ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
-      if [ "$?" == 0 ]; then
-        if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
-          RESULT=0
-        else
-          echo "$1:"
-          diff $1 $TMP2
-        fi
+      if [ "`diff $1 $TMP | wc -l`" == "0" ]; then
+        RESULT=0
+      else
+        echo "$1:"
+        ${DIFF} $1 $TMP
       fi
     else
-      echo "$1:"
       cat $TMP2
     fi
     rm -f $TMP $TMP2
@@ -151,38 +132,7 @@ function Pep8Check ()
     ${PEP8} $1 > $TMP 2> /dev/null
     if [ "$?" != 0 ]; then
       COUNT+=1
-      echo "$1:"
       cat $TMP
-    fi
-    rm -f $TMP
-  fi
-}
-
-# define function for PythonTidy or pep8 checking
-function PythonTidyOrPep8Check ()
-{
-  if [ ! -L $1 ]; then
-    RESULT=1
-    TMP=`mktemp`
-    TMP2=`mktemp`
-    ${BELLE2_TOOLS}/PythonTidy.py $1 $TMP 2> $TMP2
-    if [ "$?" == 0 ]; then
-      ${BELLE2_TOOLS}/PythonTidy.py $TMP $TMP2
-      if [ "$?" == 0 ]; then
-        if [ "`diff $1 $TMP2 | wc -l`" == "0" ]; then
-          RESULT=0
-        fi
-      fi
-    fi
-    rm -f $TMP $TMP2
-
-    if [ "$RESULT" == "1" ]; then
-      ${PEP8} $1 > $TMP 2> /dev/null
-      if [ "$?" != 0 ]; then
-        COUNT+=1
-        echo "$1:"
-        cat $TMP
-      fi
     fi
     rm -f $TMP
   fi
@@ -190,27 +140,30 @@ function PythonTidyOrPep8Check ()
 
 
 # if run in check mode
-if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-c" ]; then
+if [ "$1" = "-n" -o "$1" = "-p" ]; then
 
-  PYTHONCHECK=PythonTidyCheck
+  PYTHONCHECK=Autopep8Check
   if [ "$1" = "-p" ]; then
     PYTHONCHECK=Pep8Check
   fi
-  if [ "$1" = "-c" ]; then
-    PYTHONCHECK=PythonTidyOrPep8Check
-  fi
   shift
+
+  if [ "$1" = "-d" ]; then
+     DIFF=$2
+     shift
+     shift
+  fi
 
   # check all C++ and python code below the current directory if no arguments are given
   if [ $# -lt 1 ]; then
-    for i in `find . -name \\*.h`; do
-      AstyleCheck $i
-    done
-    for i in `find . -name \\*.cc`; do
-      AstyleCheck $i
-    done
+     for i in `find . -name \\*.h`; do
+       AstyleCheck $i
+     done
+     for i in `find . -name \\*.cc`; do
+       AstyleCheck $i
+     done
     for i in `find . -name \\*.py`; do
-      $PYTHONCHECK $i
+      ${PYTHONCHECK} $i
     done
 
   # check the specified files
@@ -219,7 +172,7 @@ if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-c" ]; then
       if [ ! -e $i ]; then
         echo "The file $i does not exist"
       elif [ `echo $i| grep "\.py$"` ]; then
-        $PYTHONCHECK $i
+        ${PYTHONCHECK} $i
       elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
         AstyleCheck $i
       else
@@ -252,7 +205,7 @@ else
 
     ${ASTYLE} --recursive \*.{h,cc}
     for i in `find . -name \\*.py`; do
-      PythonTidy $i
+      ${AUTOPEP8} $i
     done
 
   # fix the specified files
@@ -263,7 +216,7 @@ else
       elif [ -L $i ]; then
         echo "skipping symbolic link $1"
       elif [ `echo $i| grep "\.py$"` ]; then
-        PythonTidy $i
+        ${AUTOPEP8} $i
       elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
         ${ASTYLE} $i
       else
@@ -272,4 +225,3 @@ else
     done
   fi
 fi
-

@@ -15,9 +15,9 @@ fi
 # astyle
 if [ ! -f ${DIR}/astyle ]; then
   cd ${DIR}/src
-  wget -O - http://downloads.sourceforge.net/project/astyle/astyle/astyle%202.03/astyle_2.03_linux.tar.gz | tar xz
+  wget -O - http://downloads.sourceforge.net/project/astyle/astyle/astyle%202.05.1/astyle_2.05.1_linux.tar.gz | tar xz
   if [ "$?" != "0" ]; then
-    wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/astyle_2.03_linux.tar.gz | tar xz
+    wget -O - --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/astyle_2.05.1_linux.tar.gz | tar xz
   fi
   cd astyle/build/gcc
   make
@@ -129,7 +129,7 @@ fi
 PATH=${DIR}/python/bin:${PATH}
 LD_LIBRARY_PATH=${DIR}/python/lib:${LD_LIBRARY_PATH}
 BELLE2_TOOLS=${DIR} .  ${DIR}/virtualenv/bin/activate
-for PYPKG in numpy==1.8.0 ipython==1.1.0 pep8==1.4.6 pep8ify==0.0.11; do
+for PYPKG in numpy==1.8.0 ipython==1.1.0 pep8==1.5.7 autopep8==1.1; do
   PYSTR=`echo ${PYPKG} | awk -F = '{print $1" ("$NF")"}'`
   PYEXISTS=`pip list | grep "${PYSTR}" |wc -l`
   if [ "${PYEXISTS}" == 0 ]; then
