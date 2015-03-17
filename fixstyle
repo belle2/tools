@@ -17,6 +17,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  pep8 output instead of the code changes."
   echo "- The -d option can be used to specify the diff command that is called to"
   echo "  report changes. Has to be given after the -n or -p option."
+  echo "- -c is provided for compatibility, but should no longer be used. Its"
+  echo "  behaviour is equivalent to the -n option."
   echo
   exit 0
 fi
@@ -140,7 +142,7 @@ function Pep8Check ()
 
 
 # if run in check mode
-if [ "$1" = "-n" -o "$1" = "-p" ]; then
+if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-c" ]; then
 
   PYTHONCHECK=Autopep8Check
   if [ "$1" = "-p" ]; then
