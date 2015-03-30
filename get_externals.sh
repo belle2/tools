@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o pipefail
 
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
