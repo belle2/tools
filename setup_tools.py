@@ -7,7 +7,7 @@ import subprocess
 
 # determine whether we have a csh family kind of shell
 shell = (subprocess.Popen(('ps -p %d -o comm=' % os.getppid()).split(),
-         stdout=subprocess.PIPE).communicate()[0])[:-1]
+                          stdout=subprocess.PIPE).communicate()[0])[:-1]
 csh = shell in ['csh', 'tcsh']
 
 # determine library path environment variable
@@ -36,7 +36,7 @@ def get_var(var):
 def copy_from_environment(var, default=None):
     """helper function to take a variable from the environment or a default, and to split paths"""
 
-    if os.environ.has_key(var):
+    if var in os.environ:
         env_vars[var] = os.environ[var]
     else:
         env_vars[var] = default
@@ -47,7 +47,7 @@ def copy_from_environment(var, default=None):
 def add_path(path, entry):
     """helper function to add an entry to a path"""
 
-    if not env_vars.has_key(path):
+    if path not in env_vars:
         copy_from_environment(path)
         add_path(path, entry)
     elif not env_vars[path]:
@@ -64,7 +64,7 @@ def add_path(path, entry):
 def remove_path(path, entry):
     """helper function to remove an entry from a path"""
 
-    if not env_vars.has_key(path):
+    if path not in env_vars:
         copy_from_environment(path)
         remove_path(path, entry)
     elif not env_vars[path]:
@@ -80,8 +80,8 @@ def remove_path(path, entry):
 def add_option(var, option):
     """helper function to add an option to a variable"""
 
-    if not env_vars.has_key(var):
-        if os.environ.has_key(var):
+    if var not in env_vars:
+        if var in os.environ:
             env_vars[var] = os.environ[var]
         else:
             env_vars[var] = ''
@@ -91,13 +91,12 @@ def add_option(var, option):
 def remove_option(var, option):
     """helper function to remove an option from a variable"""
 
-    if not env_vars.has_key(var):
-        if os.environ.has_key(var):
+    if var not in env_vars:
+        if var in os.environ:
             env_vars[var] = os.environ[var]
         else:
             return
-    env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, ''
-            ).strip()
+    env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, '').strip()
 
 
 def unsetup_release(location):
@@ -109,6 +108,8 @@ def unsetup_release(location):
     remove_path('PATH', os.path.join(location, 'bin', subdir))
     remove_path(lib_path_name, os.path.join(location, 'lib', subdir))
     remove_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
+    # for root6
+    remove_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
 
 
 def setup_release(location):
@@ -120,28 +121,30 @@ def setup_release(location):
     add_path('PATH', os.path.join(location, 'bin', subdir))
     add_path(lib_path_name, os.path.join(location, 'lib', subdir))
     add_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
+    # for root6
+    add_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
 
 
 def unsetup_old_release():
     """remove path settings from old release"""
 
     # central release
-    if os.environ.has_key('BELLE2_RELEASE_DIR'):
+    if 'BELLE2_RELEASE_DIR' in os.environ:
         unsetup_release(os.environ['BELLE2_RELEASE_DIR'])
     env_vars['BELLE2_RELEASE_DIR'] = ''
 
     # local release
-    if os.environ.has_key('BELLE2_LOCAL_DIR'):
+    if 'BELLE2_LOCAL_DIR' in os.environ:
         unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
     env_vars['BELLE2_LOCAL_DIR'] = ''
 
     # analysis
-    if os.environ.has_key('BELLE2_ANALYSIS_DIR'):
+    if 'BELLE2_ANALYSIS_DIR' in os.environ:
         unsetup_release(os.environ['BELLE2_ANALYSIS_DIR'])
     env_vars['BELLE2_ANALYSIS_DIR'] = ''
 
     # externals
-    if os.environ.has_key('BELLE2_EXTERNALS_DIR'):
+    if 'BELLE2_EXTERNALS_DIR' in os.environ:
         try:
             sys.path[:0] = [os.environ['BELLE2_EXTERNALS_DIR']]
             from externals import unsetup_externals
@@ -284,5 +287,3 @@ def update_environment(release, local_release, local_dir):
 
     # setup environment for the release, including the externals
     export_environment()
-
-
