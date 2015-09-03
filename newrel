@@ -22,6 +22,13 @@ if [ $# -lt 1 -o $# -gt 2 ]; then
   exit 1
 fi
 
+# check svn access
+svn list ${BELLE2_REPOSITORY} >& /dev/null
+if [ "$?" != "0" ]; then
+  echo "Error: Could not access the svn repository." 1>&2
+  exit 1
+fi
+
 # read arguments
 DIR=$1
 RELEASE=head

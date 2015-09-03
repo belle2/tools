@@ -42,6 +42,13 @@ if [ $# -gt 2 ]; then
   USERNAME=$3
 fi
 
+# check svn access
+svn list ${BELLE2_REPOSITORY} >& /dev/null
+if [ "$?" != "0" ]; then
+  echo "Error: Could not access the svn repository." 1>&2
+  exit 1
+fi
+
 # check whether this analysis directory already exists in svn
 svn list ${BELLE2_REPOSITORY}/user/${USERNAME}/${DIR} &> /dev/null
 if [ "$?" == "0" ]; then
