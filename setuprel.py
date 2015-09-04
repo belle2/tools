@@ -50,7 +50,7 @@ if len(sys.argv) > 2:
     sys.exit(1)
 
 # if the MY_BELLE2_DIR environment variable is set use it as local release directory
-if os.environ.has_key('MY_BELLE2_DIR'):
+if 'MY_BELLE2_DIR' in os.environ:
     os.chdir(os.environ['MY_BELLE2_DIR'])
 
 # if the release version is given as argument or environment variable take it from there
@@ -58,7 +58,7 @@ local_release = None
 release = None
 if len(sys.argv) == 2:
     release = sys.argv[1]
-elif os.environ.has_key('MY_BELLE2_RELEASE'):
+elif 'MY_BELLE2_RELEASE' in os.environ:
     release = os.environ['MY_BELLE2_RELEASE']
 
 # if central release version given:
@@ -66,7 +66,7 @@ if release:
 
     # check whether the central release exists
     if not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
-                         'releases', release)):
+                                      'releases', release)):
         sys.stderr.write('Error: No central release %s found.\n' % release)
         sys.exit(1)
 
@@ -76,11 +76,8 @@ if release:
 
         if local_release != release:
             sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s).\n'
-                              % (release, local_release))
-else:
-
-# if no central release version given:
-
+                             % (release, local_release))
+else:  # if no central release version given:
     # check whether we are in a release directory and take the release version from there
     if not os.path.isfile('.release'):
         sys.stderr.write('Error: Not in a release directory.\n')
@@ -105,33 +102,37 @@ if not os.access(os.path.join(get_var('BELLE2_EXTERNALS_DIR'), 'Makefile'),
     ext_version = get_var('BELLE2_EXTERNALS_DIR').rsplit(os.sep)[-1]
     require_system_python = ext_version < 'v00-05-00'
     own_python = sys.executable == os.path.join(os.environ['BELLE2_TOOLS'],
-            'virtualenv', 'bin', 'python')
+                                                'virtualenv', 'bin', 'python')
     if require_system_python and own_python:
-        sys.stderr.write('ERROR: The externals version of this release requires the system version of python.\n'
-                         )
-        sys.stderr.write(' ==> Start a new shell and setup the tools with the following command:\n'
-                         )
+        sys.stderr.write('ERROR: The externals version of this release requires the system version of python.\n')
+        sys.stderr.write(' ==> Start a new shell and setup the tools with the following command:\n')
         if csh:
             sys.stderr.write(' setenv BELLE2_SYSTEM_PYTHON 1\n')
             sys.stderr.write(' source %s/setup_belle2\n'
                              % os.environ['BELLE2_TOOLS'])
         else:
             sys.stderr.write(' BELLE2_SYSTEM_PYTHON=1 source %s/setup_belle2\n'
-                              % os.environ['BELLE2_TOOLS'])
+                             % os.environ['BELLE2_TOOLS'])
         sys.exit(1)
     elif not require_system_python and not own_python:
-        sys.stderr.write('ERROR: The externals version of this release requires the python version from the tools.\n'
-                         )
-        sys.stderr.write(' ==> Start a new shell and setup the tools with the following commands:\n'
-                         )
+        sys.stderr.write('ERROR: The externals version of this release requires the python version from the tools.\n')
+        sys.stderr.write(' ==> Start a new shell and setup the tools with the following commands:\n')
         if csh:
             sys.stderr.write(' unsetenv BELLE2_SYSTEM_PYTHON\n')
             sys.stderr.write(' source %s/setup_belle2\n'
                              % os.environ['BELLE2_TOOLS'])
         else:
             sys.stderr.write(' unset BELLE2_SYSTEM_PYTHON; source %s/setup_belle2\n'
-                              % os.environ['BELLE2_TOOLS'])
+                             % os.environ['BELLE2_TOOLS'])
         sys.exit(1)
+
+# check SConstruct is a symlink to site_scons/SConstruct
+if local_release and not os.path.islink('SConstruct'):
+    sys.stderr.write(
+        'ERROR: "SConstruct" should be a symbolic link to site_scons/SConstruct, but it doesn\'t exist or is a copy.\n')
+    sys.stderr.write('Please remove it and recreate the link with\n')
+    sys.stderr.write(' ln -s site_scons/SConstruct .\n')
+    sys.exit(1)
 
 # inform user about successful completion
 print 'echo "Environment setup for release: ${BELLE2_RELEASE}"'
@@ -154,4 +155,3 @@ try:
         sys.stderr.write('Error: Check of externals at %s failed.\n' % extdir)
 except:
     sys.stderr.write('Error: Check of externals at %s failed.\n' % extdir)
-
