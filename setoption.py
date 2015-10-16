@@ -13,7 +13,7 @@ options = ['debug', 'opt', 'intel', 'clang']
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
 Usage: setoption %s
-    
+
 Set up the environment for selected compiler options:
 
   debug : include debug symbols, no optimization
@@ -34,13 +34,16 @@ if len(sys.argv) != 2 or sys.argv[1] not in options:
 
 # get current setup variables
 release = None
-if os.environ.has_key('BELLE2_RELEASE_DIR'):
+if 'BELLE2_RELEASE_DIR' in os.environ:
     release = os.path.split(os.environ['BELLE2_RELEASE_DIR'])[-1]
 local_release = None
 local_dir = None
-if os.environ.has_key('BELLE2_LOCAL_DIR'):
+if 'BELLE2_LOCAL_DIR' in os.environ:
     local_release = os.environ['BELLE2_RELEASE']
     local_dir = os.environ['BELLE2_LOCAL_DIR']
+if 'BELLE2_ANALYSIS_DIR' in os.environ:
+    local_release = 'analysis'
+    local_dir = os.environ['BELLE2_ANALYSIS_DIR']
 
 # remove old release from the environment
 if release or local_release:
@@ -49,7 +52,7 @@ if release or local_release:
 # set new compilation option
 set_var('BELLE2_OPTION', sys.argv[1])
 set_var('BELLE2_SUBDIR', os.path.join(os.environ.get('BELLE2_ARCH'),
-        sys.argv[1]))
+                                      sys.argv[1]))
 
 # update environment with new
 if release or local_release:
