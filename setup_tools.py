@@ -219,7 +219,7 @@ def export_environment():
             print 'set SAVEOLDPWD=$owd'
             print 'set SAVEPWD=$PWD'
             print 'cd %s' % path
-            print 'source %s > /dev/null' % script
+            print 'source ./%s > /dev/null' % script
             print 'cd $SAVEPWD > /dev/null'
             print 'set owd=$SAVEOLDPWD'
             print 'unset SAVEPWD'
@@ -230,7 +230,7 @@ def export_environment():
             print 'SAVEOLDPWD=$OLDPWD'
             print 'SAVEPWD=$PWD'
             print 'cd %s' % path
-            print 'source %s > /dev/null' % script
+            print 'source ./%s > /dev/null' % script
             print 'cd $SAVEPWD > /dev/null'
             print 'OLDPWD=$SAVEOLDPWD'
             print 'unset SAVEPWD'
