@@ -12,6 +12,9 @@ if [ ! -d ${DIR}/src ]; then
   mkdir ${DIR}/src
 fi
 
+# make sure tar uses stdin
+unset TAPE
+
 # astyle
 if [ ! -f ${DIR}/astyle ]; then
   cd ${DIR}/src

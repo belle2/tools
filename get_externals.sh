@@ -15,6 +15,9 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   exit 0
 fi
 
+# make sure tar uses stdin
+unset TAPE
+
 # check number of arguments
 if [ $# -gt 2 ]; then
   echo "Usage: `basename $0` [version [system]]" 1>&2
@@ -43,15 +46,6 @@ DIR=${BELLE2_EXTERNALS_TOPDIR}/${VERSION}
 if [ -d ${DIR} ]; then
   echo "Error: The externals version ${VERSION} is already installed at ${BELLE2_EXTERNALS_TOPDIR}." 1>&2
   exit 1
-fi
-
-# check whether the given version is available
-if [ "${VERSION}" != "development" ]; then
-  svn list ${BELLE2_REPOSITORY}/tags/externals/${VERSION} > /dev/null
-  if [ "$?" != "0" ]; then
-    echo "Error: The externals version ${VERSION} does not exist." 1>&2
-    exit 1
-  fi
 fi
 
 # check whether the externals top directory exists and cd to it
@@ -115,7 +109,13 @@ else
   wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_src.tgz | tar xz
   RESULT=$?
   if [ "${RESULT}" -ne "0" ]; then
-    svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
+    # check whether the given version is available
+    svn list --non-interactive ${BELLE2_REPOSITORY}/tags/externals/${VERSION} > /dev/null
+    if [ "$?" != "0" ]; then
+      echo "Error: The externals version ${VERSION} does not exist." 1>&2
+      exit 1
+    fi
+    svn co --non-interactive ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
   fi
 fi
 
