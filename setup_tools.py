@@ -108,7 +108,10 @@ def unsetup_release(location):
     remove_path('PATH', os.path.join(location, 'bin', subdir))
     remove_path(lib_path_name, os.path.join(location, 'lib', subdir))
     remove_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
-    # for root6
+    # for root6, add both the location and the include folder, otherwise
+    # ROOT's header lookup might perform a fallback to the headers at the
+    # compile location
+    remove_path('ROOT_INCLUDE_PATH', location)
     remove_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
 
 
@@ -121,7 +124,10 @@ def setup_release(location):
     add_path('PATH', os.path.join(location, 'bin', subdir))
     add_path(lib_path_name, os.path.join(location, 'lib', subdir))
     add_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
-    # for root6
+    # for root6, add both the location and the include folder, otherwise
+    # ROOT's header lookup might perform a fallback to the headers at the
+    # compile location
+    add_path('ROOT_INCLUDE_PATH', location)
     add_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
 
 
