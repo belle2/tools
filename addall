@@ -43,7 +43,7 @@ if [ "${RELEASE}" = "head" ]; then
 else
   URL=${BELLE2_REPOSITORY}/releases/software/${RELEASE}/
 fi
-PACKAGES=`svn list ${URL} | grep -v "daq/\|eutel/\|topcaf/"`
+PACKAGES=`svn list ${URL} | grep -v "daq/\|eutel/\|topcaf/\|testbeam/"`
 
 # loop over packages
 for ENTRY in ${PACKAGES}; do
