@@ -23,7 +23,7 @@ fi
 
 # set architecture, default option and sub directory name
 export BELLE2_ARCH=`uname -s`_`uname -m`
-export BELLE2_OPTION=debug
+export BELLE2_OPTION=opt
 export BELLE2_SUBDIR=${BELLE2_ARCH}/${BELLE2_OPTION}
 export BELLE2_EXTERNALS_OPTION=opt
 export BELLE2_EXTERNALS_SUBDIR=${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
