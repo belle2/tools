@@ -52,8 +52,6 @@ setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
 setenv BELLE2_REPOSITORY https://belle2.cc.kek.jp/svn
 
 # define alias for release setup
-set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
-rm -f $BELLE2_TMP
 alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
 
 # define alias for analysis setup
@@ -110,7 +108,8 @@ endif
 
 # check for a newer version
 if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
-  (svn status -u -q --non-interactive ${BELLE2_TOOLS} > ${BELLE2_TMP}) >& /dev/null
+  set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
+  (svn status -u -q --non-interactive ${BELLE2_TOOLS} >> ${BELLE2_TMP}) >& /dev/null
   if ( $? != 0 ) then
     echo
     echo "Warning: Could not access svn in non-interactive mode."
