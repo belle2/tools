@@ -270,7 +270,7 @@ def update_environment(release, local_release, local_dir):
             extdir = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'externals',
                                   version)
             if not os.path.isdir(extdir):
-                sys.stderr.write('The externals version %s does not exist.'
+                sys.stderr.write('The externals version %s does not exist. '
                                  'You can use \'get_externals.sh\' to install them.\n'
                                  % version)
                 sys.exit(1)
