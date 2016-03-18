@@ -34,37 +34,25 @@ export BELLE2_REPOSITORY=https://belle2.cc.kek.jp/svn
 # define function for release setup
 function setuprel
 {
-  tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  ${BELLE2_TOOLS}/setuprel.py $* >> $tmp
-  . $tmp
-  rm -f $tmp
+  eval "`${BELLE2_TOOLS}/setuprel.py $* || echo 'return 1'`"
 }
 
 # define function for analysis setup
 function setupana
 {
-  tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  ${BELLE2_TOOLS}/setupana.py $* >> $tmp
-  . $tmp
-  rm -f $tmp
+  eval "`${BELLE2_TOOLS}/setupana.py $* || echo 'return 1'`"
 }
 
 # define function for option selection
 function setoption
 {
-  tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  ${BELLE2_TOOLS}/setoption.py $* >> $tmp
-  . $tmp
-  rm -f $tmp
+  eval "`${BELLE2_TOOLS}/setoption.py $* || echo 'return 1'`"
 }
 
 # define function for externals option selection
 function setextoption
 {
-  tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  ${BELLE2_TOOLS}/setextoption.py $* >> $tmp
-  . $tmp
-  rm -f $tmp
+  eval "`${BELLE2_TOOLS}/setextoption.py $* || echo 'return 1'`"
 }
 
 # set scons library directory
