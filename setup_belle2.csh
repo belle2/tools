@@ -49,7 +49,9 @@ setenv BELLE2_EXTERNALS_OPTION opt
 setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
 
 # set location of Belle II code repository
-setenv BELLE2_REPOSITORY https://belle2.cc.kek.jp/svn
+setenv BELLE2_REPOSITORY ssh://git@stash.desy.de:7999/b2
+# The default is access via ssh.
+# For access via http BELLE2_REPOSITORY can be set to https://$USER@stash.desy.de/scm/b2
 
 # define alias for release setup
 alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
@@ -63,32 +65,6 @@ alias setoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setoption.py"
 # define alias for externals option selection
 alias setextoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setextoption.py"
 
-# set scons library directory
-setenv SCONS_LIB_DIR ${BELLE2_TOOLS}/lib
-
-# setup own gcc
-if ( ! ${?BELLE2_SYSTEM_COMPILER} ) then
-  if ( -f ${BELLE2_TOOLS}/gcc/bin/gcc ) then
-    setenv PATH ${BELLE2_TOOLS}/gcc/bin:${PATH}
-    if ( ${?LD_LIBRARY_PATH} ) then
-      setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/gcc/lib:${BELLE2_TOOLS}/gcc/lib64:${LD_LIBRARY_PATH}
-    else
-      setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/gcc/lib:${BELLE2_TOOLS}/gcc/lib64
-    endif
-  endif
-endif
-
-# setup own python
-if ( ! ${?BELLE2_SYSTEM_PYTHON} ) then
-  if ( -f ${BELLE2_TOOLS}/virtualenv/bin/activate ) then
-    setenv PATH ${BELLE2_TOOLS}/python/bin:${PATH}
-    setenv LD_LIBRARY_PATH ${BELLE2_TOOLS}/python/lib:${LD_LIBRARY_PATH}
-    set _SAVE_PROMPT="$prompt"
-    source ${BELLE2_TOOLS}/virtualenv/bin/activate.csh
-    set prompt="$_SAVE_PROMPT"
-  endif
-endif
-
 # make PATH changes active
 rehash
 
@@ -99,30 +75,37 @@ echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 python -c 'import sys; assert(sys.hexversion>0x02070600)' >& /dev/null
 if ( $? != 0 ) then
   echo "Warning: Your Python version is too old, basf2 will not work properly." 
-  if ( ! ${?BELLE2_SYSTEM_PYTHON} ) then
-    echo "         Please run ${BELLE2_TOOLS}/install.sh to install a newer version, then source setup_belle2 again." 
-  else
-    echo "         Please unset BELLE2_SYSTEM_PYTHON and source setup_belle2 again." 
-  endif
 endif
 
 # check for a newer version
 if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
   set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
-  (svn status -u -q --non-interactive ${BELLE2_TOOLS} >> ${BELLE2_TMP}) >& /dev/null
+  git fetch --dry-run >& ${BELLE2_TMP}
   if ( $? != 0 ) then
     echo
-    echo "Warning: Could not access svn in non-interactive mode."
+    echo "Warning: Could not access remote git repository in non-interactive mode."
     echo "-------> Please make sure you can successfully run the following command"
     echo "         WITHOUT interactive input:"
     echo
-    echo "           svn list ${BELLE2_REPOSITORY}"
+    echo "           git fetch --dry-run"
     echo
-  else if ( `cat $BELLE2_TMP | cut -c 9 | grep \* | wc -l` != 0 ) then
-    echo
-    echo "WARNING: The version of the tools you are using is outdated."
-    echo "-------> Please update the tools and source the new setup_belle2 script."
-    echo
+  else
+    set FETCH_CHECK=`cat $BELLE2_TMP | wc -l`
+    set LOCAL=`git rev-parse @`
+    set REMOTE=`git rev-parse @\{u\}`
+    if ( ${FETCH_CHECK} != 0 || ${LOCAL} != ${REMOTE} ) then
+      echo
+      echo "WARNING: The version of the tools you are using is outdated."
+      echo "-------> Please update the tools with"
+      echo
+      echo "           git pull --rebase"
+      echo
+      echo "         and source the new setup_belle2 script."
+      echo
+    endif
+    unset FETCH_CHECK
+    unset LOCAL
+    unset REMOTE
   endif
   rm -f $BELLE2_TMP
 endif
