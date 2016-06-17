@@ -3,24 +3,18 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` package [\"release\"(=default)/\"head\"/tag]"
+  echo "Usage: `basename $0` package"
   echo
   echo "- This command adds the source code of the given package from the code"
   echo "  repository to the local release directory."
   echo "  It has to be called in the local release directory."
-  echo "- By default the source code corresponding to the version of the local"
-  echo "  release is obtained."
-  echo "- The latest code version can be obtained instead, if \"head\" is given"
-  echo "  as second argument."
-  echo "- A particular tagged version of the package's source code can be obtained"
-  echo "  by using the tag name as second argument."
   echo
   exit 0
 fi
 
 # check number of arguments
-if [ $# -lt 1 -o $# -gt 2 ]; then
-  echo "Usage: `basename $0` package [\"release\"(=default)/\"head\"/tag]" 1>&2
+if [ $# -ne 1 ]; then
+  echo "Usage: `basename $0` package" 1>&2
   exit 1
 fi
 
@@ -30,41 +24,30 @@ if [ -d ${PACKAGE} ]; then
   echo "Error: The directory ${PACKAGE} already exists." 1>&2
   exit 1
 fi
-svn list ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
-if [ "$?" != "0" ]; then
-  echo "Error: The package ${PACKAGE} does not exist." 1>&2
-  exit 1
-fi
-TAG=release
-if [ $# -gt 1 ]; then
-  TAG=$2
-  if [ "${TAG}" != "head" -a "${TAG}" != "release" ]; then
-    svn list ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} &> /dev/null
-    if [ "$?" != "0" ]; then
-      echo "Error: The tag ${TAG} does not exist." 1>&2
-      exit 1
+
+# update sparse-checkout file
+TMP=`mktemp /tmp/belle2_tmp.XXXX`
+ALL=0
+DONE=0
+while read -r LINE; do
+  if [ "${LINE}" == "*" ]; then
+    ALL=1
+  fi
+  if [ "${LINE}" == "!/${PACKAGE}" ]; then
+    if [ ${ALL} == 1 ]; then
+      DONE=1
+    fi
+  else
+    echo "${LINE}" >> ${TMP}
+    if [ "${LINE}" == "/${PACKAGE}" ]; then
+      DONE=1
     fi
   fi
+done < .git/info/sparse-checkout
+if [ ${DONE} == 0 ]; then
+  echo "/${PACKAGE}" >> ${TMP}
 fi
+mv -f ${TMP} .git/info/sparse-checkout
 
 # check out package
-if [ "${TAG}" = "release" ]; then
-  if [ ! -f .release ]; then
-    echo "Error: Not in a release directory." 1>&2
-    exit 1
-  fi
-  svn up ${PACKAGE}
-  if [ "$?" == "0" ]; then
-    echo "Added release version of ${PACKAGE}."
-  fi
-elif [ "${TAG}" = "head" ]; then
-  svn co ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${PACKAGE}
-  if [ "$?" == "0" ]; then
-    echo "Added head version of ${PACKAGE}."
-  fi
-else
-  svn co ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} ${PACKAGE}
-  if [ "$?" == "0" ]; then
-    echo "Added tag ${TAG} of ${PACKAGE}."
-  fi
-fi
+git checkout
