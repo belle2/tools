@@ -33,6 +33,9 @@ export BELLE2_REPOSITORY=ssh://git@stash.desy.de:7999/b2
 # The default is access via ssh.
 # For access via http BELLE2_REPOSITORY can be set to https://$USER@stash.desy.de/scm/b2
 
+# list of packages that are excluded by default
+export BELLE2_EXCLUDE_PACKAGES="daq eutel topcaf testbeam"
+
 # define function for release setup
 function setuprel
 {

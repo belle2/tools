@@ -52,15 +52,13 @@ fi
 git clone --no-checkout --config pull.rebase=true --config core.sparsecheckout=true ${REPOSITORY} ${DIR}
 cd ${DIR}
 if [ "${RELEASE}" == "head" ]; then
-  cat - >> .git/info/sparse-checkout <<EOF
-*
-!/daq
-!/eutel
-!/testbeam
-!/topcaf
-EOF
+  echo "*" >> .git/info/sparse-checkout
+  for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
+    echo "!/${PACKAGE}" >> .git/info/sparse-checkout
+  done
 else
-  echo >> .git/info/sparse-checkout
+  echo "!/.externals" >> .git/info/sparse-checkout
+  echo "!/site_scons" >> .git/info/sparse-checkout
   ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/.externals .
   ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 fi

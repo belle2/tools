@@ -53,6 +53,9 @@ setenv BELLE2_REPOSITORY ssh://git@stash.desy.de:7999/b2
 # The default is access via ssh.
 # For access via http BELLE2_REPOSITORY can be set to https://$USER@stash.desy.de/scm/b2
 
+# list of packages that are excluded by default
+setenv BELLE2_EXCLUDE_PACKAGES "daq eutel topcaf testbeam"
+
 # define alias for release setup
 alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
 
