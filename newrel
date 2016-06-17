@@ -11,7 +11,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "- If the basis for the code development should be a particular release,"
   echo "  the version can be given as second argument."
   echo "- If no second argument is given, the latest version of the code"
-  echo "  (head of svn trunk) is taken."
+  echo "  (head of git master) is taken."
   echo
   exit 0
 fi
@@ -22,10 +22,11 @@ if [ $# -lt 1 -o $# -gt 2 ]; then
   exit 1
 fi
 
-# check svn access
-svn list ${BELLE2_REPOSITORY} > /dev/null
+# check remote git access
+REPOSITORY=${BELLE2_REPOSITORY}/software.git
+git ls-remote ${REPOSITORY} master > /dev/null
 if [ "$?" != "0" ]; then
-  echo "Error: Could not access the svn repository." 1>&2
+  echo "Error: Could not access the remote git repository." 1>&2
   exit 1
 fi
 
@@ -34,7 +35,7 @@ DIR=$1
 RELEASE=head
 if [ $# -gt 1 ]; then
   RELEASE=$2
-  svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE} > /dev/null
+  git ls-remote --exit-code ${REPOSITORY} ${RELEASE} > /dev/null
   if [ "$?" != "0" ]; then
     echo "Error: The release ${RELEASE} does not exist." 1>&2
     exit 1
@@ -46,18 +47,27 @@ if [ -d ${DIR} ]; then
   echo "Error: The directory ${DIR} already exists." 1>&2
   exit 1
 fi
-mkdir ${DIR}
-echo ${RELEASE} > ${DIR}/.release
 
-# check out base directory and site-scons
-if [ "${RELEASE}" = "head" ]; then
-  svn co --depth=empty ${BELLE2_REPOSITORY}/trunk/software ${DIR}
-else
-  svn co --depth=empty ${BELLE2_REPOSITORY}/releases/software/${RELEASE} ${DIR}
-fi
+# clone the repository and checkout site-scons
+git clone --no-checkout --config pull.rebase=true --config core.sparsecheckout=true ${REPOSITORY} ${DIR}
 cd ${DIR}
-svn up .externals
-svn up site_scons
+if [ "${RELEASE}" == "head" ]; then
+  cat - >> .git/info/sparse-checkout <<EOF
+*
+!/daq
+!/eutel
+!/testbeam
+!/topcaf
+EOF
+  git checkout master
+else
+  cat - >> .git/info/sparse-checkout <<EOF
+/.externals
+/site_scons
+EOF
+  git checkout ${RELEASE}
+fi
+echo ${RELEASE} > .release
 ln -s site_scons/SConstruct .
 
 # inform user about successful completion
