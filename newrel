@@ -23,8 +23,7 @@ if [ $# -lt 1 -o $# -gt 2 ]; then
 fi
 
 # check remote git access
-REPOSITORY=${BELLE2_REPOSITORY}/software.git
-git ls-remote ${REPOSITORY} master > /dev/null
+git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} master > /dev/null
 if [ "$?" != "0" ]; then
   echo "Error: Could not access the remote git repository." 1>&2
   exit 1
@@ -35,7 +34,7 @@ DIR=$1
 RELEASE=head
 if [ $# -gt 1 ]; then
   RELEASE=$2
-  git ls-remote --exit-code ${REPOSITORY} ${RELEASE} > /dev/null
+  git ls-remote --exit-code ${BELLE2_SOFTWARE_REPOSITORY} ${RELEASE} > /dev/null
   if [ "$?" != "0" ]; then
     echo "Error: The release ${RELEASE} does not exist." 1>&2
     exit 1
@@ -49,16 +48,15 @@ if [ -d ${DIR} ]; then
 fi
 
 # clone the repository and checkout site-scons
-git clone --no-checkout --config pull.rebase=true --config core.sparsecheckout=true ${REPOSITORY} ${DIR}
+git clone --no-checkout --config pull.rebase=true --config core.sparsecheckout=true ${BELLE2_SOFTWARE_REPOSITORY} ${DIR}
 cd ${DIR}
 if [ "${RELEASE}" == "head" ]; then
-  echo "*" >> .git/info/sparse-checkout
+  echo "/*" >> .git/info/sparse-checkout
   for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
     echo "!/${PACKAGE}" >> .git/info/sparse-checkout
   done
 else
-  echo "!/.externals" >> .git/info/sparse-checkout
-  echo "!/site_scons" >> .git/info/sparse-checkout
+  touch .git/info/sparse-checkout
   ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/.externals .
   ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 fi
