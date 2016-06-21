@@ -28,13 +28,36 @@ export BELLE2_SUBDIR=${BELLE2_ARCH}/${BELLE2_OPTION}
 export BELLE2_EXTERNALS_OPTION=opt
 export BELLE2_EXTERNALS_SUBDIR=${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
 
-# set location of Belle II code repository
-export BELLE2_REPOSITORY=ssh://git@stash.desy.de:7999/b2
-# The default is access via ssh.
-# For access via http BELLE2_REPOSITORY can be set to https://$USER@stash.desy.de/scm/b2
+# set user name
+if [ -z "${BELLE2_USER}" ]; then
+  export BELLE2_USER=${USER}
+  if [ -z "${BELLE2_USER}" ]; then
+    export BELLE2_USER=`id -nu` 
+  fi
+fi
+
+# set location of Belle II code repositories
+if [ -z "${BELLE2_GIT_SERVER}" ]; then
+  if [ "${BELLE2_GIT_ACCESS}" == "ssh" -o "${BELLE2_GIT_ACCESS}" != "http" -a -f ${HOME}/.ssh/id_rsa.pub ]; then
+    export BELLE2_GIT_SERVER=ssh://git@stash.desy.de:7999
+  else
+    export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm
+  fi
+fi
+if [ -z "${BELLE2_SOFTWARE_REPOSITORY}" ]; then
+  export BELLE2_SOFTWARE_REPOSITORY=${BELLE2_GIT_SERVER}/b2/software.git
+fi
+if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" ]; then
+  export BELLE2_EXTERNLAS_REPOSITORY=${BELLE2_GIT_SERVER}/b2/externals.git
+fi
+if [ -z "${BELLE2_USER_REPOSITORY}" ]; then
+  export BELLE2_USER_REPOSITORY=${BELLE2_GIT_SERVER}/b2u/${BELLE2_USER}.git
+fi
 
 # list of packages that are excluded by default
-export BELLE2_EXCLUDE_PACKAGES="daq eutel topcaf testbeam"
+if [ -z "${BELLE2_EXCLUDE_PACKAGES}" ]; then
+  export BELLE2_EXCLUDE_PACKAGES="daq eutel topcaf testbeam"
+fi
 
 # define function for release setup
 function setuprel
