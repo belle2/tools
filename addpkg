@@ -26,28 +26,12 @@ if [ -d ${PACKAGE} ]; then
 fi
 
 # update sparse-checkout file
-TMP=`mktemp /tmp/belle2_tmp.XXXX`
-ALL=0
-DONE=0
-while read -r LINE; do
-  if [ "${LINE}" == "*" ]; then
-    ALL=1
-  fi
-  if [ "${LINE}" == "!/${PACKAGE}" ]; then
-    if [ ${ALL} == 1 ]; then
-      DONE=1
-    fi
-  else
-    echo "${LINE}" >> ${TMP}
-    if [ "${LINE}" == "/${PACKAGE}" ]; then
-      DONE=1
-    fi
-  fi
-done < .git/info/sparse-checkout
-if [ ${DONE} == 0 ]; then
-  echo "/${PACKAGE}" >> ${TMP}
+ALL=`grep -c "^/\*$" .git/info/sparse-checkout`
+if [ "$ALL" -ne "0" ]; then
+  sed -i "/\!\/${PACKAGE}/d" .git/info/sparse-checkout
+else
+  echo ${PACKAGE} >> .git/info/sparse-checkout
 fi
-mv -f ${TMP} .git/info/sparse-checkout
 
 # check out package
 git checkout
