@@ -40,33 +40,25 @@ if [ ! -f .release ]; then
 fi
 RELEASE=`cat .release`
 if [ "${RELEASE}" = "head" ]; then
-  PACKAGES=`svn list ${BELLE2_REPOSITORY}/trunk/software/`
-else
-  PACKAGES=`svn list ${BELLE2_REPOSITORY}/releases/software/${RELEASE}/`
+  RELEASE="master"
 fi
 
 # loop over packages
+PACKAGES=`git ls-tree --name-only ${RELEASE} | grep -v "^\."`
 PACKAGE_LIST=""
-for ENTRY in ${PACKAGES}; do
-  PACKAGE=`echo ${ENTRY} | grep "/$"`
+for PACKAGE in ${PACKAGES}; do
   if [ -n "${PACKAGE}" ]; then
-    PACKAGE=`echo ${PACKAGE} | sed "s;/$;;"`
     if [ ${LIST_LOCAL} = no -a -d ${PACKAGE} ]; then
       continue
     fi
     if [ ${LIST_LIBRARIANS} = yes ]; then
-      if [ "${RELEASE}" = "head" ]; then
-        LIBRARIANS=`svn propget belle2:librarians ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}`
-      else
-        LIBRARIANS=`svn propget belle2:librarians ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}`
-      fi
-      echo "${PACKAGE} (${LIBRARIANS})" | tr "\n" " "
-      echo
+      LIBRARIANS=`git show ${RELEASE}:${PACKAGE}/.librarians 2> /dev/null | tr "\n" "," | sed "s/,$//"`
+      echo "${PACKAGE} (${LIBRARIANS})"
     else
       PACKAGE_LIST="${PACKAGE_LIST} ${PACKAGE}"
     fi
   fi
 done
-if [ ${LIST_LIBRARIANS} = no ]; then
+if [ -n "${PACKAGE_LIST}" ]; then
   echo ${PACKAGE_LIST}
 fi
