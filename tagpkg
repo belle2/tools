@@ -27,28 +27,28 @@ fi
 
 # determine package name
 PACKAGE=`pwd | awk -F/ '{print $NF}'`
-svn list ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
-if [ "$?" != "0" ]; then
+if [ ! -f  ../.release ]; then
   echo "Error: Not in a package directory." 1>&2
   exit 1
 fi
 
-# check whether we are at the head of the trunk and there are no changes
-svn info -R | grep ^URL | grep -v ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} &> /dev/null
-if [ "$?" = "0" ]; then
-  echo "Error: Not at the trunk head. Use updatepkg head." 1>&2
-  exit 1
-fi
-STATUS=`svn status -u -q --ignore-externals --xml |grep "item=\"modified\"" | wc -l`
-if [ "$STATUS" != "0" ]; then
+# check whether there are no changes
+git diff-files --quiet
+if [ "$?" != "0" ]; then
   echo "Error: There are modified files." 1>&2
   exit 1
 fi
 
 # determine revision of previous tag
-DIFFREV=`svn log ${BELLE2_REPOSITORY}/tags/software/${PACKAGE} 2>/dev/null | head -2 | tail -1 | awk '{print $1}'`
-if [ "${DIFFREV}" = "" ]; then
-  DIFFREV=r1
+DIFFREV=`git for-each-ref --sort=taggerdate --format '%(refname)' refs/tags/${PACKAGE}-* | tail -1`
+if [ "${DIFFREV}" != "" ]; then
+  DIFFREV=${DIFFREV}..
+fi
+
+# report changes with respect to previous tag
+git log ${DIFFREV} .
+if [ "$?" != "0" ]; then
+  exit 1
 fi
 
 # read arguments
@@ -59,7 +59,8 @@ fi
 
 # make tag and exit if tag name is explicitly given
 if [ "${TAG}" != "major" -a "${TAG}" != "minor" -a "${TAG}" != "patch" ]; then
-  svn copy --parents ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
+  echo "Please enter the summary of changes and then hit CTRL-D:"
+  git tag -F - ${PACKAGE}-${TAG}
   if [ "$?" == "0" ]; then
     echo "Committed tag ${TAG} of ${PACKAGE}."
   fi
@@ -67,36 +68,36 @@ if [ "${TAG}" != "major" -a "${TAG}" != "minor" -a "${TAG}" != "patch" ]; then
 fi
 
 # determine last tag
-LASTTAG=`svn list ${BELLE2_REPOSITORY}/tags/software/${PACKAGE} 2> /dev/null | grep -e "v[0-9][0-9]-[0-9][0-9]-[0-9][0-9]" |tail -1`
+LASTTAG=`git for-each-ref --sort=taggerdate --format '%(refname)' refs/tags/${PACKAGE}-??-??-?? | sed "s;refs/tags/${PACKAGE}-;;g" |tail -1`
 if [ "${LASTTAG}" = "" ]; then
-  LASTTAG=v00-00-00
+  LASTTAG=00-00-00
 fi
 
 # determine version numbers
 declare -i PATCH
-if [ "`echo ${LASTTAG} | cut -c 8`" = "0" ]; then
-  PATCH=`echo ${LASTTAG} | cut -c 9`
+if [ "`echo ${LASTTAG} | cut -c 7`" = "0" ]; then
+  PATCH=`echo ${LASTTAG} | cut -c 8`
 else
-  PATCH=`echo ${LASTTAG} | cut -c 8,9`
+  PATCH=`echo ${LASTTAG} | cut -c 7,8`
 fi
 if [ "${TAG}" = "patch" ]; then
   let PATCH+=1
 fi
 declare -i MINOR
-if [ "`echo ${LASTTAG} | cut -c 5`" = "0" ]; then
-  MINOR=`echo ${LASTTAG} | cut -c 6`
+if [ "`echo ${LASTTAG} | cut -c 4`" = "0" ]; then
+  MINOR=`echo ${LASTTAG} | cut -c 5`
 else
-  MINOR=`echo ${LASTTAG} | cut -c 5,6`
+  MINOR=`echo ${LASTTAG} | cut -c 4,5`
 fi
 if [ "${TAG}" = "minor" ]; then
   let MINOR+=1
   let PATCH=0
 fi
 declare -i MAJOR
-if [ "`echo ${LASTTAG} | cut -c 2`" = "0" ]; then
-  MAJOR=`echo ${LASTTAG} | cut -c 3`
+if [ "`echo ${LASTTAG} | cut -c 1`" = "0" ]; then
+  MAJOR=`echo ${LASTTAG} | cut -c 2`
 else
-  MAJOR=`echo ${LASTTAG} | cut -c 2,3`
+  MAJOR=`echo ${LASTTAG} | cut -c 1,2`
 fi
 if [ "${TAG}" = "major" ]; then
   let MAJOR+=1
@@ -105,15 +106,11 @@ if [ "${TAG}" = "major" ]; then
 fi
 
 # make tag
-TAG=`printf "v%02d-%02d-%02d" ${MAJOR} ${MINOR} ${PATCH}`
-echo "committing tag ${TAG} of package ${PACKAGE}"
-svn copy --parents ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE} ${BELLE2_REPOSITORY}/tags/software/${PACKAGE}/${TAG} -m "tag ${TAG} of package ${PACKAGE}"
+TAG=`printf "%02d-%02d-%02d" ${MAJOR} ${MINOR} ${PATCH}`
+echo "Please enter the summary of changes and then hit CTRL-D:"
+git tag -F - ${PACKAGE}-${TAG}
 if [ "$?" == "0" ]; then
   echo "Committed tag ${TAG} of ${PACKAGE}."
 else
   exit 1
 fi
-
-# report changes
-echo "The changes with respect to the previous tag are:"
-svn log -${DIFFREV}:HEAD ${BELLE2_REPOSITORY}/trunk/software/${PACKAGE}
