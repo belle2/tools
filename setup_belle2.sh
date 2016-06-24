@@ -92,6 +92,7 @@ fi
 
 # check for a newer version
 if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
+  pushd ${BELLE2_TOOLS} > /dev/null
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
   git fetch --dry-run >> $tmp 2>&1
   if [ $? != 0 ]; then
@@ -118,4 +119,5 @@ if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
     fi
   fi
   rm -f $tmp
+  popd  > /dev/null
 fi

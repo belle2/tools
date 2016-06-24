@@ -105,6 +105,7 @@ endif
 
 # check for a newer version
 if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
+  pushd ${BELLE2_TOOLS} > /dev/null
   set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
   git fetch --dry-run >& ${BELLE2_TMP}
   if ( $? != 0 ) then
@@ -134,4 +135,5 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
     unset REMOTE
   endif
   rm -f $BELLE2_TMP
+  popd  > /dev/null
 endif
