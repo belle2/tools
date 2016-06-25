@@ -6,30 +6,25 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "Usage: `basename $0` directory release [username]"
   echo
   echo "- This command creates a local directory with the given name"
-  echo "  for the development of analysis modules."
+  echo "  for the development of analysis code."
   echo "  It also prepares the build system and adds the analysis"
-  echo "  directory to svn."
-  echo "- The directory name can contain multiple levels to organize"
-  echo "  the analysis code in svn."
+  echo "  directory to git."
   echo "- The second argument specifies the central release on which"
   echo "  the analysis should be based."
-  echo "- The optional third argument can be used to specify an svn user"
-  echo "  name if it differs from the local user name."
   echo
   exit 0
 fi
 
 # check number of arguments
-if [ $# -lt 2 -o $# -gt 3 ]; then
-  echo "Usage: `basename $0` directory release [username]" 1>&2
+if [ $# -ne 2 ]; then
+  echo "Usage: `basename $0` directory release" 1>&2
   exit 1
 fi
 
 # read arguments
 DIR=$1
-LOCAL_DIR=`basename ${DIR}`
-if [ -d ${LOCAL_DIR} ]; then
-  echo "Error: The directory ${LOCAL_DIR} already exists." 1>&2
+if [ -d ${DIR} ]; then
+  echo "Error: The directory ${DIR} already exists." 1>&2
   exit 1
 fi
 RELEASE=$2
@@ -37,48 +32,53 @@ if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
   echo "Error: The central release ${RELEASE} does not exist." 1>&2
   exit 1
 fi
-USERNAME=$USER
-if [ $# -gt 2 ]; then
-  USERNAME=$3
-fi
 
-# check svn access
-svn list ${BELLE2_REPOSITORY} > /dev/null
+# check git access
+git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} master > /dev/null
 if [ "$?" != "0" ]; then
-  echo "Error: Could not access the svn repository." 1>&2
+  echo "Error: Could not access the git server." 1>&2
   exit 1
 fi
 
-# check whether this analysis directory already exists in svn
-svn list ${BELLE2_REPOSITORY}/user/${USERNAME}/${DIR} &> /dev/null
-if [ "$?" == "0" ]; then
-  echo "Error: The analysis directory ${DIR} already exists in svn." 1>&2
+# check whether this analysis git repository already exists
+ANALYSIS_NAME=${BELLE2_USER}_${DIR}
+ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+git ls-remote --exit-code ${ANALYSIS_REPOSITORY} master &> /dev/null
+if [ "$?" = "0" ]; then
+  echo "Error: The analysis git repository ${DIR} already exists." 1>&2
   exit 1
 fi
 
-# create analysis directory in svn
-svn mkdir --parents -m "new analysis directory ${DIR}" ${BELLE2_REPOSITORY}/user/${USERNAME}/${DIR}
-if [ "$?" != "0" ]; then
-  echo "Error: The creation of the analysis directory ${DIR} for user ${USERNAME} in svn failed." 1>&2
-  exit 1
-fi
-
-# create local analysis directory
-svn co ${BELLE2_REPOSITORY}/user/${USERNAME}/${DIR}
-if [ "$?" != "0" ]; then
-  echo "Error: The checkout of the analysis directory ${DIR} for user ${USERNAME} failed." 1>&2
-  exit 1
+# create analysis git repository
+echo "Enter your DESY password to create your analysis directory on the stash server."
+wget --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --header="Content-Type: application/json" --post-data='{"name":"'${ANALYSIS_NAME}'"}' "https://stash.desy.de/rest/api/1.0/projects/${BELLE2_ANALYSES_PROJECT}/repos/"
+if [ "$?" = "0" ]; then
+  REMOTE_EXISTS=1
+  git clone ${ANALYSIS_REPOSITORY} ${DIR}
+  cd ${DIR}
+else
+  REMOTE_EXISTS=0
+  mkdir ${DIR}
+  cd ${DIR}
+  git init
+  git remote add origin ${ANALYSIS_REPOSITORY}
 fi
 
 # get site-scons and write release version to .analysis
-pushd . > /dev/null
-cd ${LOCAL_DIR}
 ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 ln -s site_scons/SConstruct .
 echo ${RELEASE} > .analysis
-svn add .analysis
-popd > /dev/null
+
+# commit to git
+echo site_scons > .gitignore
+echo SConstruct >> .gitignore
+git add .analysis .gitignore
+git commit -a -m "Analysis ${DIR} by ${BELLE2_USER}"
+if [ "${REMOTE_EXISTS}" = "1" ]; then
+  git push origin master
+fi
 
 # inform user about successful completion
+echo
 echo "New analysis directory created for ${RELEASE} release: ${DIR}"
 echo "-> change to the new directory and set up the environment: cd ${DIR}; setupana"

@@ -50,8 +50,8 @@ fi
 if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" ]; then
   export BELLE2_EXTERNLAS_REPOSITORY=${BELLE2_GIT_SERVER}/b2/externals.git
 fi
-if [ -z "${BELLE2_USER_REPOSITORY}" ]; then
-  export BELLE2_USER_REPOSITORY=${BELLE2_GIT_SERVER}/b2u/${BELLE2_USER}.git
+if [ -z "${BELLE2_ANALYSES_PROJECT}" ]; then
+  export BELLE2_ANALYSES_PROJECT=b2a
 fi
 
 # list of packages that are excluded by default

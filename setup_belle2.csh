@@ -70,8 +70,8 @@ endif
 if ( ! ${?BELLE2_EXTERNALS_REPOSITORY} ) then
   setenv BELLE2_EXTERNALS_REPOSITORY ${BELLE2_GIT_SERVER}/b2/externals.git
 endif
-if ( ! ${?BELLE2_USER_REPOSITORY} ) then
-  setenv BELLE2_USER_REPOSITORY ${BELLE2_GIT_SERVER}/b2u/${BELLE2_USER}.git
+if ( ! ${?BELLE2_ANALYSES_PROJECT} ) then
+  setenv BELLE2_ANALYSES_PROJECT b2a
 endif
 
 # list of packages that are excluded by default

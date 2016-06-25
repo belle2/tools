@@ -22,30 +22,27 @@ fi
 
 # read arguments
 DIR=$1
-LOCAL_DIR=`basename ${DIR}`
-if [ -d ${LOCAL_DIR} ]; then
+if [ -d ${DIR} ]; then
   echo "Error: The directory ${LOCAL_DIR} already exists." 1>&2
   exit 1
 fi
-USERNAME=$USER
+USERNAME=$BELLE2_USER
 if [ $# -gt 1 ]; then
   USERNAME=$2
 fi
-SVNDIR=/user/${USERNAME}/${DIR}
-if [ `echo ${DIR} | cut -c 1` = "/" ]; then
-  SVNDIR=${DIR}
-fi
 
 
-# verify that the svn directory exists and is an analysis directory
-svn list ${BELLE2_REPOSITORY}${SVNDIR} >& /dev/null
+# verify that the git repository exists and is an analysis repository
+ANALYSIS_NAME=${BELLE2_USER}_${DIR}
+ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+git ls-remote --exit-code ${ANALYSIS_REPOSITORY} master &> /dev/null
 if [ "$?" != "0" ]; then
-  echo "Error: The svn directory ${SVNDIR} does not exist." 1>&2
+  echo "Error: The git repository ${ANALYSIS_NAME} does not exist." 1>&2
   exit 1
 fi
-RELEASE=`svn cat ${BELLE2_REPOSITORY}${SVNDIR}/.analysis 2> /dev/null`
+RELEASE=`git archive --remote=${ANALYSIS_REPOSITORY} master .analysis | tar -xO 2> /dev/null`
 if [ "$?" != "0" ]; then
-  echo "Error: The svn directory ${SVNDIR} is not an analysis directory." 1>&2
+  echo "Error: The git repository ${ANALYSIS_NAME} is not an analysis repository." 1>&2
   exit 1
 fi
 
@@ -56,20 +53,18 @@ if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
 fi
 
 # check out the analysis directory
-svn co ${BELLE2_REPOSITORY}${SVNDIR} ${LOCAL_DIR}
+git clone ${ANALYSIS_REPOSITORY} ${DIR}
 if [ "$?" != "0" ]; then
-  echo "Error: The checkout of the analysis directory ${SVNDIR} failed." 1>&2
+  echo "Error: The checkout of the analysis repository ${ANALYSIS_NAME} failed." 1>&2
   exit 1
 fi
 
 # get site-scons
-pushd . > /dev/null
-cd ${LOCAL_DIR}
-RELEASE=`cat .analysis`
+pushd ${DIR} > /dev/null
 ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 ln -s site_scons/SConstruct .
 popd > /dev/null
 
 # inform user about successful completion
-echo "Analysis ${SVNDIR} for release ${RELEASE} checked out at: ${DIR}"
+echo "Analysis ${ANALYSIS_NAME} for release ${RELEASE} checked out at: ${DIR}"
 echo "-> change to the new directory and set up the environment: cd ${DIR}; setupana"
