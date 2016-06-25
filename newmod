@@ -402,5 +402,5 @@ REG_MODULE(%s)
     ))
 f.close()
 
-# add new files to svn
-subprocess.call(['svn', 'add', header, src])
+# add new files to git
+subprocess.call(['git', 'add', header, src])
