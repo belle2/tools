@@ -45,7 +45,7 @@ ANALYSIS_NAME=${BELLE2_USER}_${DIR}
 ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
 git ls-remote --exit-code ${ANALYSIS_REPOSITORY} master &> /dev/null
 if [ "$?" = "0" ]; then
-  echo "Error: The analysis git repository ${DIR} already exists." 1>&2
+  echo "Error: The analysis git repository for analysis ${DIR} already exists." 1>&2
   exit 1
 fi
 
