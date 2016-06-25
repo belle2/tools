@@ -53,6 +53,9 @@ fi
 if [ -z "${BELLE2_ANALYSES_PROJECT}" ]; then
   export BELLE2_ANALYSES_PROJECT=b2a
 fi
+if [ -z "${BELLE2_DOWNLOAD}" ]; then
+  export BELLE2_DOWNLOAD="--no-check-certificate --user=belle2 --password=Aith4tee https://b2-master.belle2.org/download"
+fi
 
 # list of packages that are excluded by default
 if [ -z "${BELLE2_EXCLUDE_PACKAGES}" ]; then

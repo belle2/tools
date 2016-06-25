@@ -73,6 +73,9 @@ endif
 if ( ! ${?BELLE2_ANALYSES_PROJECT} ) then
   setenv BELLE2_ANALYSES_PROJECT b2a
 endif
+if ( ! ${?BELLE2_DOWNLOAD} ) then
+  setenv BELLE2_DOWNLOAD "--user=belle2 --password=Aith4tee https://b2-master.belle2.org/download"
+endif
 
 # list of packages that are excluded by default
 if ( ! ${?BELLE2_EXCLUDE_PACKAGES} ) then

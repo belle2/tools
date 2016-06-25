@@ -25,17 +25,17 @@ if [ $# -gt 2 ]; then
 fi
 
 # check for software tools setup
-if [ -z "${BELLE2_REPOSITORY}" -o -z "${BELLE2_EXTERNALS_TOPDIR}" ]; then
+if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" -o -z "${BELLE2_EXTERNALS_TOPDIR}" ]; then
   echo "Belle II software environment is not set up." 1>&2
-  echo "-> Source \"setup_belle2.sh\" (for bash) or \"setup_belle2.csh\" (for csh)." 1>&2
+  echo "-> source setup_belle2" 1>&2
   exit 1
 fi
 
 # list available versions if no argument is given
 if [ $# -eq 0 ]; then
-  svn list ${BELLE2_REPOSITORY}/tags/externals | sed "s;/$;;g"
-  REVISION=`svn list --verbose --depth=empty ${BELLE2_REPOSITORY}/trunk/externals | awk '{print $1}'`
-  echo "development (revision ${REVISION})"
+  git ls-remote ${BELLE2_EXTERNALS_REPOSITORY} | awk -F / '{print $NF}'
+  COMMIT=`git ls-remote ${BELLE2_EXTERNALS_REPOSITORY} master | awk '{print $1}'`
+  echo "development (commit ${COMMIT})"
   exit 0
 fi
 
@@ -92,12 +92,12 @@ function CheckBuildEnvironment ()
 # check out the selected version
 if [ "${VERSION}" = "development" ]; then
   CheckBuildEnvironment
-  svn co --non-interactive --trust-server-cert ${BELLE2_REPOSITORY}/trunk/externals development
+  git clone ${BELLE2_EXTERNALS_REPOSITORY} development
 else
 
   # try the binary version if the operating system is given
   if [ $# -gt 1 ]; then
-    wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_$2.tgz | tar xz
+    wget -O - --tries=3 ${BELLE2_DOWNLOAD}/externals/externals_${VERSION}_$2.tgz | tar xz
     RESULT=$?
     if [ "${RESULT}" = "0" ]; then
       exit 0
@@ -106,21 +106,21 @@ else
 
   # next try the externals source tarball and then the checkout from the svn repository
   CheckBuildEnvironment
-  wget -O - --tries=3 --user=belle2 --password=Aith4tee https://belle2.cc.kek.jp/download/externals/externals_${VERSION}_src.tgz | tar xz
+  wget -O - --tries=3 ${BELLE2_DOWNLOAD}/externals/externals_${VERSION}_src.tgz | tar xz
   RESULT=$?
   if [ "${RESULT}" -ne "0" ]; then
     # check whether the given version is available
-    svn list --non-interactive ${BELLE2_REPOSITORY}/tags/externals/${VERSION} > /dev/null
+    git ls-remote ${BELLE2_EXTERNALS_REPOSITORY} ${VERSION} > /dev/null
     if [ "$?" != "0" ]; then
       echo "Error: The externals version ${VERSION} does not exist." 1>&2
       exit 1
     fi
-    svn co --non-interactive ${BELLE2_REPOSITORY}/tags/externals/${VERSION}
+    git clone --branch release/${VERSION} ${BELLE2_EXTERNALS_REPOSITORY} ${VERSION}
   fi
 fi
 
 if [ "$?" != 0 ]; then
-  echo "\nError: The svn checkout of the externals failed." 1>&2
+  echo "\nError: The git checkout of the externals failed." 1>&2
   exit 2
 fi
 
