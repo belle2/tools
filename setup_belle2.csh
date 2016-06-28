@@ -58,7 +58,7 @@ endif
 
 # set location of Belle II code repositories
 if ( ! ${?BELLE2_GIT_SERVER} ) then
-  if ( "${?BELLE2_GIT_ACCESS}" == "ssh" || ( "${?BELLE2_GIT_ACCESS}" != "http" && -f ${HOME}/.ssh/id_rsa.pub ) ) then
+  if ( "${?BELLE2_GIT_ACCESS}" = "ssh" || ( "${?BELLE2_GIT_ACCESS}" != "http" && -f ${HOME}/.ssh/id_rsa.pub ) ) then
     setenv BELLE2_GIT_SERVER ssh://git@stash.desy.de:7999
   else
     setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm
