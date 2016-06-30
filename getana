@@ -33,7 +33,7 @@ fi
 
 
 # verify that the git repository exists and is an analysis repository
-ANALYSIS_NAME=${BELLE2_USER}_${DIR}
+ANALYSIS_NAME=${USERNAME}_${DIR}
 ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
 git ls-remote --exit-code ${ANALYSIS_REPOSITORY} master &> /dev/null
 if [ "$?" != "0" ]; then
