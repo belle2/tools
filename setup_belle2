@@ -3,7 +3,7 @@
 #
 
 # sh type shells
-test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && . `python -c 'import os,sys;print os.path.realpath(sys.argv[1])' $(dirname ${BASH_SOURCE:-$0})`/setup_belle2.sh
+test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && . `python -c 'from __future__ import print_function; import os,sys; print(os.path.realpath(sys.argv[1]))' $(dirname ${BASH_SOURCE:-$0})`/setup_belle2.sh
 test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && return
 
 # tcsh shell

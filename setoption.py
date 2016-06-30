@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import sys
 import os
@@ -61,4 +62,4 @@ else:
     export_environment()
 
 # inform user about successful completion
-print 'echo "Environment setup for build option: ${BELLE2_OPTION}"'
+print('echo "Environment setup for build option: ${BELLE2_OPTION}"')

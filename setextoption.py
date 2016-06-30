@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 
 import sys
 import os
@@ -62,4 +63,4 @@ if extdir:
 export_environment()
 
 # inform user about successful completion
-print 'echo "Environment setup for externals option: %s"' % sys.argv[1]
+print('echo "Environment setup for externals option: %s"' % sys.argv[1])

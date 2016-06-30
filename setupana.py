@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
 import os
 from setup_tools import get_var, unsetup_old_release, update_environment
@@ -34,11 +35,11 @@ unsetup_old_release()
 update_environment(release, 'analysis', os.getcwd())
 
 # inform user about successful completion
-print 'echo "Environment setup for analysis : ${BELLE2_ANALYSIS_DIR}"'
-print 'echo "Central release directory      : ${BELLE2_RELEASE_DIR}"'
+print('echo "Environment setup for analysis : ${BELLE2_ANALYSIS_DIR}"')
+print('echo "Central release directory      : ${BELLE2_RELEASE_DIR}"')
 
 # set the build option if a .option file exists in the local analysis directory
 if os.path.isfile('.option'):
     build_option = open('.option').readline().strip()
-    print 'setoption %s' % build_option
+    print('setoption %s' % build_option)
 
