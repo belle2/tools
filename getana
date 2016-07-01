@@ -40,23 +40,18 @@ if [ "$?" != "0" ]; then
   echo "Error: The git repository ${ANALYSIS_NAME} does not exist." 1>&2
   exit 1
 fi
-RELEASE=`git archive --remote=${ANALYSIS_REPOSITORY} master .analysis | tar -xO 2> /dev/null`
-if [ "$?" != "0" ]; then
-  echo "Error: The git repository ${ANALYSIS_NAME} is not an analysis repository." 1>&2
-  exit 1
-fi
-
-# check whether the release exists
-if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
-  echo "Error: The central release ${RELEASE} required by this analysis does not exist." 1>&2
-  exit 1
-fi
 
 # check out the analysis directory
 git clone ${ANALYSIS_REPOSITORY} ${DIR}
 if [ "$?" != "0" ]; then
   echo "Error: The checkout of the analysis repository ${ANALYSIS_NAME} failed." 1>&2
   exit 1
+fi
+
+# check whether the release exists
+RELEASE=`cat .analysis`
+if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
+  echo "Warning: The central release ${RELEASE} required by this analysis does not exist." 1>&2
 fi
 
 # get site-scons
