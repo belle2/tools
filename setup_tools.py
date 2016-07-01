@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
 import os
 import subprocess
@@ -209,38 +210,38 @@ def export_environment():
             value = ':'.join(value)
         if value and len(value) > 0:
             if csh:
-                print 'setenv %s "%s"' % (var, value)
+                print('setenv %s "%s"' % (var, value))
             else:
-                print 'export %s="%s"' % (var, value)
+                print('export %s="%s"' % (var, value))
         else:
             if csh:
-                print 'unsetenv %s' % var
+                print('unsetenv %s' % var)
             else:
-                print 'unset %s' % var
+                print('unset %s' % var)
 
     for (sh_script, csh_script) in source_scripts:
         if csh:
             # cd to script directory because of geant4 setup issue with csh
             (path, script) = os.path.split(csh_script)
-            print 'set SAVEOLDPWD=$owd'
-            print 'set SAVEPWD=$PWD'
-            print 'cd %s' % path
-            print 'source ./%s > /dev/null' % script
-            print 'cd $SAVEPWD > /dev/null'
-            print 'set owd=$SAVEOLDPWD'
-            print 'unset SAVEPWD'
-            print 'unset SAVEOLDPWD'
+            print('set SAVEOLDPWD=$owd')
+            print('set SAVEPWD=$PWD')
+            print('cd %s' % path)
+            print('source ./%s > /dev/null' % script)
+            print('cd $SAVEPWD > /dev/null')
+            print('set owd=$SAVEOLDPWD')
+            print('unset SAVEPWD')
+            print('unset SAVEOLDPWD')
         else:
             # cd to script directory because of geant4 setup issue with zsh
             (path, script) = os.path.split(sh_script)
-            print 'SAVEOLDPWD=$OLDPWD'
-            print 'SAVEPWD=$PWD'
-            print 'cd %s' % path
-            print 'source ./%s > /dev/null' % script
-            print 'cd $SAVEPWD > /dev/null'
-            print 'OLDPWD=$SAVEOLDPWD'
-            print 'unset SAVEPWD'
-            print 'unset SAVEOLDPWD'
+            print('SAVEOLDPWD=$OLDPWD')
+            print('SAVEPWD=$PWD')
+            print('cd %s' % path)
+            print('source ./%s > /dev/null' % script)
+            print('cd $SAVEPWD > /dev/null')
+            print('OLDPWD=$SAVEOLDPWD')
+            print('unset SAVEPWD')
+            print('unset SAVEOLDPWD')
 
 
 def update_environment(release, local_release, local_dir):

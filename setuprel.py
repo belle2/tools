@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import sys
 import os
 from setup_tools import get_var, unsetup_old_release, update_environment, csh
@@ -135,16 +136,16 @@ if local_release and not os.path.islink('SConstruct'):
     sys.exit(1)
 
 # inform user about successful completion
-print 'echo "Environment setup for release: ${BELLE2_RELEASE}"'
+print('echo "Environment setup for release: ${BELLE2_RELEASE}"')
 if len(get_var('BELLE2_RELEASE_DIR')) > 0:
-    print 'echo "Central release directory    : ${BELLE2_RELEASE_DIR}"'
+    print('echo "Central release directory    : ${BELLE2_RELEASE_DIR}"')
 if len(get_var('BELLE2_LOCAL_DIR')) > 0:
-    print 'echo "Local release directory      : ${BELLE2_LOCAL_DIR}"'
+    print('echo "Local release directory      : ${BELLE2_LOCAL_DIR}"')
 
 # set the build option if a .option file exists in the local release directory
 if os.path.isfile('.option'):
     build_option = open('.option').readline().strip()
-    print 'setoption %s' % build_option
+    print('setoption %s' % build_option)
 
 # check the externals and warn the user if the check fails
 try:
