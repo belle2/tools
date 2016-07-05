@@ -64,6 +64,10 @@ git checkout master
 echo ${RELEASE} > .release
 ln -s site_scons/SConstruct .
 
+# install hooks
+rm -rf .git/hooks
+ln -sf ${BELLE2_TOOLS}/hooks .git/hooks
+
 # inform user about successful completion
 echo "New local directory created for ${RELEASE} release: ${DIR}"
 echo "-> change to the new directory and set up the environment: cd ${DIR}; setuprel"
