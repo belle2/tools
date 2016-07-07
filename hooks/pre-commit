@@ -55,6 +55,4 @@ if [ $RESULT -ne 0 ]; then
   echo "*** Commit aborted ***"
 fi
 
-exit 1
-
 exit $RESULT
