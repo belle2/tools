@@ -110,8 +110,8 @@ if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
     git fetch --dry-run 2>&1 | grep -v X11 > $tmp
     FETCH_CHECK=`cat $tmp | wc -l`
     rm -f $tmp
-    LOCAL=$(git rev-parse @)
-    REMOTE=$(git rev-parse @{u})
+    LOCAL=$(git rev-parse HEAD)
+    REMOTE=$(git rev-parse @{upstream})
     if [ ${FETCH_CHECK} != 0 -o ${LOCAL} != ${REMOTE} ]; then
       echo
       echo "WARNING: The version of the tools you are using is outdated."
