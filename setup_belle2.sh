@@ -96,8 +96,7 @@ fi
 # check for a newer version
 if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
   pushd ${BELLE2_TOOLS} > /dev/null
-  tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  git fetch --dry-run >> $tmp 2>&1
+  git fetch --dry-run &> /dev/null
   if [ $? != 0 ]; then
     echo
     echo "Warning: Could not access remote git repository in non-interactive mode."
@@ -107,7 +106,10 @@ if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
     echo "           git fetch --dry-run"
     echo
   else
+    tmp=`mktemp /tmp/belle2_tmp.XXXX`
+    git fetch --dry-run 2>&1 | grep -v X11 > $tmp
     FETCH_CHECK=`cat $tmp | wc -l`
+    rm -f $tmp
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse @{u})
     if [ ${FETCH_CHECK} != 0 -o ${LOCAL} != ${REMOTE} ]; then
@@ -121,6 +123,5 @@ if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
       echo
     fi
   fi
-  rm -f $tmp
   popd  > /dev/null
 fi
