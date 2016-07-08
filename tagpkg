@@ -47,9 +47,6 @@ fi
 
 # report changes with respect to previous tag
 git log ${DIFFREV} .
-if [ "$?" != "0" ]; then
-  exit 1
-fi
 
 # read arguments
 TAG=patch
@@ -112,5 +109,15 @@ git tag -F - ${PACKAGE}-${TAG}
 if [ "$?" == "0" ]; then
   echo "Committed tag ${TAG} of ${PACKAGE}."
 else
+  echo "Error: Committing tag ${TAG} failed"
   exit 1
+fi
+
+# push tag
+git push origin tags/${PACKAGE}-${TAG}
+if [ "$?" == "0" ]; then
+  echo "Pushed tag ${TAG} of ${PACKAGE}."
+else
+  echo "Error: Pushing tag ${TAG} failed"
+  exit 2
 fi
