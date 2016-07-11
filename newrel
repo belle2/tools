@@ -48,7 +48,10 @@ if [ -d ${DIR} ]; then
 fi
 
 # clone the repository and checkout site-scons
-git clone --no-checkout --config branch.master.rebase=true --config core.sparsecheckout=true ${BELLE2_SOFTWARE_REPOSITORY} ${DIR}
+git clone --no-checkout ${BELLE2_SOFTWARE_REPOSITORY} ${DIR}
+cd ${DIR}
+git config branch.master.rebase true
+git config core.sparsecheckout true
 cd ${DIR}
 if [ "${RELEASE}" == "head" ]; then
   echo "/*" >> .git/info/sparse-checkout
