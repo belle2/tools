@@ -93,6 +93,10 @@ function CheckBuildEnvironment ()
 if [ "${VERSION}" = "development" ]; then
   CheckBuildEnvironment
   git clone ${BELLE2_EXTERNALS_REPOSITORY} development
+  if [ "$?" != 0 ]; then
+    echo "\nError: The git checkout of the externals failed." 1>&2
+    exit 2
+  fi
 else
 
   # try the binary version if the operating system is given
@@ -115,13 +119,16 @@ else
       echo "Error: The externals version ${VERSION} does not exist." 1>&2
       exit 1
     fi
-    git clone --branch ${VERSION} ${BELLE2_EXTERNALS_REPOSITORY} ${VERSION}
+    git clone ${BELLE2_EXTERNALS_REPOSITORY} ${VERSION}
+    if [ "$?" != 0 ]; then
+      echo "\nError: The git checkout of the externals failed." 1>&2
+      exit 2
+    else
+      cd ${VERSION}
+      git checkout ${VERSION}
+      cd ..
+    fi
   fi
-fi
-
-if [ "$?" != 0 ]; then
-  echo "\nError: The git checkout of the externals failed." 1>&2
-  exit 2
 fi
 
 # build the externals
