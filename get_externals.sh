@@ -33,7 +33,7 @@ fi
 
 # list available versions if no argument is given
 if [ $# -eq 0 ]; then
-  git ls-remote ${BELLE2_EXTERNALS_REPOSITORY} | grep "tags/" | awk -F / '{print $NF}'
+  git ls-remote ${BELLE2_EXTERNALS_REPOSITORY} | grep "tags/" | grep -v "\^{}$" | awk -F / '{print $NF}'
   COMMIT=`git ls-remote ${BELLE2_EXTERNALS_REPOSITORY} master | awk '{print $1}'`
   echo "development (commit ${COMMIT})"
   exit 0
