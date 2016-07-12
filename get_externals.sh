@@ -115,7 +115,7 @@ else
       echo "Error: The externals version ${VERSION} does not exist." 1>&2
       exit 1
     fi
-    git clone --branch release/${VERSION} ${BELLE2_EXTERNALS_REPOSITORY} ${VERSION}
+    git clone --branch ${VERSION} ${BELLE2_EXTERNALS_REPOSITORY} ${VERSION}
   fi
 fi
 
