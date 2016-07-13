@@ -97,6 +97,9 @@ alias setoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setoption.py"
 # define alias for externals option selection
 alias setextoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setextoption.py"
 
+# define alias for externals setup without release
+alias setupext "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setupext.py"
+
 # make PATH changes active
 rehash
 

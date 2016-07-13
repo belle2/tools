@@ -244,10 +244,10 @@ def export_environment():
             print('unset SAVEOLDPWD')
 
 
-def update_environment(release, local_release, local_dir):
+def update_environment(release, local_release, local_dir, externals_version=None):
     """update the environment for the given central and local release or analysis"""
 
-    env_vars['BELLE2_EXTERNALS_VERSION'] = ''
+    env_vars['BELLE2_EXTERNALS_VERSION'] = '' if externals_version is None else externals_version
 
     # add the new central release to the environment
     setup_central_release(release)

@@ -85,6 +85,13 @@ function setextoption
 {
   eval "`${BELLE2_TOOLS}/setextoption.py $* || echo 'return 1'`"
 }
+
+# define function for externals setup without release
+function setupext
+{
+  eval "`${BELLE2_TOOLS}/setupext.py $* || echo 'return 1'`"
+}
+
 # inform user about successful setup
 echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 
