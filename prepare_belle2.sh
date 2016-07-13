@@ -25,24 +25,31 @@ if [ `uname` = Darwin ]; then
 
 elif [ -f /etc/SuSE-release ]; then
   # OpenSUSE
-  PACKAGES="subversion make gcc gcc-c++ binutils patch wget python libxml2-devel xorg-x11-libX11-devel xorg-x11-libXpm-devel xorg-x11-libXext-devel libbz2-devel ncurses-devel readline-devel" 
-  OPTIONALS="mesa-libGL-devel glew-devel"
+  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
+    tar gzip bzip2 xz unzip wget libpng-devel xorg-x11-libX11-devel
+    xorg-x11-libXext-devel xorg-x11-libXpm-devel ncurses-devel openssl-devel
+    readline-devel"
+  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
 
 elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
   # Ubuntu
-  PACKAGES="subversion make gcc g++ binutils patch wget python libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
-  OPTIONALS="libglu1-mesa-dev libglew1.5-dev"
+  PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
+    gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
+    libncurses-dev libssl-dev libreadline-dev"
+  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   INSTALL_CMD="apt-get install"
 
 elif [ -f /etc/debian_version ]; then
   # Debian
-  PACKAGES="subversion make gcc g++ binutils patch wget python libxml2-dev dpkg-dev libx11-dev libxpm-dev libxft-dev libxext-dev libbz2-dev libssl-dev libncurses5-dev libreadline-dev lsb-release unzip"
-  OPTIONALS="libglu1-mesa-dev libglew1.5-dev"
+  PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
+    gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
+    libncurses-dev libssl-dev libreadline-dev"
+  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
@@ -52,8 +59,10 @@ else
     echo "Unknown linux distribution. Trying installation with yum..."
   fi
   # RH, SL, CentOS
-  PACKAGES="subversion make gcc gcc-c++ binutils patch wget python libxml2-devel libX11-devel libXpm-devel libXft-devel libXext-devel bzip2-devel openssl-devel ncurses-devel readline-devel"
-  OPTIONALS="mesa-libGL-devel glew-devel"
+  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
+    tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
+    libXpm-devel ncurses-devel openssl-devel readline-devel"
+  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
