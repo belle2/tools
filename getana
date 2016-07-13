@@ -49,7 +49,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # check whether the release exists
-RELEASE=`cat .analysis`
+RELEASE=`cat ${DIR}/.analysis`
 if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
   echo "Warning: The central release ${RELEASE} required by this analysis does not exist." 1>&2
 fi
