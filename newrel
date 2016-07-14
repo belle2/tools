@@ -52,7 +52,6 @@ git clone --no-checkout ${BELLE2_SOFTWARE_REPOSITORY} ${DIR}
 cd ${DIR}
 git config branch.master.rebase true
 git config core.sparsecheckout true
-cd ${DIR}
 if [ "${RELEASE}" == "head" ]; then
   echo "/*" >> .git/info/sparse-checkout
   for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
