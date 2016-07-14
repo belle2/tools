@@ -9,16 +9,7 @@ import sys
 limit = 1024 * 1024
 
 # Exceptions
-exceptions = [
-    'analysis/data/TMVA/StandardPi0/weights/PI0-MC3.5_1_vs_0_LPCA.class.C',
-    'mdst/tests/mdst_compatibility.out',
-    'geometry/data/MagneticField3d_TotalVolume-150302-01-04_cylindrical.dat.gz',
-    'geometry/data/MagneticField3d_TrackingVolume-150302-01-05_cylindrical.dat.gz',
-    'cdc/data/xt_',
-    'generators/modules/cryinput/data/cosmics_',
-    'tracking/data/',
-    'reconstruction/data'
-    ]
+exceptions = {}
 
 # loop over to be committed files
 os.chdir(sys.argv[1])
@@ -26,14 +17,8 @@ fail = False
 for root, dirs, files in os.walk('.'):
     for changed_file in files:
         file_name = os.path.join(root, changed_file)[2:]
-        skip = False
-        for exception in exceptions:
-            if file_name.startswith(exception):
-                skip = True
-                break
-        if skip:
-            continue
-        if os.path.getsize(file_name) > limit:
+        file_limit = exceptions.get(file_name, limit)
+        if os.path.getsize(file_name) > file_limit:
             print('file size limit exceeded for %s' % file_name)
             fail = True
             
