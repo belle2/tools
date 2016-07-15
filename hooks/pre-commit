@@ -51,7 +51,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check the access rights
-BRANCH=`git branch | grep "^*" | cut -c 3-`
+BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ "$BRANCH" = "master" ]; then
   if [ "$BELLE2_ACCESS_CHECK" != "no" ]; then
     ${BELLE2_TOOLS}/hooks/check_access.py ${TMPDIR}
