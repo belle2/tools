@@ -27,8 +27,8 @@ elif [ -f /etc/SuSE-release ]; then
   # OpenSUSE
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel xorg-x11-libX11-devel
-    xorg-x11-libXext-devel xorg-x11-libXpm-devel ncurses-devel openssl-devel
-    readline-devel"
+    xorg-x11-libXext-devel xorg-x11-libXpm-devel xorg-x11-libXft-devel
+    ncurses-devel openssl-devel readline-devel"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
@@ -38,7 +38,7 @@ elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
   # Ubuntu
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
-    libncurses-dev libssl-dev libreadline-dev"
+    libxft-dev libncurses-dev libssl-dev libreadline-dev"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
@@ -48,7 +48,7 @@ elif [ -f /etc/debian_version ]; then
   # Debian
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
-    libncurses-dev libssl-dev libreadline-dev"
+    libxft-dev libncurses-dev libssl-dev libreadline-dev"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
@@ -61,7 +61,7 @@ else
   # RH, SL, CentOS
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
-    libXpm-devel ncurses-devel openssl-devel readline-devel"
+    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
