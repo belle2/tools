@@ -18,33 +18,54 @@ fi
 TMPDIR=`mktemp -d`
 if [ $? -ne 0 ]; then
   echo "Problem creating temp dir, aborting commit."
-  exit 2
+  exit 1
 fi
 
 # Find out which files were modified
 FILES_MODIFIED=`git diff --cached --name-only`
 # Place a copy of the versions to be commited in the temp dir
-git checkout-index --prefix=${TMPDIR}/ -- ${FILES_MODIFIED}
 # Add empty file with suffix .deleted for deleted files
 for FILE in ${FILES_MODIFIED}; do
+  git checkout-index --prefix=${TMPDIR}/ -- "${FILE}" &> /dev/null
   if [ ! -f "${TMPDIR}/${FILE}" ]; then
+    mkdir -p `dirname "${TMPDIR}/${FILE}"`
     touch "${TMPDIR}/${FILE}.deleted"
   fi
 done
 
+# Add librarians and authors information
+git archive -o ${TMPDIR}/access.tar --prefix=access/ HEAD `git ls-tree --name-only -r HEAD | grep ".authors\|.librarians"`
+
 RESULT=0
 
 # Check the code style
-${BELLE2_TOOLS}/hooks/check_style.sh ${TMPDIR}
+${BELLE2_TOOLS}/hooks/check_style.py ${TMPDIR}
 if [ $? -ne 0 ]; then
-  echo "=> Please run 'fixstyle' on the files listed above and 'git add' them to your commit again."
-  RESULT=3
+  RESULT=2
 fi
 
 # Check the file sizes
 ${BELLE2_TOOLS}/hooks/check_size.py ${TMPDIR}
 if [ $? -ne 0 ]; then
-  RESULT=4
+  RESULT=3
+fi
+
+# Check the access rights
+BRANCH=`git branch | grep "^*" | cut -c 3-`
+if [ "$BRANCH" = "master" ]; then
+  if [ "$BELLE2_ACCESS_CHECK" != "no" ]; then
+    ${BELLE2_TOOLS}/hooks/check_access.py ${TMPDIR}
+    if [ $? -ne 0 ]; then
+      if [ "$BELLE2_ACCESS_CHECK" = "yes" ]; then
+        echo "=> You can set BELLE2_ACCESS_CHECK to warn to be able to commit to your local repository, BUT:"
+        RESULT=4
+      else
+        echo "=> WARNING: You will not be able to push your changes to the central repository."
+      fi
+      echo "   It is recommended to either ask the librarions of the above listed packages for commit rights"
+      echo "   or commit your changes to a new feature branch and then make a pull request to the librarians."
+    fi
+  fi
 fi
 
 # Clean up the temp dir
@@ -52,7 +73,9 @@ rm -r ${TMPDIR}
 
 # Return check result
 if [ $RESULT -ne 0 ]; then
-  echo "*** Commit aborted ***"
+  echo
+  echo "*** Commit aborted (see reasons above) ***"
 fi
 
+exit 10
 exit $RESULT
