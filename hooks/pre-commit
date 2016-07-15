@@ -34,7 +34,7 @@ for FILE in ${FILES_MODIFIED}; do
 done
 
 # Add librarians and authors information
-git archive -o ${TMPDIR}/access.tar --prefix=access/ HEAD `git ls-tree --name-only -r HEAD | grep ".authors\|.librarians"`
+git archive -o ${TMPDIR}/access.tar --prefix=access/ master `git ls-tree --name-only -r master | grep ".authors\|.librarians"`
 
 RESULT=0
 
@@ -56,11 +56,11 @@ if [ "$BRANCH" = "master" ]; then
   if [ "$BELLE2_ACCESS_CHECK" != "no" ]; then
     ${BELLE2_TOOLS}/hooks/check_access.py ${TMPDIR}
     if [ $? -ne 0 ]; then
-      if [ "$BELLE2_ACCESS_CHECK" = "yes" ]; then
-        echo "=> You can set BELLE2_ACCESS_CHECK to warn to be able to commit to your local repository, BUT:"
-        RESULT=4
-      else
+      if [ "$BELLE2_ACCESS_CHECK" = "warn" ]; then
         echo "=> WARNING: You will not be able to push your changes to the central repository."
+      else
+        echo "=> You can set BELLE2_ACCESS_CHECK to 'warn' or 'no' to be able to commit to your local repository, BUT:"
+        RESULT=4
       fi
       echo "   It is recommended to either ask the librarions of the above listed packages for commit rights"
       echo "   or commit your changes to a new feature branch and then make a pull request to the librarians."
@@ -77,5 +77,4 @@ if [ $RESULT -ne 0 ]; then
   echo "*** Commit aborted (see reasons above) ***"
 fi
 
-exit 10
 exit $RESULT

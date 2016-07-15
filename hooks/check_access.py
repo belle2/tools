@@ -48,7 +48,7 @@ for root, dirs, files in os.walk('.'):
         while dir_name != '' and dir_name not in access.keys():
             dir_name = os.path.dirname(dir_name)
         librarians, authors = access.get(dir_name, [[], []])
-        if len(librarians) == 0 and 'STASH_IS_ADMIN' in os.environ.keys():
+        if len(librarians) == 0 and os.environ.get('STASH_IS_ADMIN', 'false') == 'true':
             librarians = [committer]
         if (file_name.endswith('/.librarians') or file_name.endswith('/.authors')) and committer not in librarians:
             failed_access.append(dir_name)
