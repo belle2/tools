@@ -62,7 +62,7 @@ if [ "$BRANCH" = "master" ]; then
         echo "=> You can set BELLE2_ACCESS_CHECK to 'warn' or 'no' to be able to commit to your local repository, BUT:"
         RESULT=4
       fi
-      echo "   It is recommended to either ask the librarions of the above listed packages for commit rights"
+      echo "   It is recommended to either ask the librarians of the above listed packages for commit rights"
       echo "   or commit your changes to a new feature branch and then make a pull request to the librarians."
     fi
   fi
