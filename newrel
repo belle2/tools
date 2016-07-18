@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# comparison of versions
+function version_greater_equal
+{
+  test "$(echo -e "$1\n$2" | sort -V | tail -n 1)" = "$1"
+}
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
@@ -51,11 +57,17 @@ fi
 git clone --no-checkout ${BELLE2_SOFTWARE_REPOSITORY} ${DIR}
 cd ${DIR}
 git config branch.master.rebase true
-git config core.sparsecheckout true
+GIT_VERSION=$(git --version | awk '{print $3}')
+if version_greater_equal ${GIT_VERSION} 1.7.4 ; then
+  git config core.sparsecheckout true
+else
+  echo "Warning: Because your git version (${GIT_VERSION}) is older than 1.7.4 the support of sparse checkouts is disabled."
+  echo "=> When you have set up a git version >= 1.7.4, e.g. from the externals development version, you can re-enable it by executing 'git config core.sparsecheckout true' in your local release directory."
+fi
 if [ "${RELEASE}" == "head" ]; then
   echo "/*" >> .git/info/sparse-checkout
   for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
-    echo "!/${PACKAGE}" >> .git/info/sparse-checkout
+    echo "!/${PACKAGE}/" >> .git/info/sparse-checkout
   done
 else
   touch .git/info/sparse-checkout

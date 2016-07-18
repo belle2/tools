@@ -28,9 +28,9 @@ fi
 # update sparse-checkout file
 ALL=`grep -c "^/\*$" .git/info/sparse-checkout`
 if [ "$ALL" -ne "0" ]; then
-  sed -i "/\!\/${PACKAGE}/d" .git/info/sparse-checkout
+  sed -i "/\!\/${PACKAGE}\//d" .git/info/sparse-checkout
 else
-  echo ${PACKAGE} >> .git/info/sparse-checkout
+  echo "/${PACKAGE}/" >> .git/info/sparse-checkout
 fi
 
 # check out package
