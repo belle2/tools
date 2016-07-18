@@ -40,8 +40,8 @@ DIR=$1
 RELEASE=head
 if [ $# -gt 1 ]; then
   RELEASE=$2
-  git ls-remote --exit-code ${BELLE2_SOFTWARE_REPOSITORY} ${RELEASE} > /dev/null
-  if [ "$?" != "0" ]; then
+  RELEASE_EXISTS=`git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} ${RELEASE} | wc -l`
+  if [ "${RELEASE_EXISTS}" = "0" ]; then
     echo "Error: The release ${RELEASE} does not exist." 1>&2
     exit 1
   fi
@@ -74,7 +74,9 @@ else
   ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/.externals .
   ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 fi
-git checkout master
+if version_greater_equal ${GIT_VERSION} 1.7.4 ; then
+  git checkout master
+fi
 echo ${RELEASE} > .release
 ln -s site_scons/SConstruct .
 
