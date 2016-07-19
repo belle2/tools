@@ -3,7 +3,7 @@
 # comparison of versions
 function version_greater_equal
 {
-  test "$(echo -e "$1\n$2" | sort -V | tail -n 1)" = "$1"
+  test "$(echo -e "$1\n$2" | sort | tail -n 1)" = "$1"
 }
 
 # check for help option
