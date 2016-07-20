@@ -53,7 +53,7 @@ for root, dirs, files in os.walk('.'):
         if len(librarians) == 0 and os.environ.get('STASH_IS_ADMIN', 'false') == 'true':
             librarians = [committer]
         if (file_name.endswith('/.librarians') or file_name.endswith('/.authors')) and committer not in librarians:
-            failed_access.append(dir_name)
+            failed_access.append(os.path.dirname(file_name))
         elif (committer not in librarians + authors) and ('*' not in authors):
             failed_dirs.append(dir_name)
 
