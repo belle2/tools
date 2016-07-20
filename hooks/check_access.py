@@ -28,7 +28,7 @@ for root, dirs, files in os.walk('access'):
         if dir_name not in access.keys():
             parent_dir = dir_name.split(os.path.sep, -1)[0]
             if parent_dir in access.keys():
-                access[dir_name] = access[parent_dir]
+                access[dir_name] = [list(access[parent_dir][0]), list(access[parent_dir][1])]
             else:
                 access[dir_name] = [[], []]
         for line in open(file_name).readlines():
