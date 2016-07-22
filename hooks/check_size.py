@@ -1,7 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
 import os
 import sys
 
@@ -25,6 +24,6 @@ for root, dirs, files in os.walk('.'):
 if len(failed_files) > 0:
     print('\nThe following files exceed the maximally allowed file size:')
     for failed_file in failed_files:
-        print(' %s' % failed_file)
+        print((' %s' % failed_file))
     print('=> Contact the git repository administrator (Thomas.Kuhr@lmu.de) if you are convinced that these files should nevertheless be stored in the code repository.')
     sys.exit(1)

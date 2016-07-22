@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+
 import os
 import sys
 import subprocess
@@ -25,9 +25,9 @@ for root, dirs, files in os.walk('access'):
             index = 1
         else:
             continue
-        if dir_name not in access.keys():
+        if dir_name not in list(access.keys()):
             parent_dir = dir_name.split(os.path.sep, -1)[0]
-            if parent_dir in access.keys():
+            if parent_dir in list(access.keys()):
                 access[dir_name] = [list(access[parent_dir][0]), list(access[parent_dir][1])]
             else:
                 access[dir_name] = [[], []]
@@ -45,7 +45,7 @@ for root, dirs, files in os.walk('.'):
         file_name = os.path.join(root, changed_file)[2:]
         file_name.replace('.deleted', '')
         dir_name = os.path.dirname(file_name)
-        while dir_name != '' and dir_name not in access.keys():
+        while dir_name != '' and dir_name not in list(access.keys()):
             dir_name = os.path.dirname(dir_name)
         librarians, authors = access.get(dir_name, [[], []])
         if dir_name == '':
@@ -59,12 +59,12 @@ for root, dirs, files in os.walk('.'):
 
 # return result of access check
 if len(failed_access) > 0:
-    print("\nYou (%s) don't have the right to edit the list of librarians or authors of the following directories:" % committer)
+    print(("\nYou (%s) don't have the right to edit the list of librarians or authors of the following directories:" % committer))
     for failed_dir in list(set(failed_access)):
-        print(' %s' % failed_dir)
+        print((' %s' % failed_dir))
 if len(failed_dirs) > 0:
-    print("\nYou (%s) don't have the right to commit code to the following directories:" % committer)
+    print(("\nYou (%s) don't have the right to commit code to the following directories:" % committer))
     for failed_dir in list(set(failed_dirs)):
-        print(' %s' % failed_dir)
+        print((' %s' % failed_dir))
 if len(failed_access + failed_dirs) > 0:
     sys.exit(1)

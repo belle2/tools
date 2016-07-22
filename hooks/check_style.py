@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from __future__ import print_function
+#from __future__ import print_function
 import os
 import sys
 import subprocess
@@ -25,7 +25,7 @@ for root, dirs, files in os.walk('.'):
 if len(failed_files) > 0:
     print('\nThe following files do not comply with the style rules:')
     for failed_file in failed_files:
-        print(' %s' % failed_file)
+        print((' %s' % failed_file))
     print("=> Run the 'fixstyle' tool on the files listed above and 'git add' them to your commit again.")
     print("   (And make sure you have the latest version in your tools directory.)")
     sys.exit(1)
