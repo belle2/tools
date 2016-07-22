@@ -63,6 +63,7 @@ ASTYLE="${ASTYLE_TOOL} \
 --align-pointer=type \
 --align-reference=type \
 --max-code-length=132 \
+--lineend=linux \
 --formatted"
 
 # autopep8 command
@@ -129,14 +130,25 @@ function Autopep8Check ()
 # define function for pep8 checking
 function Pep8Check ()
 {
+  FAIL=0
   if [ ! -L $1 ]; then
     TMP=`mktemp`
     ${PEP8} $1 > $TMP 2> /dev/null
     if [ "$?" != 0 ]; then
-      COUNT+=1
+      FAIL=1
       cat $TMP
     fi
     rm -f $TMP
+
+    file $1 | grep "$1:.*with CRLF line terminators" > /dev/null 2> /dev/null
+    if [ "$?" != 1 ]; then
+      FAIL=1
+      echo "$1: file has DOS-style (CRLF) line-endings, please use dos2unix or your editor configuration to fix it"
+    fi
+
+    if [ "$FAIL" != 0 ]; then
+      COUNT+=1
+    fi
   fi
 }
 
