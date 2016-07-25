@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
-from __future__ import print_function
 import sys
 import os
 from setup_tools import get_var, unsetup_old_release, update_environment, csh
