@@ -17,7 +17,7 @@ else
   exit 1
 endif
 set DIRNAME=`dirname ${FILENAME}`
-setenv BELLE2_TOOLS `python -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' ${DIRNAME}`
+setenv BELLE2_TOOLS `python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${DIRNAME}`
 unset DIRNAME
 unset FILENAME
 if ( ${?PATH} ) then
@@ -33,7 +33,7 @@ endif
 
 # set top directory of Belle II software installation
 if ( ! ${?VO_BELLE2_SW_DIR} ) then
-  setenv VO_BELLE2_SW_DIR `python -c 'from __future__ import print_function; import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
+  setenv VO_BELLE2_SW_DIR `python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
 endif
 
 # set top directory of external software
