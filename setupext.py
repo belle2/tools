@@ -21,29 +21,29 @@ else:
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
-    print("""
+    print >> sys.stderr, """
 Usage: setupext [externals_version]
 
 This command sets up the Belle2 externals to be used without any specific release
 of the Belle II software. It's useful if you just want to enable the software
 included in the Belle2 externals like an updated ROOT or git version. Without an
 argument it will setup the latest version it can find, otherwise it will setup
-the specified version""", file=sys.stderr)
+the specified version"""
     if available_versions:
-        print("""
+        print >> sys.stderr, """
 Available Versions: %s
-Default Version: %s""" % (", ".join(available_versions), default_version), file=sys.stderr)
+Default Version: %s""" % (", ".join(available_versions), default_version)
         sys.exit(0)
 
 if not available_versions:
-    print("""
+    print >> sys.stderr, """
 Error: Cannot find any externals in the top directory '%s'.
-Try installing externals with get_externals.sh first""" % top_dir, file=sys.stderr)
+Try installing externals with get_externals.sh first""" % top_dir
     sys.exit(1)
 
 # check number of arguments
 if len(sys.argv) > 2:
-    print('Usage: setupext [--help] [version]', file=sys.stderr)
+    print >> sys.stderr, 'Usage: setupext [--help] [version]'
     sys.exit(1)
 
 # check which version we want
@@ -51,8 +51,10 @@ version = default_version
 if len(sys.argv) == 2:
     version = sys.argv[1]
     if version not in available_versions:
-        print("Error: Externals version '{0}' is not available, available versions are {1}.\n"
-              "You can try installing it by using 'get_externals.sh {0}'".format(version, ", ".join(available_versions)), file=sys.stderr)
+        print >> sys.stderr, """
+Error: Externals version '{0}' is not available, available versions are {1}.\n
+You can try installing it by using 'get_externals.sh {0}'""".format(version, ", ".join(available_versions))
+
         sys.exit(1)
 
 # remove old release from the environment
