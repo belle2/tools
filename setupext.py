@@ -12,8 +12,12 @@ try:
     available_versions = sorted(next(os.walk(top_dir))[1])
 except:
     available_versions = []
+
 # and chose the latest one as default
-default_version = available_versions[-1] if available_versions else None
+if available_versions:
+    default_version = available_versions[-1] 
+else:
+    default_version = None
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:

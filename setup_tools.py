@@ -245,7 +245,10 @@ def export_environment():
 def update_environment(release, local_release, local_dir, externals_version=None):
     """update the environment for the given central and local release or analysis"""
 
-    env_vars['BELLE2_EXTERNALS_VERSION'] = '' if externals_version is None else externals_version
+    if externals_version is None:
+        env_vars['BELLE2_EXTERNALS_VERSION'] = ''
+    else:
+        env_vars['BELLE2_EXTERNALS_VERSION'] = externals_version
 
     # add the new central release to the environment
     setup_central_release(release)
