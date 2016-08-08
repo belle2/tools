@@ -86,19 +86,19 @@ if ( ! ${?BELLE2_EXCLUDE_PACKAGES} ) then
 endif
 
 # define alias for release setup
-alias setuprel "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setuprel.py"
+alias setuprel "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/setuprel.py"
 
 # define alias for analysis setup
-alias setupana "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setupana.py"
+alias setupana "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/setupana.py"
 
 # define alias for option selection
-alias setoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setoption.py"
+alias setoption "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/setoption.py"
 
 # define alias for externals option selection
-alias setextoption "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setextoption.py"
+alias setextoption "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/setextoption.py"
 
 # define alias for externals setup without release
-alias setupext "source ${BELLE2_TOOLS}/source.csh ${BELLE2_TOOLS}/setupext.py"
+alias setupext "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/setupext.py"
 
 # make PATH changes active
 rehash

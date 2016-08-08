@@ -65,31 +65,31 @@ fi
 # define function for release setup
 function setuprel
 {
-  eval "`${BELLE2_TOOLS}/setuprel.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/setuprel.py $* || echo 'return 1'`"
 }
 
 # define function for analysis setup
 function setupana
 {
-  eval "`${BELLE2_TOOLS}/setupana.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/setupana.py $* || echo 'return 1'`"
 }
 
 # define function for option selection
 function setoption
 {
-  eval "`${BELLE2_TOOLS}/setoption.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/setoption.py $* || echo 'return 1'`"
 }
 
 # define function for externals option selection
 function setextoption
 {
-  eval "`${BELLE2_TOOLS}/setextoption.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/setextoption.py $* || echo 'return 1'`"
 }
 
 # define function for externals setup without release
 function setupext
 {
-  eval "`${BELLE2_TOOLS}/setupext.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/setupext.py $* || echo 'return 1'`"
 }
 
 # inform user about successful setup
