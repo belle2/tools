@@ -3,7 +3,7 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` directory release [username]"
+  echo "Usage: `basename $0` directory release"
   echo
   echo "- This command creates a local directory with the given name"
   echo "  for the development of analysis code."
