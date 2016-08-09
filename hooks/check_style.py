@@ -16,7 +16,7 @@ for root, dirs, files in os.walk('.'):
         if len([exception for exception in exceptions if file_name.startswith(exception)]) > 0:
             continue
         if os.path.splitext(file_name)[1] in ['.h', '.cc', '.py']:
-            if subprocess.call(['checkstyle', file_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE) != 0:
+            if subprocess.call(['checkstyle', file_name], stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w')) != 0:
                 failed_files.append(file_name)
             
 # print instructions in case of failed test
