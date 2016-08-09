@@ -1,5 +1,31 @@
 #!/bin/bash
 
+NO_PROMPT=no
+INSTALL_OPTIONAL=no
+for i in "$@"; do
+  case $i in
+    --non-interactive)
+      NO_PROMPT=yes
+      ;;
+    --optionals)
+      INSTALL_OPTIONAL=y
+      ;;
+    *)
+      cat <<EOT
+Usage: prepare_belle2.sh [--non-interactive] [--optionals]
+
+If executed without arguments it will check if all necessary packages are
+installed and if not it will ask the user if it should do it.
+
+If --non-interactive is given it will not ask but just install the necessary
+packages but not the optional ones. If --optionals is given as well it will
+install everything without asking.
+EOT
+      exit 1
+      ;;
+    esac
+done
+
 if [ `uname` = Darwin ]; then
   # Mac OS
   MISSING=""
@@ -33,6 +59,9 @@ elif [ -f /etc/SuSE-release ]; then
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
+  if [ "$NO_PROMPT" = "yes" ]; then
+    INSTALL_CMD="yum install -y"
+  fi
 
 elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
   # Ubuntu
@@ -43,6 +72,9 @@ elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   INSTALL_CMD="apt-get install"
+  if [ "$NO_PROMPT" = "yes" ]; then
+    INSTALL_CMD="apt-get install -y"
+  fi
 
 elif [ -f /etc/debian_version ]; then
   # Debian
@@ -53,7 +85,9 @@ elif [ -f /etc/debian_version ]; then
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
-
+  if [ "$NO_PROMPT" = "yes" ]; then
+    INSTALL_CMD="apt-get install -y"
+  fi
 else
   if [ ! -f /etc/redhat-release ]; then
     echo "Unknown linux distribution. Trying installation with yum..."
@@ -66,6 +100,9 @@ else
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
+  if [ "$NO_PROMPT" = "yes" ]; then
+    INSTALL_CMD="yum install -y"
+  fi
 fi
 TEXT="already"
 
@@ -96,7 +133,10 @@ if [ -n "${MISSING_PACKAGES}" ]; then
   if [ "${SU_CMD}" != "sudo" ]; then
     INSTALL_MISSING=\"${INSTALL_MISSING}\"
   fi
-  echo "The following packages are missing:${MISSING_PACKAGES}
+  if [ "$NO_PROMPT" = "yes" ]; then
+    REPLY=y
+  else
+    echo "The following packages are missing:${MISSING_PACKAGES}
 
 Please install them with the following command:
 
@@ -104,8 +144,9 @@ Please install them with the following command:
 
 You will need root access to run this command.
 "
-  read -p "Would you like to execute it now (y/n)? " -n 1 REPLY 
-  echo
+    read -p "Would you like to execute it now (y/n)? " -n 1 REPLY
+    echo
+  fi
   if [ "$REPLY" = "y" ]; then
     if [ "${SU_CMD}" != "sudo" ]; then
       ${SU_CMD} "${INSTALL_CMD}${MISSING_PACKAGES}"
@@ -127,7 +168,10 @@ if [ -n "${MISSING_OPTIONALS}" ]; then
   if [ "${SU_CMD}" != "sudo" ]; then
     INSTALL_MISSING=\"${INSTALL_MISSING}\"
   fi
-  echo "The following optional packages (required to build the event display) are not installed:${MISSING_OPTIONALS}
+  if [ "$NO_PROMPT" = "yes" ]; then
+    REPLY=$INSTALL_OPTIONAL
+  else
+    echo "The following optional packages (required to build the event display) are not installed:${MISSING_OPTIONALS}
 
 You can install them with the following command:
 
@@ -135,8 +179,9 @@ You can install them with the following command:
 
 You will need root access to run this command.
 "
-  read -p "Would you like to execute it now (y/n)? " -n 1 REPLY 
-  echo
+    read -p "Would you like to execute it now (y/n)? " -n 1 REPLY
+    echo
+  fi
   if [ "$REPLY" = "y" ]; then
     if [ "${SU_CMD}" != "sudo" ]; then
       ${SU_CMD} "${INSTALL_CMD}${MISSING_OPTIONALS}"
