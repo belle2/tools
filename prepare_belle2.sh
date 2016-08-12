@@ -95,7 +95,7 @@ else
   # RH, SL, CentOS
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
-    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel"
+    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel which"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
