@@ -60,7 +60,7 @@ endif
 if ( ! ${?BELLE2_GIT_SERVER} ) then
   if ( ! ${?BELLE2_GIT_ACCESS} ) then
     set BELLE2_GIT_ACCESS=""
-  endif 
+  endif
   if ( "${BELLE2_GIT_ACCESS}" == "ssh" || ( "${BELLE2_GIT_ACCESS}" != "http" && -f ${HOME}/.ssh/id_rsa.pub ) ) then
     setenv BELLE2_GIT_SERVER ssh://git@stash.desy.de:7999
   else
@@ -109,7 +109,8 @@ echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 # check for a newer version
 if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
   pushd ${BELLE2_TOOLS} > /dev/null
-  git fetch --dry-run >& /dev/null
+  set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
+  git fetch --dry-run > ${BELLE2_TMP}
   if ( $? != 0 ) then
     echo
     echo "Warning: Could not access remote git repository in non-interactive mode."
@@ -119,10 +120,7 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
     echo "           git fetch --dry-run"
     echo
   else
-    set BELLE2_TMP=`mktemp /tmp/belle2_tmp.XXXX`
-    git fetch --dry-run |& grep -v X11 > ${BELLE2_TMP}
-    set FETCH_CHECK=`cat $BELLE2_TMP | wc -l`
-    rm -f $BELLE2_TMP
+    set FETCH_CHECK=`cat $BELLE2_TMP | grep -v X11 | wc -l`
     set LOCAL=`git rev-parse HEAD`
     set REMOTE=`git rev-parse @\{upstream\}`
     if ( ${FETCH_CHECK} != 0 || ${LOCAL} != ${REMOTE} ) then
@@ -139,5 +137,6 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
     unset LOCAL
     unset REMOTE
   endif
+  rm -f $BELLE2_TMP
   popd  > /dev/null
 endif
