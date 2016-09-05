@@ -40,7 +40,7 @@ if [ "$?" != "0" ]; then
 fi
 
 # determine revision of previous tag
-DIFFREV=`git for-each-ref --sort=taggerdate --format '%(refname)' refs/tags/${PACKAGE}-* | tail -1`
+DIFFREV=`git for-each-ref --format '%(refname)' refs/tags/${PACKAGE}-* | tail -1`
 if [ "${DIFFREV}" != "" ]; then
   DIFFREV=${DIFFREV}..
 fi
@@ -65,7 +65,7 @@ if [ "${TAG}" != "major" -a "${TAG}" != "minor" -a "${TAG}" != "patch" ]; then
 fi
 
 # determine last tag
-LASTTAG=`git for-each-ref --sort=taggerdate --format '%(refname)' refs/tags/${PACKAGE}-??-??-?? | sed "s;refs/tags/${PACKAGE}-;;g" |tail -1`
+LASTTAG=`git for-each-ref --format '%(refname)' refs/tags/${PACKAGE}-??-??-?? | sed "s;refs/tags/${PACKAGE}-;;g" |tail -1`
 if [ "${LASTTAG}" = "" ]; then
   LASTTAG=00-00-00
 fi
