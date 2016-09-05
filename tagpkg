@@ -5,7 +5,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "Usage: `basename $0` [\"major\"/\"minor\"/\"patch\"(=default)/tag]"
   echo
-  echo "- This command tags the current version of the source code of a package."
+  echo "- This command tags the current version of the source code of a package"
+  echo "  and pushes the tag to the central repository.
   echo "  It has to be called in the package directory of the local release."
   echo "  There should be no locally modified files."
   echo "- If no argument is given, the tag name is chosen automatically by"
