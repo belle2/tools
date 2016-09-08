@@ -55,7 +55,7 @@ elif [ -f /etc/SuSE-release ]; then
     tar gzip bzip2 xz unzip wget libpng-devel xorg-x11-libX11-devel
     xorg-x11-libXext-devel xorg-x11-libXpm-devel xorg-x11-libXft-devel
     ncurses-devel openssl-devel readline-devel"
-  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
+  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
@@ -68,7 +68,7 @@ elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
     libxft-dev libncurses-dev libssl-dev libreadline-dev"
-  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev"
+  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   INSTALL_CMD="apt-get install"
@@ -81,7 +81,7 @@ elif [ -f /etc/debian_version ]; then
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
     libxft-dev libncurses-dev libssl-dev libreadline-dev"
-  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev"
+  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
@@ -96,7 +96,7 @@ else
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
     libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel which"
-  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel"
+  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="yum install"
@@ -171,7 +171,7 @@ if [ -n "${MISSING_OPTIONALS}" ]; then
   if [ "$NO_PROMPT" = "yes" ]; then
     REPLY=$INSTALL_OPTIONAL
   else
-    echo "The following optional packages (required to build the event display) are not installed:${MISSING_OPTIONALS}
+    echo "The following optional packages (required to build the event display or compile doxygen) are not installed:${MISSING_OPTIONALS}
 
 You can install them with the following command:
 
