@@ -20,6 +20,14 @@ if [ -z "${BELLE2_EXTERNALS_DIR}" ]; then
   exit 1
 fi
 
+# Check whether the email address is set
+git config --get user.email &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "Your email address is not set, aborting commit."
+  echo "Please run 'git config --global user.email \"your_email@example.com\"' with your correct email address."
+  exit 1
+fi
+
 # To check the files to be commited we need a temporary dir as there might
 # be differences between the file in the index and the file on disk
 TMPDIR=`mktemp -d`
