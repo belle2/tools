@@ -5,7 +5,7 @@ import sys
 import subprocess
 
 # Exceptions
-exceptions = []
+exceptions = ['genfit2/code2/']
 
 # loop over to be committed files
 os.chdir(sys.argv[1])
