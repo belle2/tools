@@ -72,22 +72,25 @@ fi
 # try the binary version if the operating system is given
 if [ $# -gt 1 ]; then
   wget -O - --tries=3 ${BELLE2_DOWNLOAD}/releases/${VERSION}_$2.tgz | tar xz
-  RESULT=$?
-  if [ "${RESULT}" = "0" ]; then
+  if [ "$?" = "0" ]; then
     exit 0
   fi
 fi
 
-# check whether the given version is available in the git repository
-VERSION_EXISTS=`git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} ${VERSION} | wc -l`
-if [ "${VERSION_EXISTS}" = "0" ]; then
-  echo "Error: The basf2 version ${VERSION} does not exist." 1>&2
-  exit 1
-fi
-git archive --format=tar.gz --prefix=${VERSION}/ --remote=${BELLE2_SOFTWARE_REPOSITORY} ${VERSION} | tar xzv
-if [ "$?" != 0 ]; then
-  echo "Error: The download of ${VERSION} from the git repository failed." 1>&2
-  exit 2
+# try the source version
+wget -O - --tries=3 ${BELLE2_DOWNLOAD}/releases/${VERSION}_src.tgz | tar xz
+if [ "$?" != "0" ]; then
+  # check whether the given version is available in the git repository
+  VERSION_EXISTS=`git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} ${VERSION} | wc -l`
+  if [ "${VERSION_EXISTS}" = "0" ]; then
+    echo "Error: The basf2 version ${VERSION} does not exist." 1>&2
+    exit 1
+  fi
+  git archive --format=tar.gz --prefix=${VERSION}/ --remote=${BELLE2_SOFTWARE_REPOSITORY} ${VERSION} | tar xzv
+  if [ "$?" != 0 ]; then
+    echo "Error: The download of ${VERSION} from the git repository failed." 1>&2
+    exit 2
+  fi
 fi
 
 # build basf2
