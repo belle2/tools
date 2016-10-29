@@ -219,7 +219,8 @@ else
 
     ${ASTYLE} --recursive \*.{h,cc}
     for i in `find . -name \\*.py`; do
-      ${AUTOPEP8} $i
+      ${AUTOPEP8} "$i"
+      checkstyle "$i" || echo "Some problems in '$i' could not be fixed, please resolve them manually."
     done
 
   # fix the specified files
@@ -230,9 +231,10 @@ else
       elif [ -L $i ]; then
         echo "skipping symbolic link $1"
       elif [ `echo $i| grep "\.py$"` ]; then
-        ${AUTOPEP8} $i
+        ${AUTOPEP8} "$i"
+        checkstyle "$i" || echo "Some problems in '$i' could not be fixed, please resolve them manually."
       elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
-        ${ASTYLE} $i
+        ${ASTYLE} "$i"
       else
         echo "File of unknown type not formatted: $i"
       fi
