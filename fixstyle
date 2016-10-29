@@ -140,7 +140,8 @@ function Pep8Check ()
     fi
     rm -f $TMP
 
-    file $1 | grep "$1:.*with CRLF line terminators" > /dev/null 2> /dev/null
+    # call file, disable magic checking
+    LC_ALL=C file -b -m /dev/null $1 | grep "with CRLF line terminators" > /dev/null 2> /dev/null
     if [ "$?" != 1 ]; then
       FAIL=1
       echo "$1: file has DOS-style (CRLF) line-endings, please use dos2unix or your editor configuration to fix it"
