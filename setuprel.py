@@ -53,12 +53,19 @@ if 'MY_BELLE2_DIR' in os.environ:
     os.chdir(os.environ['MY_BELLE2_DIR'])
 
 # if the release version is given as argument or environment variable take it from there
-local_release = None
 release = None
 if len(sys.argv) == 2:
     release = sys.argv[1]
 elif 'MY_BELLE2_RELEASE' in os.environ:
     release = os.environ['MY_BELLE2_RELEASE']
+
+# determine local release version and directory by looking for .release file in current and parent directories
+local_release = None
+local_dir = os.path.abspath(os.getcwd())
+while len(local_dir) > 1 and not os.path.isfile(os.path.join(local_dir, '.release')):
+    local_dir = os.path.dirname(local_dir)
+if os.path.isfile(os.path.join(local_dir, '.release')):
+    local_release = open(os.path.join(local_dir, '.release')).readline().strip()
 
 # if central release version given:
 if release:
@@ -70,19 +77,15 @@ if release:
         sys.exit(1)
 
     # check whether it matches the release in the current directory
-    if os.path.isfile('.release'):
-        local_release = open('.release').readline().strip()
-
-        if local_release != release:
-            sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s).\n'
-                             % (release, local_release))
+    if local_release and local_release != release:
+        sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s).\n'
+                         % (release, local_release))
 else:  # if no central release version given:
-    # check whether we are in a release directory and take the release version from there
-    if not os.path.isfile('.release'):
+
+    if not local_release:
         sys.stderr.write('Error: Not in a release directory.\n')
         sys.exit(1)
 
-    local_release = open('.release').readline().strip()
     if len(local_release) == 0:
         sys.stderr.write('Error: The .release file is empty.\n')
         sys.exit(1)
@@ -93,10 +96,10 @@ else:  # if no central release version given:
 unsetup_old_release()
 
 # add the new release
-update_environment(release, local_release, os.getcwd())
+update_environment(release, local_release, local_dir)
 
 # check SConstruct is a symlink to site_scons/SConstruct
-if local_release and not os.path.islink('SConstruct'):
+if local_release and not os.path.islink(os.path.join(local_dir, 'SConstruct')):
     sys.stderr.write(
         'ERROR: "SConstruct" should be a symbolic link to site_scons/SConstruct, but it doesn\'t exist or is a copy.\n')
     sys.stderr.write('Please remove it and recreate the link with\n')
@@ -111,8 +114,8 @@ if len(get_var('BELLE2_LOCAL_DIR')) > 0:
     print('echo "Local release directory      : ${BELLE2_LOCAL_DIR}"')
 
 # set the build option if a .option file exists in the local release directory
-if os.path.isfile('.option'):
-    build_option = open('.option').readline().strip()
+if os.path.isfile(os.path.join(local_dir, '.option')):
+    build_option = open(os.path.join(local_dir, '.option')).readline().strip()
     print('setoption %s' % build_option)
 
 # check the externals and warn the user if the check fails
