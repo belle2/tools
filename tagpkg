@@ -40,6 +40,13 @@ if [ "$?" != "0" ]; then
   exit 1
 fi
 
+# check whether there are unpushed commits
+UNPUSHED=`git rev-list origin..HEAD | wc -l`
+if [ "$UNPUSHED" != "0" ]; then
+  echo "Error: There are unpushed commits." 1>&2
+  exit 1
+fi
+
 # determine revision of previous tag
 DIFFREV=`git for-each-ref --format '%(refname)' refs/tags/${PACKAGE}-* | tail -1`
 if [ "${DIFFREV}" != "" ]; then
