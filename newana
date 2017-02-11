@@ -43,7 +43,7 @@ fi
 # check whether this analysis git repository already exists
 ANALYSIS_NAME=${BELLE2_USER}_${DIR}
 ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
-REPOSITORY_EXISTS=`git ls-remote ${ANALYSIS_REPOSITORY} master | wc -l`
+REPOSITORY_EXISTS=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
 if [ "${REPOSITORY_EXISTS}" = "1" ]; then
   echo "Error: The analysis git repository for analysis ${DIR} already exists." 1>&2
   exit 1
@@ -57,6 +57,7 @@ if [ "$?" = "0" ]; then
   git clone ${ANALYSIS_REPOSITORY} ${DIR}
   cd ${DIR}
 else
+  echo "WARNING: The creation of the analysis directory on the stash server failed. Go to https://stash.desy.de/projects/B2A, click \"Create repository\", then enter the Name \"${ANALYSIS_NAME}\" and click the \"Create repository\" button."
   REMOTE_EXISTS=0
   mkdir ${DIR}
   cd ${DIR}
