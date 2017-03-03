@@ -103,7 +103,7 @@ echo "Belle II software tools set up at: ${BELLE2_TOOLS}"
 if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
   pushd ${BELLE2_TOOLS} > /dev/null
   tmp=`mktemp /tmp/belle2_tmp.XXXX`
-  git fetch --dry-run 2>&1 > $tmp
+  git fetch --dry-run 2> $tmp
   if [ $? != 0 ]; then
     echo
     echo "Warning: Could not access remote git repository in non-interactive mode."
