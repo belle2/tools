@@ -4,6 +4,11 @@ import sys
 import os
 import subprocess
 
+try:
+    from importlib import reload
+except ImportError:
+    pass
+
 # determine whether we have a csh family kind of shell
 shell = (subprocess.Popen(('ps -p %d -o comm=' % os.getppid()).split(),
                           stdout=subprocess.PIPE).communicate()[0])[:-1]
