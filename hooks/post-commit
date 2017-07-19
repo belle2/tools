@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Check only merge commits
+COMMIT=`git rev-list -n 1 HEAD`
+MERGE=`git rev-list -n 1 --merges HEAD`
+if [ "$COMMIT" != "$MERGE" ]; then
+  exit 0
+fi
+
+# Merge commits to the master are already checked in the pre-commit hook
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+if [ "$BRANCH" = "master" ]; then
+  exit 0
+fi
+
+# Create temporary directory for modified files
+TMPDIR=`mktemp -d`
+if [ $? -ne 0 ]; then
+  echo "Problem creating temp dir, aborting commit."
+  exit 1
+fi
+
+# Find out which files were modified
+FILES_MODIFIED=`git diff-tree --cc --no-commit-id --root -r --name-only HEAD`
+# Place a copy of the committed versions in the temp dir
+for FILE in ${FILES_MODIFIED}; do
+  git checkout-index --prefix=${TMPDIR}/ -- "${FILE}" &> /dev/null
+done
+
+RESULT=0
+
+# Check the code style
+${BELLE2_TOOLS}/hooks/check_style.py ${TMPDIR}
+if [ $? -ne 0 ]; then
+  RESULT=2
+fi
+
+# Check the file sizes
+${BELLE2_TOOLS}/hooks/check_size.py ${TMPDIR}
+if [ $? -ne 0 ]; then
+  RESULT=3
+fi
+
+# Clean up the temp dir
+rm -r ${TMPDIR}
+
+# Print a warning if the commit will be blocked by the server hook
+if [ $RESULT -ne 0 ]; then
+  echo
+  echo "*** WARNING: You will not be able to push the merge commit ${COMMIT} ***"
+fi
+
+exit $RESULT
