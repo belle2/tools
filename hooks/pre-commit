@@ -28,6 +28,15 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Do not check merge commits to non-master branches
+BRANCH=`git rev-parse --abbrev-ref HEAD`
+if [ "$BRANCH" != "master" ]; then
+  MERGE=`git rev-parse -q --verify MERGE_HEAD`
+  if [ -n "$MERGE" ]; then
+    exit 0
+  fi
+fi
+
 # To check the files to be commited we need a temporary dir as there might
 # be differences between the file in the index and the file on disk
 TMPDIR=`mktemp -d`
@@ -66,7 +75,6 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check the access rights
-BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ "$BRANCH" = "master" ]; then
   if [ "$BELLE2_ACCESS_CHECK" != "no" ]; then
     ${BELLE2_TOOLS}/hooks/check_access.py ${TMPDIR}
