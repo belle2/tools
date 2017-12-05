@@ -49,16 +49,16 @@ if [ `uname` = Darwin ]; then
   SU_CMD="sudo"
   INSTALL_CMD="fink install"
 
-elif [ -f /etc/SuSE-release ]; then
+elif [ -f /etc/SUSE-brand ]; then
   # OpenSUSE
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
-    tar gzip bzip2 xz unzip wget libpng-devel xorg-x11-libX11-devel
-    xorg-x11-libXext-devel xorg-x11-libXpm-devel xorg-x11-libXft-devel
-    ncurses-devel openssl-devel readline-devel"
-  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
+  PACKAGES="binutils gcc gcc-c++ git make patch patterns-devel-perl-devel_perl
+    python subversion tar gzip bzip2 xz unzip wget libpng-devel libX11-devel
+    libXext-devel libXpm-devel libXft-devel ncurses-devel libopenssl-devel
+    readline-devel"
+  OPTIONALS="tk-devel tcl-devel glew-devel Mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
-  INSTALL_CMD="yum install"
+  INSTALL_CMD="zypper in"
   if [ "$NO_PROMPT" = "yes" ]; then
     INSTALL_CMD="yum install -y"
   fi
