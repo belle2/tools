@@ -60,7 +60,7 @@ elif [ -f /etc/SUSE-brand ]; then
   SU_CMD="su -c"
   INSTALL_CMD="zypper in"
   if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="yum install -y"
+    INSTALL_CMD="zypper in -y"
   fi
 
 elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
