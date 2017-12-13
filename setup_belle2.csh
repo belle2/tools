@@ -121,7 +121,7 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
     echo "-------> Please make sure you can successfully run the following command"
     echo "         WITHOUT interactive input:"
     echo
-    echo "           git fetch --dry-run"
+    echo "           git -C ${BELLE2_TOOLS} fetch --dry-run"
     echo
   else
     set FETCH_CHECK=`cat $BELLE2_TMP | grep -v X11 | wc -l`
