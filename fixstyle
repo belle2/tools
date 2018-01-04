@@ -81,10 +81,31 @@ DIFF="diff -u"
 declare -i COUNT
 COUNT=0
 
+# define function for detecting imported files
+function IsImported ()
+{
+  DIR=`dirname $1`
+  while true; do
+    if [ -f ${DIR}/.imported ]; then
+      echo "ignoring imported file $1"
+      return 1
+    fi
+    NEWDIR=`dirname $DIR`
+    if [ "${NEWDIR}" == "${DIR}" ]; then
+      return 0
+    fi
+    DIR=${NEWDIR}
+  done
+}
+
 # define function for C++ code style checking
 function AstyleCheck ()
 {
   if [ ! -L $1 ]; then
+    IsImported "$1"
+    if [ "$?" == 1 ]; then
+      return
+    fi
     RESULT=1
     TMP=`mktemp`
     TMP2=`mktemp`
@@ -108,6 +129,10 @@ function AstyleCheck ()
 function Autopep8Check ()
 {
   if [ ! -L $1 ]; then
+    IsImported "$1"
+    if [ "$?" == 1 ]; then
+      return
+    fi
     RESULT=1
     TMP=`mktemp`
     TMP2=`mktemp`
@@ -132,6 +157,10 @@ function Pep8Check ()
 {
   FAIL=0
   if [ ! -L $1 ]; then
+    IsImported "$1"
+    if [ "$?" == 1 ]; then
+      return
+    fi
     TMP=`mktemp`
     ${PEP8} $1 > $TMP 2> /dev/null
     if [ "$?" != 0 ]; then
@@ -218,8 +247,18 @@ else
       fi
     fi
 
-    ${ASTYLE} --recursive \*.{h,cc}
+    for i in `find . -name \\*.h; find . -name \\*.cc`; do
+      IsImported "$i"
+      if [ "$?" == 1 ]; then
+        continue
+      fi
+      ${ASTYLE} "$i"
+    done
     for i in `find . -name \\*.py`; do
+      IsImported "$i"
+      if [ "$?" == 1 ]; then
+        continue
+      fi
       ${AUTOPEP8} "$i"
       checkstyle "$i" || echo "Some problems in '$i' could not be fixed, please resolve them manually."
     done
@@ -232,9 +271,17 @@ else
       elif [ -L $i ]; then
         echo "skipping symbolic link $1"
       elif [ `echo $i| grep "\.py$"` ]; then
+        IsImported "$i"
+        if [ "$?" == 1 ]; then
+          continue
+        fi
         ${AUTOPEP8} "$i"
         checkstyle "$i" || echo "Some problems in '$i' could not be fixed, please resolve them manually."
       elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
+        IsImported "$i"
+        if [ "$?" == 1 ]; then
+          continue
+        fi
         ${ASTYLE} "$i"
       else
         echo "File of unknown type not formatted: $i"
