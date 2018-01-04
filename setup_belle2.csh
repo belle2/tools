@@ -132,7 +132,7 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
       echo "WARNING: The version of the tools you are using is outdated."
       echo "-------> Please update the tools with"
       echo
-      echo "           git pull --rebase"
+      echo "           git -C ${BELLE2_TOOLS} pull --rebase"
       echo
       echo "         and source the new setup_belle2 script."
       echo
