@@ -10,6 +10,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "- By default it checks all C++ and python files in the current directory and"
   echo "  its subfolders recursively."
   echo "- Individual files can be checked explicitly by giving them as argument."
+  echo "  If they do not have the standard extension of .cc/.h or .py one can add"
+  echo "  .cc or .py to the file name to select the check style."
   echo "- If the -n option is used, only the changes that the fixstyle would apply"
   echo "  are printed. The files are not modified. The return code gives the number"
   echo "  of files that would be changed."
@@ -91,7 +93,7 @@ function IsImported ()
       return 1
     fi
     NEWDIR=`dirname $DIR`
-    if [ "${NEWDIR}" == "${DIR}" ]; then
+    if [ "${NEWDIR}" = "${DIR}" ]; then
       return 0
     fi
     DIR=${NEWDIR}
@@ -103,15 +105,15 @@ function AstyleCheck ()
 {
   if [ ! -L $1 ]; then
     IsImported "$1"
-    if [ "$?" == 1 ]; then
+    if [ "$?" = 1 ]; then
       return
     fi
     RESULT=1
     TMP=`mktemp`
     TMP2=`mktemp`
     ${ASTYLE} < $1 > $TMP 2> $TMP2
-    if [ "$?" == 0 ]; then
-      if [ "`diff $1 $TMP | wc -l`" == "0" ]; then
+    if [ "$?" = 0 ]; then
+      if [ "`diff $1 $TMP | wc -l`" = "0" ]; then
         RESULT=0
       else
         echo "$1:"
@@ -130,15 +132,15 @@ function Autopep8Check ()
 {
   if [ ! -L $1 ]; then
     IsImported "$1"
-    if [ "$?" == 1 ]; then
+    if [ "$?" = 1 ]; then
       return
     fi
     RESULT=1
     TMP=`mktemp`
     TMP2=`mktemp`
     ${AUTOPEP8CHECK} $1 > $TMP 2> $TMP2
-    if [ "$?" == 0 ]; then
-      if [ "`diff $1 $TMP | wc -l`" == "0" ]; then
+    if [ "$?" = 0 ]; then
+      if [ "`diff $1 $TMP | wc -l`" = "0" ]; then
         RESULT=0
       else
         echo "$1:"
@@ -158,7 +160,7 @@ function Pep8Check ()
   FAIL=0
   if [ ! -L $1 ]; then
     IsImported "$1"
-    if [ "$?" == 1 ]; then
+    if [ "$?" = 1 ]; then
       return
     fi
     TMP=`mktemp`
@@ -213,12 +215,20 @@ if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-c" ]; then
   # check the specified files
   else
     for i in $*; do
-      if [ ! -e $i ]; then
+      FILE="$i"
+      CHECK=None
+      if [ `echo ${FILE}| grep "\.py$"` ]; then
+        CHECK=${PYTHONCHECK}
+      elif [ `echo ${FILE}| grep "\.h$\|\.cc$"` ]; then
+        CHECK=AstyleCheck
+      fi
+      if [ ! -e ${FILE} -a "${CHECK}" != "None" ]; then
+        FILE=${FILE%.*}
+      fi
+      if [ ! -e ${FILE} ]; then
         echo "The file $i does not exist"
-      elif [ `echo $i| grep "\.py$"` ]; then
-        ${PYTHONCHECK} $i
-      elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
-        AstyleCheck $i
+      elif [ "${CHECK}" != "None" ]; then
+        ${CHECK} "${FILE}"
       else
         echo "File of unknown type not checked: $i"
       fi
@@ -249,14 +259,14 @@ else
 
     for i in `find . -name \\*.h; find . -name \\*.cc`; do
       IsImported "$i"
-      if [ "$?" == 1 ]; then
+      if [ "$?" = 1 ]; then
         continue
       fi
       ${ASTYLE} "$i"
     done
     for i in `find . -name \\*.py`; do
       IsImported "$i"
-      if [ "$?" == 1 ]; then
+      if [ "$?" = 1 ]; then
         continue
       fi
       ${AUTOPEP8} "$i"
@@ -266,23 +276,29 @@ else
   # fix the specified files
   else
     for i in $*; do
-      if [ ! -e $i ]; then
+      FILE="$i"
+      CHECK=None
+      if [ `echo ${FILE}| grep "\.py$"` ]; then
+        CHECK=${AUTOPEP8}
+      elif [ `echo ${FILE}| grep "\.h$\|\.cc$"` ]; then
+        CHECK=${ASTYLE}
+      fi
+      if [ ! -e ${FILE} -a "${CHECK}" != "None" ]; then
+        FILE=${FILE%.*}
+      fi
+      if [ ! -e ${FILE} ]; then
         echo "The file $i does not exist"
-      elif [ -L $i ]; then
-        echo "skipping symbolic link $1"
-      elif [ `echo $i| grep "\.py$"` ]; then
-        IsImported "$i"
-        if [ "$?" == 1 ]; then
+      elif [ -L ${FILE} ]; then
+        echo "skipping symbolic link ${FILE}"
+      elif [ "${CHECK}" != "None" ]; then
+        IsImported "${FILE}"
+        if [ "$?" = 1 ]; then
           continue
         fi
-        ${AUTOPEP8} "$i"
-        checkstyle "$i" || echo "Some problems in '$i' could not be fixed, please resolve them manually."
-      elif [ `echo $i| grep "\.h$\|\.cc$"` ]; then
-        IsImported "$i"
-        if [ "$?" == 1 ]; then
-          continue
+        ${CHECK} "${FILE}"
+        if [ `echo $i| grep "\.py$"` ]; then
+          checkstyle "${FILE}" || echo "Some problems in '${FILE}' could not be fixed, please resolve them manually."
         fi
-        ${ASTYLE} "$i"
       else
         echo "File of unknown type not formatted: $i"
       fi
