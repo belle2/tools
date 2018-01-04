@@ -67,11 +67,11 @@ ASTYLE="${ASTYLE_TOOL} \
 --formatted"
 
 # autopep8 command
-AUTOPEP8CHECK="autopep8 --aggressive --aggressive --max-line-length=132"
+AUTOPEP8CHECK="autopep8 --aggressive --aggressive --ignore-local-config --global-config ${BELLE2_TOOLS}/pep8.cfg"
 AUTOPEP8="${AUTOPEP8CHECK} --in-place"
 
 # pep8 command
-PEP8="pep8 --max-line-length=132"
+PEP8="pep8 --config=${BELLE2_TOOLS}/pep8.cfg"
 
 # diff command
 DIFF="diff -u"
