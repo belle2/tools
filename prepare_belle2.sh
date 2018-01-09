@@ -26,6 +26,14 @@ EOT
     esac
 done
 
+
+# If /etc/os-release is present, read system identifer from it
+OS_RELEASE_ID="<unknown>"
+if [ -f /etc/os-release ]; then
+  OS_RELEASE_ID=`(source /etc/os-release && echo $ID)`
+fi
+
+
 if [ `uname` = Darwin ]; then
   # Mac OS
   MISSING=""
@@ -49,21 +57,21 @@ if [ `uname` = Darwin ]; then
   SU_CMD="sudo"
   INSTALL_CMD="fink install"
 
-elif [ -f /etc/SuSE-release ]; then
-  # OpenSUSE
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
-    tar gzip bzip2 xz unzip wget libpng-devel xorg-x11-libX11-devel
-    xorg-x11-libXext-devel xorg-x11-libXpm-devel xorg-x11-libXft-devel
-    ncurses-devel openssl-devel readline-devel"
-  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
+elif [ $OS_RELEASE_ID == "opensuse" ] || [ $OS_RELEASE_ID == "sles" ]; then
+  # OpenSUSE or SUSE Linux Entreprise Server
+  PACKAGES="binutils gcc gcc-c++ git make patch pattern:devel_perl
+    python subversion tar gzip bzip2 xz unzip wget libpng-devel libX11-devel
+    libXext-devel libXpm-devel libXft-devel ncurses-devel libopenssl-devel
+    readline-devel"
+  OPTIONALS="tk-devel tcl-devel glew-devel Mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
-  INSTALL_CMD="yum install"
+  INSTALL_CMD="zypper in"
   if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="yum install -y"
+    INSTALL_CMD="zypper in -y"
   fi
 
-elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
+elif [ $OS_RELEASE_ID == "ubuntu" ]; then
   # Ubuntu
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
@@ -76,7 +84,7 @@ elif [ -f /etc/lsb-release -a ! -f /etc/redhat-release ]; then
     INSTALL_CMD="apt-get install -y"
   fi
 
-elif [ -f /etc/debian_version ]; then
+elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
@@ -88,6 +96,7 @@ elif [ -f /etc/debian_version ]; then
   if [ "$NO_PROMPT" = "yes" ]; then
     INSTALL_CMD="apt-get install -y"
   fi
+
 else
   if [ ! -f /etc/redhat-release ]; then
     echo "Unknown linux distribution. Trying installation with yum..."
