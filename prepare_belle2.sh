@@ -49,9 +49,9 @@ if [ `uname` = Darwin ]; then
   SU_CMD="sudo"
   INSTALL_CMD="fink install"
 
-elif [ -f /etc/SUSE-brand ]; then
+elif [ -f /etc/SuSE-release ] || [ -f /etc/SUSE-brand ]; then
   # OpenSUSE
-  PACKAGES="binutils gcc gcc-c++ git make patch patterns-devel-perl-devel_perl
+  PACKAGES="binutils gcc gcc-c++ git make patch pattern:devel_perl
     python subversion tar gzip bzip2 xz unzip wget libpng-devel libX11-devel
     libXext-devel libXpm-devel libXft-devel ncurses-devel libopenssl-devel
     readline-devel"
