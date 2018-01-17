@@ -226,7 +226,7 @@ for method in ['initialize', 'beginRun', 'event', 'endRun', 'terminate', 'destru
     if selected:
         if method == 'destructor':
             methods_header = '''    /** %s */
-    virtual ~%sModule();
+    virtual ~%sModule() override;
 
 ''' \
                 % (method_desc, module) + methods_header
@@ -239,7 +239,7 @@ for method in ['initialize', 'beginRun', 'event', 'endRun', 'terminate', 'destru
         else:
             methods_header = methods_header \
                 + '''    /** %s */
-    virtual void %s();
+    virtual void %s() override;
 
 ''' % (method_desc,
                     method)
