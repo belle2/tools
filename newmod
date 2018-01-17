@@ -3,7 +3,6 @@
 
 import sys
 import os
-import pwd
 import subprocess
 import datetime
 
@@ -183,22 +182,14 @@ while True:
     header_includes.append(io_class)
     if io_branch != '':
         ctor_src = ctor_src + ', m_%s("%s")' % (io_name, io_branch)
-    init_src = init_src + '  m_%s.registerInDataStore(%s);\n' % (io_name,
-             io_storeFlag)
+    init_src = init_src + '  m_%s.registerInDataStore(%s);\n' % (io_name, io_storeFlag)
 
 # get module methods
 methods_header = ''
 methods_src = ''
 sys.stdout.write("""Please select the required module methods:
 """)
-for method in [
-    'initialize',
-    'beginRun',
-    'event',
-    'endRun',
-    'terminate',
-    'destructor',
-    ]:
+for method in ['initialize', 'beginRun', 'event', 'endRun', 'terminate', 'destructor']:
     if method == 'initialize' and init_src != '':
         selected = True
         method_desc = 'Register input and output data'
