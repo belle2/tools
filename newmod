@@ -18,6 +18,24 @@ This command creates a source code template for a module.
 
 module = sys.argv[1]
 
+
+def default_member_name(class_name):
+    """
+    Return a default member name for a given class name
+
+    Convert first letter of classname to lower case. If more than one capital
+    letter in the beginning (probably detector name), convert all but the last
+    capital letter in the beginning to lower case
+    """
+    default_name = list(class_name)
+    for i, c in enumerate(default_name):
+        if i == 0 or class_name[i:i+2].isupper():
+            default_name[i] = c.lower()
+        else:
+            break
+    return "".join(default_name)
+
+
 # define relpath for python < 2.6
 if not hasattr(os.path, 'relpath'):
 
@@ -143,8 +161,11 @@ while True:
         io_required = 'optional'
     sys.stdout.write('    Branch name [default]: ')
     io_branch = sys.stdin.readline().strip('\n')
-    sys.stdout.write('    Variable name        : ')
+    io_default_name = default_member_name(io_class)
+    sys.stdout.write('    Variable name [%s]: ' % io_default_name)
     io_name = sys.stdin.readline().strip('\n')
+    if not io_name:
+        io_name = io_default_name
     sys.stdout.write('    Description          : ')
     io_desc = sys.stdin.readline().strip('\n')
     init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
@@ -172,8 +193,11 @@ while True:
         io_storeFlag = 'DataStore::c_DontWriteOut'
     sys.stdout.write('    Branch name [default]: ')
     io_branch = sys.stdin.readline().strip('\n')
-    sys.stdout.write('    Variable name        : ')
+    io_default_name = default_member_name(io_class)
+    sys.stdout.write('    Variable name [%s]: ' % io_default_name)
     io_name = sys.stdin.readline().strip('\n')
+    if not io_name:
+        io_name = io_default_name
     sys.stdout.write('    Description          : ')
     io_desc = sys.stdin.readline().strip('\n')
     init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
