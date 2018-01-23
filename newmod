@@ -3,7 +3,6 @@
 
 import sys
 import os
-import pwd
 import subprocess
 import datetime
 
@@ -18,6 +17,24 @@ This command creates a source code template for a module.
     sys.exit(0)
 
 module = sys.argv[1]
+
+
+def default_member_name(class_name):
+    """
+    Return a default member name for a given class name
+
+    Convert first letter of classname to lower case. If more than one capital
+    letter in the beginning (probably detector name), convert all but the last
+    capital letter in the beginning to lower case
+    """
+    default_name = list(class_name)
+    for i, c in enumerate(default_name):
+        if i == 0 or class_name[i:i+2].isupper():
+            default_name[i] = c.lower()
+        else:
+            break
+    return "".join(default_name)
+
 
 # define relpath for python < 2.6
 if not hasattr(os.path, 'relpath'):
@@ -144,8 +161,11 @@ while True:
         io_required = 'optional'
     sys.stdout.write('    Branch name [default]: ')
     io_branch = sys.stdin.readline().strip('\n')
-    sys.stdout.write('    Variable name        : ')
+    io_default_name = default_member_name(io_class)
+    sys.stdout.write('    Variable name [%s]: ' % io_default_name)
     io_name = sys.stdin.readline().strip('\n')
+    if not io_name:
+        io_name = io_default_name
     sys.stdout.write('    Description          : ')
     io_desc = sys.stdin.readline().strip('\n')
     init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
@@ -173,8 +193,11 @@ while True:
         io_storeFlag = 'DataStore::c_DontWriteOut'
     sys.stdout.write('    Branch name [default]: ')
     io_branch = sys.stdin.readline().strip('\n')
-    sys.stdout.write('    Variable name        : ')
+    io_default_name = default_member_name(io_class)
+    sys.stdout.write('    Variable name [%s]: ' % io_default_name)
     io_name = sys.stdin.readline().strip('\n')
+    if not io_name:
+        io_name = io_default_name
     sys.stdout.write('    Description          : ')
     io_desc = sys.stdin.readline().strip('\n')
     init_header = init_header + '    Store%s<%s> m_%s; /**< %s */\n' \
@@ -183,22 +206,14 @@ while True:
     header_includes.append(io_class)
     if io_branch != '':
         ctor_src = ctor_src + ', m_%s("%s")' % (io_name, io_branch)
-    init_src = init_src + '  m_%s.registerInDataStore(%s);\n' % (io_name,
-             io_storeFlag)
+    init_src = init_src + '  m_%s.registerInDataStore(%s);\n' % (io_name, io_storeFlag)
 
 # get module methods
 methods_header = ''
 methods_src = ''
 sys.stdout.write("""Please select the required module methods:
 """)
-for method in [
-    'initialize',
-    'beginRun',
-    'event',
-    'endRun',
-    'terminate',
-    'destructor',
-    ]:
+for method in ['initialize', 'beginRun', 'event', 'endRun', 'terminate', 'destructor']:
     if method == 'initialize' and init_src != '':
         selected = True
         method_desc = 'Register input and output data'
@@ -211,7 +226,7 @@ for method in [
     if selected:
         if method == 'destructor':
             methods_header = '''    /** %s */
-    virtual ~%sModule();
+    virtual ~%sModule() override;
 
 ''' \
                 % (method_desc, module) + methods_header
@@ -224,7 +239,7 @@ for method in [
         else:
             methods_header = methods_header \
                 + '''    /** %s */
-    virtual void %s();
+    virtual void %s() override;
 
 ''' % (method_desc,
                     method)
@@ -279,67 +294,49 @@ WARNING: The header files for the following classes were not found:
 f = open(header, 'w')
 f.write("""/**************************************************************************
  * BASF2 (Belle Analysis Framework 2)                                     *
- * Copyright(C) %d - Belle II Collaboration                             *
+ * Copyright(C) %(year)d - Belle II Collaboration                             *
  *                                                                        *
  * Author: The Belle II Collaboration                                     *
- * Contributors: %-50s       *
+ * Contributors: %(author)-50s       *
  *                                                                        *
  * This software is provided "as is" without any warranty.                *
  **************************************************************************/
 
-#ifndef %sMODULE_H
-#define %sMODULE_H
+#pragma once
 
 #include <framework/core/Module.h>
-%s
+%(includes)s
 
 namespace Belle2 {
   /**
-   * %s
+   * %(short_description)s
    *
-   * %s   *
+   * %(long_description)s
    */
-  class %sModule : public Module {
+  class %(module)sModule : public Module {
 
   public:
 
     /**
      * Constructor: Sets the description, the properties and the parameters of the module.
      */
-    %sModule();
+    %(module)sModule();
 
-%s
+%(methods)s
   private:
 
-%s%s  };
+%(members)s  };
 }
-
-#endif /* %sMODULE_H */
-"""
-        % (  # year
-             # copyright
-             # include guards
-             # include statements
-             # doxygen comments
-             # class name
-             # constructor
-             # methods
-             # parameters and datastore objects
-             # include guards comment
-    datetime.datetime.now().year,
-    author,
-    module.upper(),
-    module.upper(),
-    includes_header,
-    short_desc,
-    '   * '.join(long_desc),
-    module,
-    module,
-    methods_header,
-    params_header,
-    init_header,
-    module.upper(),
-    ))
+""" % {
+    'year': datetime.datetime.now().year,
+    'author': author,
+    'includes': includes_header,
+    'short_description': short_desc,
+    'long_description': '   * '.join(long_desc),
+    'module': module,
+    'methods': methods_header,
+    'members': params_header + init_header,
+})
 f.close()
 
 # write the source file
@@ -347,59 +344,61 @@ path = ''
 f = open(src, 'w')
 f.write("""/**************************************************************************
  * BASF2 (Belle Analysis Framework 2)                                     *
- * Copyright(C) 2013 - Belle II Collaboration                             *
+ * Copyright(C) %(year)d - Belle II Collaboration                             *
  *                                                                        *
  * Author: The Belle II Collaboration                                     *
- * Contributors: %-50s       *
+ * Contributors: %(author)-50s       *
  *                                                                        *
  * This software is provided "as is" without any warranty.                *
  **************************************************************************/
 
-#include <%s>
-%s
+#include <%(module_header)s>
+
+/* --------------- WARNING ---------------------------------------------- *
+If you have more complex parameter types in your class then simple int,
+double or std::vector of those you might need to uncomment the following
+include directive to avoid an undefined reference on compilation.
+ * ---------------------------------------------------------------------- */
+// #include <framework/core/ModuleParam.templateDetails.h>
+
+%(includes)s
 
 using namespace Belle2;
 
 //-----------------------------------------------------------------
 //                 Register the Module
 //-----------------------------------------------------------------
-REG_MODULE(%s)
+REG_MODULE(%(module)s)
 
 //-----------------------------------------------------------------
 //                 Implementation
 //-----------------------------------------------------------------
 
-%sModule::%sModule() : Module()%s
+%(module)sModule::%(module)sModule() : Module()%(constructor)s
 {
   // Set module properties
-  setDescription("%s");
+  setDescription(R"DOC("%(short_description)s
+
+%(long_description)s
+  )DOC");
 
   // Parameter definitions
-%s
+%(params)s
 }
 
-%s
-"""
-        % (  # copyright
-             # include path
-             # include statements
-             # module registration
-             # constructor
-             # module description
-             # module parameters
-             # implementation of methods
-    author,
-    os.path.relpath(os.path.join(os.getcwd(), '%sModule.h' % module),
-                    local_dir),
-    includes_src,
-    module,
-    module,
-    module,
-    ctor_src,
-    short_desc,
-    params_src,
-    methods_src,
-    ))
+%(methods)s
+""" % {
+    'year': datetime.datetime.now().year,
+    'author': author,
+    'module_header': os.path.relpath(os.path.join(os.getcwd(), '%sModule.h' % module), local_dir),
+    'includes': includes_src,
+    'short_description': short_desc,
+    'long_description': '\n'.join(e.strip() for e in long_desc),
+    'module': module,
+    'constructor': ctor_src,
+    'methods': methods_src,
+    'params': params_src,
+})
 f.close()
 
 # add new files to git
