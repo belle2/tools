@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [-l] [-s]"
+  echo
+  echo "- This command lists the available packages."
+  echo "  If the -l option is used, the responsible librarians"
+  echo "  are printed as well."
+  echo "  If the -s option is used, locally installed packages"
+  echo "  are suppressed."
+  echo "  It has to be called in the local release directory."
+  echo
+  exit 0
+fi
+
+# read arguments
+LIST_LIBRARIANS=no
+LIST_LOCAL=yes
+while [ $# -gt 0 ]; do
+  if [ "$1" = "-l" ]; then
+    LIST_LIBRARIANS=yes
+  elif [ "$1" = "-s" ]; then
+    LIST_LOCAL=no
+  elif [ "$1" = "-ls" -o "$1" = "-sl" ]; then
+    LIST_LIBRARIANS=yes
+    LIST_LOCAL=no
+  else
+    echo "Error: Invalid argument $1." 1>&2
+    exit 1
+  fi
+  shift
+done
+
+# get list of packages
+if [ ! -f .release ]; then
+  echo "Error: Not in a release directory." 1>&2
+  exit 1
+fi
+RELEASE=`cat .release`
+if [ "${RELEASE}" = "head" ]; then
+  RELEASE="master"
+fi
+
+# loop over packages
+PACKAGES=`git ls-tree --name-only ${RELEASE} | grep -v "^\."`
+PACKAGE_LIST=""
+for PACKAGE in ${PACKAGES}; do
+  if [ -n "${PACKAGE}" ]; then
+    if [ ${LIST_LOCAL} = no -a -d ${PACKAGE} ]; then
+      continue
+    fi
+    if [ ${LIST_LIBRARIANS} = yes ]; then
+      LIBRARIANS=`git show ${RELEASE}:${PACKAGE}/.librarians 2> /dev/null | tr "\n" "," | sed "s/,$//"`
+      echo "${PACKAGE} (${LIBRARIANS})"
+    else
+      PACKAGE_LIST="${PACKAGE_LIST} ${PACKAGE}"
+    fi
+  fi
+done
+if [ -n "${PACKAGE_LIST}" ]; then
+  echo ${PACKAGE_LIST}
+fi

@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0`"
+  echo
+  echo "This command determines the operating system name and version and prints them"
+  echo "in a form that is used to identify binary version of the Belle II Software."
+  echo
+  exit 0
+fi
+
+OS_RELEASE_ID="<unknown>"
+OS_RELEASE_VERSION="<unknown>"
+
+# If /etc/os-release is present, read system identifer from it
+if [ -f /etc/os-release ]; then
+  OS_RELEASE_ID=`(source /etc/os-release && echo $ID)`
+  if [ "${OS_RELEASE_ID}" = "centos" ] || [ "${OS_RELEASE_ID}" = "rhel" ]; then
+    OS_RELEASE_ID="el"
+  fi
+  OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | sed 's/\.//g')`
+
+# Else if /etc/redhat-release is present, assume SL and read version number fron it
+elif [ -f /etc/redhat-release ]; then
+  OS_RELEASE_ID="sl"
+  OS_RELEASE_VERSION=`(cat /etc/redhat-release | awk -F . '{print $1}' | awk '{print $NF}')`
+fi
+
+echo ${OS_RELEASE_ID} ${OS_RELEASE_VERSION}

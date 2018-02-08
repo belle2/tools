@@ -1,0 +1,131 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [\"major\"/\"minor\"/\"patch\"(=default)/tag]"
+  echo
+  echo "- This command tags the current version of the source code of a package"
+  echo "  and pushes the tag to the central repository."
+  echo "  It has to be called in the package directory of the local release."
+  echo "  There should be no locally modified files."
+  echo "- If no argument is given, the tag name is chosen automatically by"
+  echo "  increasing the patch level number, e.g. from v01-01-01 to v01-01-02."
+  echo "- If \"minor\" is given as argument, the minor version number is increased,"
+  echo "  e.g. from v01-01-01 to v01-02-01."
+  echo "- If \"major\" is given as argument, the major version number is increased,"
+  echo "  e.g. from v01-01-01 to v02-01-01."
+  echo "- Alternatively the name of the tag can be given explicitly as argument."
+  echo
+  exit 0
+fi
+
+# check number of arguments
+if [ $# -gt 1 ]; then
+  echo "Usage: `basename $0` [\"major\"/\"minor\"/\"patch\"(=default)/tag]" 1>&2
+  exit 1
+fi
+
+# determine package name
+PACKAGE=`pwd | awk -F/ '{print $NF}'`
+if [ ! -f  ../.release ]; then
+  echo "Error: Not in a package directory." 1>&2
+  exit 1
+fi
+
+# check whether there are no changes
+git diff-files --quiet
+if [ "$?" != "0" ]; then
+  echo "Error: There are modified files." 1>&2
+  exit 1
+fi
+
+# check whether there are unpushed commits
+UNPUSHED=`git rev-list origin..HEAD | wc -l`
+if [ "$UNPUSHED" != "0" ]; then
+  echo "Error: There are unpushed commits." 1>&2
+  exit 1
+fi
+
+# determine revision of previous tag
+DIFFREV=`git for-each-ref --format '%(refname)' refs/tags/${PACKAGE}-* | tail -1`
+if [ "${DIFFREV}" != "" ]; then
+  DIFFREV=${DIFFREV}..
+fi
+
+# report changes with respect to previous tag
+git log ${DIFFREV} .
+
+# read arguments
+TAG=patch
+if [ $# -gt 0 ]; then
+  TAG=$1
+fi
+
+# make tag and exit if tag name is explicitly given
+if [ "${TAG}" != "major" -a "${TAG}" != "minor" -a "${TAG}" != "patch" ]; then
+  echo "Please enter the summary of changes and then hit CTRL-D:"
+  git tag -F - ${PACKAGE}-${TAG}
+  if [ "$?" == "0" ]; then
+    echo "Committed tag ${TAG} of ${PACKAGE}."
+  fi
+  exit 0
+fi
+
+# determine last tag
+LASTTAG=`git for-each-ref --format '%(refname)' refs/tags/${PACKAGE}-??-??-?? | sed "s;refs/tags/${PACKAGE}-;;g" |tail -1`
+if [ "${LASTTAG}" = "" ]; then
+  LASTTAG=00-00-00
+fi
+
+# determine version numbers
+declare -i PATCH
+if [ "`echo ${LASTTAG} | cut -c 7`" = "0" ]; then
+  PATCH=`echo ${LASTTAG} | cut -c 8`
+else
+  PATCH=`echo ${LASTTAG} | cut -c 7,8`
+fi
+if [ "${TAG}" = "patch" ]; then
+  let PATCH+=1
+fi
+declare -i MINOR
+if [ "`echo ${LASTTAG} | cut -c 4`" = "0" ]; then
+  MINOR=`echo ${LASTTAG} | cut -c 5`
+else
+  MINOR=`echo ${LASTTAG} | cut -c 4,5`
+fi
+if [ "${TAG}" = "minor" ]; then
+  let MINOR+=1
+  let PATCH=0
+fi
+declare -i MAJOR
+if [ "`echo ${LASTTAG} | cut -c 1`" = "0" ]; then
+  MAJOR=`echo ${LASTTAG} | cut -c 2`
+else
+  MAJOR=`echo ${LASTTAG} | cut -c 1,2`
+fi
+if [ "${TAG}" = "major" ]; then
+  let MAJOR+=1
+  let MINOR=0
+  let PATCH=0
+fi
+
+# make tag
+TAG=`printf "%02d-%02d-%02d" ${MAJOR} ${MINOR} ${PATCH}`
+echo "Please enter the summary of changes and then hit CTRL-D:"
+git tag -F - ${PACKAGE}-${TAG}
+if [ "$?" == "0" ]; then
+  echo "Committed tag ${TAG} of ${PACKAGE}."
+else
+  echo "Error: Committing tag ${TAG} failed"
+  exit 1
+fi
+
+# push tag
+git push origin tags/${PACKAGE}-${TAG}
+if [ "$?" == "0" ]; then
+  echo "Pushed tag ${TAG} of ${PACKAGE}."
+else
+  echo "Error: Pushing tag ${TAG} failed"
+  exit 2
+fi
