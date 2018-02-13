@@ -50,14 +50,10 @@ fi
 
 # set location of Belle II code repositories
 if [ -z "${BELLE2_GIT_SERVER}" ]; then
-  HAVEKEY=0
-  if [ -f ${HOME}/.ssh/id_rsa -o -f ${HOME}/.ssh/id_dsa ]; then
-    HAVEKEY=1
-  fi
-  if [ "${BELLE2_GIT_ACCESS}" = "ssh" -o "${BELLE2_GIT_ACCESS}" != "http" -a "${HAVEKEY}" = "1" ]; then
-    export BELLE2_GIT_SERVER=ssh://git@stash.desy.de:7999
-  else
+  if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
     export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm
+  else
+    export BELLE2_GIT_SERVER=ssh://git@stash.desy.de:7999
   fi
 fi
 if [ -z "${BELLE2_SOFTWARE_REPOSITORY}" ]; then

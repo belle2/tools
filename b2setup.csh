@@ -81,14 +81,10 @@ if ( ! ${?BELLE2_GIT_SERVER} ) then
   if ( ! ${?BELLE2_GIT_ACCESS} ) then
     set BELLE2_GIT_ACCESS=""
   endif
-  set HAVEKEY=0
-  if ( -f ${HOME}/.ssh/id_rsa || -f ${HOME}/.ssh/id_dsa ) then
-    set HAVEKEY=1
-  endif
-  if ( "${BELLE2_GIT_ACCESS}" == "ssh" || ( "${BELLE2_GIT_ACCESS}" != "http" &&  "${HAVEKEY}" == "1") ) then
-    setenv BELLE2_GIT_SERVER ssh://git@stash.desy.de:7999
-  else
+  if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
     setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm
+  else
+    setenv BELLE2_GIT_SERVER ssh://git@stash.desy.de:7999
   endif
 endif
 if ( ! ${?BELLE2_SOFTWARE_REPOSITORY} ) then
