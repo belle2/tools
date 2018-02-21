@@ -8,8 +8,9 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "- This command installs the given version of the externals in the"
   echo "  directory given by the environment variable BELLE2_EXTERNALS_TOPDIR."
-  echo "- If the operating system is specified it tries to install the"
-  echo "  corresponding precompiled binary version."
+  echo "- By default it tries to install the precompiled binary version for"
+  echo "  the current system. A binary version can be selected explicitly"
+  echo "  with the second argument."
   echo "- If no version is given it lists the available externals versions."
   echo
   exit 0
@@ -99,9 +100,13 @@ if [ "${VERSION}" = "development" ]; then
   fi
 else
 
-  # try the binary version if the operating system is given
+  # try the binary version
+  SYSTEM=`b2install-print-os | sed "s/ //g"`
   if [ $# -gt 1 ]; then
-    wget -O - --tries=3 ${BELLE2_DOWNLOAD}/externals/externals_${VERSION}_$2.tgz | tar xz
+    SYSTEM=$2
+  fi
+  if [ "${SYSTEM}" != "<unknown><unknown>" ]; then
+    wget -O - --tries=3 ${BELLE2_DOWNLOAD}/externals/externals_${VERSION}_${SYSTEM}.tgz | tar xz
     RESULT=$?
     if [ "${RESULT}" = "0" ]; then
       exit 0
