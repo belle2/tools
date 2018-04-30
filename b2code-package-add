@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` package"
+  echo
+  echo "- This command adds the source code of the given package from the code"
+  echo "  repository to the local release directory."
+  echo "  It has to be called in the local release directory."
+  echo
+  exit 0
+fi
+
+# check number of arguments
+if [ $# -ne 1 ]; then
+  echo "Usage: `basename $0` package" 1>&2
+  exit 1
+fi
+
+# read arguments
+PACKAGE=$1
+if [ -d ${PACKAGE} ]; then
+  echo "Error: The directory ${PACKAGE} already exists." 1>&2
+  exit 1
+fi
+
+# update sparse-checkout file
+ALL=`grep -c "^/\*$" .git/info/sparse-checkout`
+if [ "$ALL" -ne "0" ]; then
+  sed -i "/\!\/${PACKAGE}\//d" .git/info/sparse-checkout
+else
+  echo "/${PACKAGE}/" >> .git/info/sparse-checkout
+fi
+
+# check out package
+git checkout

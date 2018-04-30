@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [files]"
+  echo
+  echo "- The b2code-style-check tool checks the layout of C++ and python code"
+  echo "  and reports changes that the b2code-style-fix tool would apply."
+  echo "- By default it checks all C++ and python files in the current directory and"
+  echo "  its subfolders recursively."
+  echo "- Individual files can be checked explicitly by giving them as argument."
+  echo
+  exit 0
+fi
+
+# call b2code-style-fix in check mode
+b2code-style-fix -p $*
