@@ -13,8 +13,10 @@ Belle II Software is to use it via CVMFS_ which is readily available on KEKCC an
 many HEP specific software resources.  It can also easily be installed on your
 local machine following the `CVMFS Client Quick Start`_ guide.
 
+.. note:: In the following it is assumed that you have configured your `access to the code repository`_
+
 If you want to install the Belle II Software without CVMFS please have a look at
-the following documents, otherwise if you have CVMFS available please continue with :ref:`cvmfs-setup`
+the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs-setup`
 
 .. toctree:: 
    :maxdepth: 1
@@ -22,9 +24,12 @@ the following documents, otherwise if you have CVMFS available please continue w
    installation-tools
    installation-local
 
+Alternatively you can use `Jan's docker container`_ to get the Belle II software, for example on Mac or Windows machines.
+
+
 .. _cvmfs-setup:
 
-Setup Of the Belle II Software
+Setup of the Belle II Software
 ------------------------------
 
 The command ::
@@ -121,4 +126,5 @@ And you can compile the code with  ::
 
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
-
+.. _access to the code repository: https://confluence.desy.de/x/2o4iAg
+.. _Jan's docker container: https://confluence.desy.de/display/BI/How+to+run+basf2+on+a+laptop

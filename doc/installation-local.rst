@@ -60,8 +60,8 @@ which tells us that we need externals version ``v01-05-02`` by calling ::
 
   $ b2install-externals v01-05-02 [<system>]
 
-``system`` is again optional and can be the short distribution name for the desired system from the list of
-supported distributions in the table above. For example, to download
+``system`` is again optional and can be the short distribution name for the desired system from the
+`list of supported distributions`_. For example, to download
 externals ``v01-05-02`` on an Ubuntu 16.04 machine you need to run ::
 
   $ b2install-externals v01-05-02 ubuntu1604
@@ -74,4 +74,20 @@ Now everything should be installed and you can setup the software using ::
 
 .. warning:: If you work on a system for which we do not provide precompiled binaries
   the b2install-externals command will compile the externals from source.
+  This can take an hour or more.
+  In case of problems try to find a solution at the `troubleshooting guide`_
+  or at `questions <https://questions.belle2.org>`_.
 
+Validation of the Installation
+------------------------------
+
+A quick test to check whether everythings was installed correctly is to execute
+
+  $ basf2 --info
+
+and to list the available modules with
+
+  $ basf2 -m
+
+.. _list of supported distributions: https://confluence.desy.de/display/BI/External+Software#ExternalSoftware-Precompiledbinaryversions
+.. _troubleshooting guide: https://confluence.desy.de/display/BI/External+Software#ExternalSoftware-Compilationtroubleshooting
