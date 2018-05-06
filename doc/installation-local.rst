@@ -81,11 +81,11 @@ Now everything should be installed and you can setup the software using ::
 Validation of the Installation
 ------------------------------
 
-A quick test to check whether everythings was installed correctly is to execute
+A quick test to check whether everythings was installed correctly is to execute ::
 
   $ basf2 --info
 
-and to list the available modules with
+and to list the available modules with ::
 
   $ basf2 -m
 
