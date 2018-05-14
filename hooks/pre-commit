@@ -28,6 +28,14 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+# Check that the commit does not introduce duplicates
+DUPLICATES=$(git ls-files | sort | uniq -di)
+if [[ "$DUPLICATES" != "" ]]; then
+  echo "Duplicate files that differ only by case are not allowed:" >&2
+  echo "${DUPLICATES}" >&2
+  exit 1
+fi
+
 # Do not check merge commits to non-master branches
 BRANCH=`git rev-parse --abbrev-ref HEAD`
 if [ "$BRANCH" != "master" ]; then
