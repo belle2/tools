@@ -3,7 +3,7 @@ BELLE2_TOOLS=`python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' $(d
 
 # check for pre setup script
 BELLE2_SETUP_DIRS="${PWD} ${HOME} ${BELLE2_TOOLS} ${BELLE2_CONFIG_DIR} /etc /sw/belle2"
-for DIR in ${BELLE2_SETUP_DIRS}; do
+for DIR in `echo ${BELLE2_SETUP_DIRS}`; do
   if [ -f ${DIR}/b2presetup.sh ]; then
     source ${DIR}/b2presetup.sh
     break
@@ -134,7 +134,7 @@ if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
 fi
 
 # check for post setup script
-for DIR in ${BELLE2_SETUP_DIRS}; do
+for DIR in `echo ${BELLE2_SETUP_DIRS}`; do
   if [ -f ${DIR}/b2postsetup.sh ]; then
     source ${DIR}/b2postsetup.sh
     break
