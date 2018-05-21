@@ -28,13 +28,13 @@ fi
 # check for software tools setup
 if [ -z "${BELLE2_SOFTWARE_REPOSITORY}" -o -z "${VO_BELLE2_SW_DIR}" ]; then
   echo "Belle II software environment is not set up." 1>&2
-  echo "-> source setup_belle2" 1>&2
+  echo "-> source b2setup" 1>&2
   exit 1
 fi
 
 # list available versions if no argument is given
 if [ $# -eq 0 ]; then
-  git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} | grep "tags/" | grep "release-\|build-" | grep -v "\^{}$" | awk -F / '{print $NF}'
+  git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} | grep "tags/" | grep "release-\|build-\|light-" | grep -v "\^{}$" | awk -F / '{print $NF}'
   exit 0
 fi
 
@@ -102,8 +102,7 @@ fi
 cd ${VERSION}
 echo head > .release
 ln -s site_scons/SConstruct .
-. ${BELLE2_TOOLS}/setup_belle2.sh
-setuprel
+. ${BELLE2_TOOLS}/b2setup.sh
 scons
 
 if [ "$?" != 0 ]; then

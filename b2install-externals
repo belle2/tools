@@ -28,7 +28,7 @@ fi
 # check for software tools setup
 if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" -o -z "${BELLE2_EXTERNALS_TOPDIR}" ]; then
   echo "Belle II software environment is not set up." 1>&2
-  echo "-> source setup_belle2" 1>&2
+  echo "-> source b2setup" 1>&2
   exit 1
 fi
 

@@ -3,15 +3,15 @@ set COMMAND=`echo $_`
 if ( "${COMMAND}" != "" ) then
   set FILENAME=`echo ${COMMAND} | awk '{print $2}'`
 else if ( $?BELLE2_TOOLS ) then
-  set FILENAME=${BELLE2_TOOLS}/setup_belle2.csh
+  set FILENAME=${BELLE2_TOOLS}/b2setup.csh
 else if ( $?VO_BELLE2_SW_DIR ) then
-  set FILENAME=${VO_BELLE2_SW_DIR}/tools/setup_belle2.csh
-else if ( -f ${HOME}/tools/setup_belle2.csh ) then
-  set FILENAME=${HOME}/tools/setup_belle2.csh
-else if ( -f tools/setup_belle2.csh ) then
-  set FILENAME=tools/setup_belle2.csh
-else if ( -f setup_belle2.csh ) then
-  set FILENAME=setup_belle2.csh
+  set FILENAME=${VO_BELLE2_SW_DIR}/tools/b2setup.csh
+else if ( -f ${HOME}/tools/b2setup.csh ) then
+  set FILENAME=${HOME}/tools/b2setup.csh
+else if ( -f tools/b2setup.csh ) then
+  set FILENAME=tools/b2setup.csh
+else if ( -f b2setup.csh ) then
+  set FILENAME=b2setup.csh
 else
   echo "No tools folder found"
   exit 1
@@ -147,7 +147,7 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
       echo
       echo "           git -C ${BELLE2_TOOLS} pull --rebase"
       echo
-      echo "         and source the new setup_belle2 script."
+      echo "         and source the new b2setup script."
       echo
     endif
     unset FETCH_CHECK
