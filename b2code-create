@@ -9,7 +9,7 @@ function version_greater_equal
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` directory [release]"
+  echo "Usage: `basename $0` [--light] directory [release]"
   echo
   echo "- This command creates a local directory with the given name"
   echo "  as basis for a working copy of the Belle II software."
@@ -17,14 +17,22 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "- If the basis for the code development should be a particular release,"
   echo "  the version can be given as second argument."
   echo "- If no second argument is given, the latest version of the code"
-  echo "  (head of git master) is taken."
+  echo "  (head of git master) is taken. In this case the --light option can be"
+  echo "  used to check out only the packages of a light release."
   echo
   exit 0
 fi
 
+# check for light option
+LIGHT=0
+if [ "$1" = "--light" ]; then
+  LIGHT=1
+  shift
+fi
+
 # check number of arguments
 if [ $# -lt 1 -o $# -gt 2 ]; then
-  echo "Usage: `basename $0` directory [release]" 1>&2
+  echo "Usage: `basename $0` [--light] directory [release]" 1>&2
   exit 1
 fi
 
@@ -65,10 +73,17 @@ else
   echo "=> When you have set up a git version >= 1.7.4, e.g. from the externals development version, you can re-enable it by executing 'git config core.sparsecheckout true' in your local release directory."
 fi
 if [ "${RELEASE}" == "head" ]; then
-  echo "/*" >> .git/info/sparse-checkout
-  for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
-    echo "!/${PACKAGE}/" >> .git/info/sparse-checkout
-  done
+  if [ "${LIGHT}" == "1" ]; then
+    echo "/.light" >> .git/info/sparse-checkout
+    git checkout master
+    rm -f .git/info/sparse-checkout
+    ln -s ${PWD}/.light .git/info/sparse-checkout
+  else
+    echo "/*" >> .git/info/sparse-checkout
+    for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
+      echo "!/${PACKAGE}/" >> .git/info/sparse-checkout
+    done
+  fi
   git checkout master
 else
   touch .git/info/sparse-checkout
@@ -85,4 +100,4 @@ ln -sf ${BELLE2_TOOLS}/hooks .git/hooks
 
 # inform user about successful completion
 echo "New local directory created for ${RELEASE} release: ${DIR}"
-echo "-> change to the new directory and set up the environment: cd ${DIR}; setuprel"
+echo "-> change to the new directory and set up the environment: cd ${DIR}; b2setup"
