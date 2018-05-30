@@ -1,3 +1,5 @@
+echo "HINT: setup_belle2 is deprecated, instead use: b2setup"
+
 # add tools directory to path
 export BELLE2_TOOLS=`python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' $(dirname ${BASH_SOURCE:-$0})`
 if [ -n "${PATH}" ]; then

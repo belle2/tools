@@ -4,6 +4,8 @@ import sys
 import os
 from setup_tools import get_var, set_var, export_environment
 
+print('echo "HINT: setextoption is deprecated, instead use: b2code-option-externals"')
+
 # allowed options
 options = ['debug', 'opt', 'intel']
 

@@ -4,6 +4,8 @@ import sys
 import os
 from setup_tools import get_var, unsetup_old_release, update_environment, csh
 
+print('echo "HINT: setuprel is deprecated, instead use: b2setup"')
+
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""

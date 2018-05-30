@@ -5,6 +5,8 @@ import os
 from setup_tools import get_var, set_var, unsetup_old_release, \
     update_environment, export_environment
 
+print('echo "HINT: setoption is deprecated, instead use: b2code-option"')
+
 # allowed options
 options = ['debug', 'opt', 'intel', 'clang']
 

@@ -1,3 +1,5 @@
+echo "HINT: setup_belle2 is deprecated, instead use: b2setup"
+
 # add tools directory to path
 set COMMAND=`echo $_`
 if ( "${COMMAND}" != "" ) then

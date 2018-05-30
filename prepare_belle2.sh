@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "HINT: prepare_belle2.sh is deprecated, instead use: b2install-prepare"
+
 NO_PROMPT=no
 INSTALL_OPTIONAL=no
 for i in "$@"; do

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "HINT: addpkg is deprecated, instead use: b2code-package-add"
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo

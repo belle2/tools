@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "HINT: newrel is deprecated, instead use: b2code-create"
+
 # comparison of versions
 function version_greater_equal
 {

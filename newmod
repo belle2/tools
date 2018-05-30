@@ -6,6 +6,8 @@ import os
 import subprocess
 import datetime
 
+print('HINT: newmod is deprecated, instead use: b2code-module')
+
 # check for help option
 if len(sys.argv) != 2 or sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""

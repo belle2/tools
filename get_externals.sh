@@ -1,6 +1,8 @@
 #!/bin/bash
 set -o pipefail
 
+echo "HINT: get_externals.sh is deprecated, instead use: b2install-externals"
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo

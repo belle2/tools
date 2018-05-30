@@ -5,6 +5,8 @@ import os
 import glob
 from setup_tools import get_var, unsetup_old_release, update_environment, csh
 
+print('echo "HINT: setupext is deprecated, instead use: b2setup-externals"')
+
 # prepare list of available versions
 top_dir = os.environ["BELLE2_EXTERNALS_TOPDIR"]
 # get sorted list of directories in externals directory
