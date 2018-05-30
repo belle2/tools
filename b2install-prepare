@@ -75,7 +75,7 @@ elif [ $OS_RELEASE_ID == "ubuntu" ]; then
   # Ubuntu
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
-    libxft-dev libncurses-dev libssl-dev libreadline-dev"
+    libxft-dev libncurses-dev libssl-dev libreadline-dev lsof"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
@@ -88,7 +88,7 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
-    libxft-dev libncurses-dev libssl-dev libreadline-dev"
+    libxft-dev libncurses-dev libssl-dev libreadline-dev lsof"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
@@ -104,7 +104,7 @@ else
   # RH, SL, CentOS
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
-    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel which"
+    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel which lsof"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
