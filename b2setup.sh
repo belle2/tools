@@ -17,11 +17,10 @@ if [ -n "${PATH}" ]; then
 else
   export PATH=${BELLE2_TOOLS}
 fi
-if [ -n "${PYTHONPATH}" ]; then
-  export PYTHONPATH=${BELLE2_TOOLS}:${PYTHONPATH}
-else
-  export PYTHONPATH=${BELLE2_TOOLS}
+if [ -n "${PYTHONPATH}" -a "${PYTHONPATH}" != "${BELLE2_TOOLS}" ]; then
+  echo "Warning: Changing existing PYTHONPATH from ${PYTHONPATH} to ${BELLE2_TOOLS}"
 fi
+export PYTHONPATH=${BELLE2_TOOLS}
 
 # set top directory of Belle II software installation
 if [ -z "${VO_BELLE2_SW_DIR}" ]; then
