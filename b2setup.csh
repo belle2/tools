@@ -45,7 +45,7 @@ if ( ${?PATH} ) then
 else
   setenv PATH ${BELLE2_TOOLS}
 endif
-if ( ${?PYTHONPATH} )
+if ( ${?PYTHONPATH} ) then
   if ( "${PYTHONPATH}" != "${BELLE2_TOOLS}" ) then
     echo "Warning: Changing existing PYTHONPATH from ${PYTHONPATH} to ${BELLE2_TOOLS}"
   endif
