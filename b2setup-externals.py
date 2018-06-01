@@ -38,12 +38,12 @@ Default Version: %s""" % (", ".join(available_versions), default_version)
 if not available_versions:
     print >> sys.stderr, """
 Error: Cannot find any externals in the top directory '%s'.
-Try installing externals with get_externals.sh first""" % top_dir
+Try installing externals with b2install-externals first""" % top_dir
     sys.exit(1)
 
 # check number of arguments
 if len(sys.argv) > 2:
-    print >> sys.stderr, 'Usage: setupext [--help] [version]'
+    print >> sys.stderr, 'Usage: b2setup-externals [--help] [version]'
     sys.exit(1)
 
 # check which version we want
@@ -53,7 +53,7 @@ if len(sys.argv) == 2:
     if version not in available_versions:
         print >> sys.stderr, """
 Error: Externals version '{0}' is not available, available versions are {1}.\n
-You can try installing it by using 'get_externals.sh {0}'""".format(version, ", ".join(available_versions))
+You can try installing it by using 'b2install-externals {0}'""".format(version, ", ".join(available_versions))
 
         sys.exit(1)
 

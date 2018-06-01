@@ -278,7 +278,7 @@ def update_environment(release, local_release, local_dir, externals_version=None
                                   version)
             if not os.path.isdir(extdir):
                 sys.stderr.write('The externals version %s does not exist. '
-                                 'You can use \'get_externals.sh\' to install them.\n'
+                                 'You can use \'b2install-externals\' to install them.\n'
                                  % version)
                 sys.exit(1)
 

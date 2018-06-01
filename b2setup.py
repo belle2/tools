@@ -9,20 +9,18 @@ if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
 Usage: b2setup [release]
 
-This command sets up the environment for a local and/or central release
-of the Belle II software of for an Belle II analysis.
+This command sets up the environment for a central and/or local release
+of the Belle II software or for an Belle II analysis.
+
+-> Central release setup:
+
+  Execute the b2setup command with the central release version as argument.
 
 -> Local (+ central) release setup:
 
   Execute the b2setup command in the local release directory. If a centrally
   installed release with the same version as the local one exists, it is set
-  up, too. (If a release version is given as argument this is used as version
-  for the central release instead of the one matching the local release.)
-
--> Central release setup (without a local release):
-
-  Execute the b2setup command outside a local release directory with the
-  central release version as argument.
+  up, too.
 
 -> Analysis setup:
 
@@ -94,16 +92,18 @@ if local_release:
 
     # check whether central and local releases match if both are given
     if release and local_release != release:
-        sys.stderr.write('Warning: The given release (%s) differs from the one in the current directory (%s) and will be ignored.\n'
-                         % (release, local_release))
+        sys.stderr.write('Warning: The local release in the current directory (%s) will not be set up because it differs from the release given as argument (%s). If you want to set up the local release call b2setup without argument.\n'
+                         % (local_release, release))
+        local_release = None
 
-    # check whether the local release exists
-    if local_release != 'head' and not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
-                                                                  'releases', local_release)):
-        sys.stderr.write('Error: No central release %s found.\n' % local_release)
-        sys.exit(1)
+    else:
+        # check whether the local release exists
+        if local_release != 'head' and not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
+                                                                      'releases', local_release)):
+            sys.stderr.write('Error: No central release %s found.\n' % local_release)
+            sys.exit(1)
 
-    release = local_release
+        release = local_release
 
 # remove old release from the environment
 unsetup_old_release()
