@@ -124,6 +124,13 @@ And you can compile the code with  ::
 
   $ scons
 
+If you want to do the development from a certain version or branch just use
+``git checkout`` to obtain it and run ``b2setup`` to make sure the correct
+externals version is set up, e.g. ::
+
+  $ git checkout release-XX-YY-ZZ
+  $ b2setup
+
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
 .. _access to the code repository: https://confluence.desy.de/x/2o4iAg
