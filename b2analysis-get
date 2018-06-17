@@ -61,4 +61,4 @@ popd > /dev/null
 
 # inform user about successful completion
 echo "Analysis ${ANALYSIS_NAME} for release ${RELEASE} checked out at: ${DIR}"
-echo "-> change to the new directory and set up the environment: cd ${DIR}; setupana"
+echo "-> change to the new directory and set up the environment: cd ${DIR}; b2setup"

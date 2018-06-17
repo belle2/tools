@@ -96,4 +96,4 @@ fi
 # inform user about successful completion
 echo
 echo "New analysis directory created for ${RELEASE} release: ${DIR}"
-echo "-> change to the new directory and set up the environment: cd ${DIR}; setupana"
+echo "-> change to the new directory and set up the environment: cd ${DIR}; b2setup"
