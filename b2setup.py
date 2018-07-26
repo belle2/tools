@@ -3,6 +3,7 @@
 import sys
 import os
 from setup_tools import get_var, unsetup_old_release, update_environment, csh
+from versioning import supported_release
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
@@ -144,3 +145,9 @@ try:
         sys.stderr.write('Error: Check of externals at %s failed.\n' % extdir)
 except:
     sys.stderr.write('Error: Check of externals at %s failed.\n' % extdir)
+
+# check whether the central release is supported
+if release is not None and release != 'head':
+    supported = supported_release(release)
+    if supported != release:
+        print('echo "Warning: The release %s is not supported any more. Please update to %s"' % (release, supported))

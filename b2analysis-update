@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys, os
+from versioning import supported_release
+
+# check for help option
+if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
+    sys.stderr.write("""
+Usage: b2analysis-update [release]
+
+This command changes the central release version for the current analysis
+to the given or recommended version.
+
+""")
+    sys.exit(0)
+
+# get argument
+release = None if len(sys.argv) < 2 else sys.argv[1]
+
+# get .analysis file and its content
+analysis = None
+for path in ['.', os.environ.get('BELLE2_ANALYSIS_DIR', '.')]:
+    filename = os.path.join(path, '.analysis')
+    if os.path.isfile(filename):
+	analysis = filename
+	break
+
+if analysis is None:
+    sys.stderr.write('Error: No analysis directory found.')
+    sys.exit(1)
+
+current_release = open(analysis).readline().strip()
+
+# if no release is given take the recommended one
+if release is None:
+    release = supported_release(current_release)
+
+# if a release is given check whether it is supported
+else:
+    supported = supported_release(release)
+    if release != supported:
+	print('Warning: %s is not supported, instead %s is recommended' % (release, supported))
+
+# do the update if the release differs from the current one
+if release == current_release:
+    print('The analysis is already set to %s. No update is done.' % release)
+else:
+    print('Updating from analysis at %s from %s to %s.' % (os.path.dirname(analysis), current_release, release))
+    print('Please make sure to run b2setup.')
+    analysis_file = open(analysis, 'w')
+    analysis_file.write(release + '\n')
+    analysis_file.close()
