@@ -102,7 +102,7 @@ fi
 cd ${VERSION}
 echo head > .release
 ln -s site_scons/SConstruct .
-. ${BELLE2_TOOLS}/b2setup.sh
+. ${BELLE2_TOOLS}/b2setup.sh ""
 scons
 
 if [ "$?" != 0 ]; then
