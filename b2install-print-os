@@ -21,6 +21,9 @@ if [ -f /etc/os-release ]; then
     OS_RELEASE_ID="el"
   fi
   OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | sed 's/\.//g')`
+  if [ "${OS_RELEASE_ID}" = "el" ]; then
+    OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | cut -c 1)`
+  fi
 
 # Else if /etc/redhat-release is present, assume SL and read version number fron it
 elif [ -f /etc/redhat-release ]; then
