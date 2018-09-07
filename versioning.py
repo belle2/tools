@@ -8,6 +8,9 @@ import sys, os, subprocess
 def get_remote_versioning(repository):
     """Get versioning.py from central git repository"""
 
+    if os.environ.get('BELLE2_NO_TOOLS_CHECK', False):
+        return None
+
     command = ['git', 'archive', '--remote=' + repository, 'HEAD', 'versioning.py']
     git = subprocess.Popen(command, stdout=subprocess.PIPE)
     tar = subprocess.Popen(['tar', '-xO', 'versioning.py'], stdin=git.stdout, stdout=subprocess.PIPE)
