@@ -57,8 +57,8 @@ if [ `uname` = Darwin ]; then
   SU_CMD="sudo"
   INSTALL_CMD="fink install"
 
-elif [ $OS_RELEASE_ID == "opensuse" ] || [ $OS_RELEASE_ID == "sles" ]; then
-  # OpenSUSE or SUSE Linux Entreprise Server
+elif [[ $OS_RELEASE_ID =~ ^(opensuse(-leap|-tumbleweed)?|sles)$ ]]; then
+  # OpenSUSE or SUSE Linux Enterprise Server
   PACKAGES="binutils gcc gcc-c++ git make patch pattern:devel_perl
     python subversion tar gzip bzip2 xz unzip wget libpng-devel libX11-devel
     libXext-devel libXpm-devel libXft-devel ncurses-devel libopenssl-devel
