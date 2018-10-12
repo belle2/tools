@@ -101,7 +101,7 @@ A major version of the software may contain non-backward-compatible changes to t
 Light releases
 **************
 
-A light release (``light-YYMM-CODENAME``) is a release made from only the `Analysis`, `skim`, `mdst`, `mva`, and `framework` packages.
+A light release (``light-YYMM-CODENAME``) is a release made from only the `analysis`, `skim`, `mdst`, `mva`, and `framework` packages.
 
 They are suitable for doing high-level analysis tasks which do not require the generation or reconstruction of data.
 If you are running over some MC or data that already exists (e.g. was produced by the data production group)
