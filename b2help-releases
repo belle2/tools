@@ -6,23 +6,23 @@ from versioning import supported_release
 # check for help option
 if len(sys.argv) > 1 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
-Usage: b2releases [release_to_check]
+Usage: b2help-releases [release_to_check]
 
-This command prints the currently recommended release of the Belle II software.
+This command just prints the current recommended release of the Belle II software.
 If you provide release_to_check, it will check if you should be using a more recent version.
 
+The recommended release is:
 """)
     print(supported_release())
 
 # check whether the provided release is supported
-elif len(sys.argv) > 1 and sys.argv[1] not in ['--help', '-h', '-?']:
+elif len(sys.argv) > 1:
     release = sys.argv[1]
-    if release is not None and release != 'head':
-        supported = supported_release(release)
-        if supported != release:
-            print("Warning: The release %s is not supported any more. Please update to %s" % (release, supported))
-        else:
-            print("The release %s is supported" % release)
+    supported = supported_release(release)
+    if supported != release:
+        print("Warning: The release %s is not supported any more. Please update to %s" % (release, supported))
+    else:
+        print("The release %s is supported" % release)
      
 # if no options provided just print supported releases
 else:
