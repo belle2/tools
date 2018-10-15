@@ -67,6 +67,9 @@ after the tools have been set up.
 
 Some releases are old, but left available for legacy reasons.
 If you try to setup an old/unsupported release, you will get a message advising you to move to a newer (supported) release.
+You can check if a given release is supported with::
+
+  $ b2help-releases your_release_version
 
 Releases come in four kinds:
 
@@ -96,6 +99,7 @@ A major version of the software may contain non-backward-compatible changes to t
 
 .. tip::
         If you do not know what release you need to use, then the newest supported full release should be your default choice.
+        The command ``b2help-releases`` with no arguments, shows this.
 
 
 Light releases

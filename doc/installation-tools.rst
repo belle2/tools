@@ -152,6 +152,15 @@ For users
    argument it will setup the latest version it can find, otherwise it will setup
    the specified version
 
+.. describe:: b2help-releases
+
+   ::
+
+     Usage: b2help-releases [release_to_check]
+
+   This command just prints the current recommended release of the Belle II software.
+   If you provide release_to_check, it will check if you should be using a more recent version.
+
 .. describe:: b2install-release
 
   ::
