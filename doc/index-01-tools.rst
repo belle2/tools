@@ -54,9 +54,67 @@ To only set up the tools without a release use ::
 
   $ source /cvmfs/belle.cern.ch/tools/b2setup
 
-.. hint:: To get a list of the available releases run ``b2install-release`` after the tools have been set up.
-
 .. warning:: The setup of tools and releases has to be done in every shell you plan on using the Belle II Software.
+
+Choosing a release
+..................
+
+You can see available releases of ``basf2``::
+
+  $ b2setup --help
+
+after the tools have been set up.
+
+Some releases are old, but left available for legacy reasons.
+If you try to setup an old/unsupported release, you will get a message advising you to move to a newer (supported) release.
+You can check if a given release is supported with::
+
+  $ b2help-releases your_release_version
+
+Releases come in four kinds:
+
+1) A full release, name of the form ``release-AA-BB-CC``.
+2) A light release, name of the form ``light-YYMM-CODENAME``.
+3) A monthly build, name of the form ``build-YYYY-MM-DD``.
+4) A prerelease, name of the form ``prerelease-AA-00-00abc``.
+
+Monthly builds are made from the development version of the code, they are a `CI`_ tool.
+Pre-releases are for testing and validation before a full release. 
+
+.. warning::
+       Neither monthly builds nor prereleases are supported for use in analysis.
+       They are not recommended for anything other than software validation.
+       They can disappear without warning.
+
+
+Full release
+************
+
+A full release (``release-AA-BB-CC``) is a complete version of ``basf2`` that has undergone extensive testing and valiation.
+Real data production and Monte Carlo simulation campaigns are always based on a full release.
+With a full release you are able to perform the full reconstruction chain, including analysis.
+
+The numbering of releases follows `semantic versioning`_, ``AA`` is the major release number, ``BB`` the minor, and ``CC`` the patch.
+A major version of the software may contain non-backward-compatible changes to the user interface.
+
+.. tip::
+        If you do not know what release you need to use, then the newest supported full release should be your default choice.
+        The command ``b2help-releases`` with no arguments, shows this.
+
+
+Light releases
+**************
+
+A light release (``light-YYMM-CODENAME``) is a release made from only the `analysis`, `skim`, `mdst`, `mva`, and `framework` packages.
+
+They are suitable for doing high-level analysis tasks which do not require the generation or reconstruction of data.
+If you are running over some MC or data that already exists (e.g. was produced by the data production group)
+and want access to newer features, you should consider using a light release.
+
+.. warning:: 
+        Unfortunately from light release to light release the syntax may change and you might have to update your analysis scripts.
+
+For more technical information about light releases, see `BELLE2-NOTE-TE-2018-013`_.
 
 
 Physics Analysis Setup
@@ -106,6 +164,11 @@ directory, use the command  ::
 
   $ git pull --rebase
 
+
+
+
+
+
 Development Setup
 .................
 
@@ -135,3 +198,6 @@ externals version is set up, e.g. ::
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
 .. _access to the code repository: https://confluence.desy.de/x/2o4iAg
 .. _Jan's docker container: https://confluence.desy.de/display/BI/How+to+run+basf2+on+a+laptop
+.. _semantic versioning: https://semver.org
+.. _CI: https://en.wikipedia.org/wiki/Continuous_integration
+.. _BELLE2-NOTE-TE-2018-013: https://docs.belle2.org/record/1114
