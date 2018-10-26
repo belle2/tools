@@ -1,0 +1,83 @@
+#!/bin/bash
+set -o pipefail
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` datatype"
+  echo
+  echo "- This command installs or updates the given type of basf2 data."
+  echo
+  exit 0
+fi
+
+# check number of arguments
+if [ $# -gt 2 ]; then
+  echo "Usage: `basename $0` datatype" 1>&2
+  exit 1
+fi
+
+# check for software tools setup
+if [ -z "${VO_BELLE2_SW_DIR}" ]; then
+  echo "Belle II software environment is not set up." 1>&2
+  echo "-> source b2setup" 1>&2
+  exit 1
+fi
+
+
+# get data type and corresponding directory and environment variable names
+DATATYPE=$1
+DIRNAME="${DATATYPE,,}-data"
+ENVNAME="BELLE2_${DATATYPE^^}_DATA_DIR"
+
+# check existance of directory and create it if missing and approved by user
+if [ -n "${!ENVNAME}" ]; then
+  DIR=${!ENVNAME}
+  if [ ! -d ${DIR} ]; then
+    echo "The environment variable ${ENVNAME} is set to ${DIR}, but the directory does not exit."
+    read -p "Would you like to create it (y/n)? " -n 1 REPLY
+    echo
+    if [ "$REPLY" != "y" ]; then
+      exit 0
+    fi
+    mkdir -p ${DIR}
+  fi
+else
+  DIR=${VO_BELLE2_SW_DIR}/${DIRNAME}
+  if [ ! -d ${DIR} ]; then
+    echo "The environment variable ${ENVNAME} is not set. The default installation directory is ${DIR}, but it does not exit."
+    read -p "Would you like to create it (y/n)? " -n 1 REPLY
+    echo
+    if [ "$REPLY" != "y" ]; then
+      exit 0
+    fi
+    mkdir -p ${DIR}
+  fi
+fi
+
+
+# check rclone
+which rclone >& /dev/null
+if [ "$?" != 0 ]; then
+  echo "Error: rclone not found. Please set up an externals version >= v01-07-00."
+  exit 1
+fi
+
+# check rclone config
+rclone config show 2> /dev/null | grep desycloud > /dev/null
+if [ "$?" != 0 ]; then
+  echo "No rclone config found."
+  read -s -p "Please type your DESY password to create a config file: " PASSWORD
+  echo ""
+  rclone config create desycloud webdav url https://desycloud.desy.de/remote.php/webdav vendor nextcloud user ${BELLE2_USER} &> /dev/null
+  rclone config password desycloud pass ${PASSWORD} &> /dev/null
+fi
+
+# sync data from cloud
+cd ${DIR}
+echo "Syncing ${DATATYPE} data to ${DIR}"
+rclone sync --progress desycloud:/data/${DIRNAME}/ .
+if [ "$?" != 0 ]; then
+  echo "Error: The synchronization of the ${DATATYPE} data failed." 1>&2
+  exit 1
+fi
