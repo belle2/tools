@@ -51,4 +51,6 @@ else:
         return None
     def upload_global_tag(task):
         return None
+    def jira_global_tag(task):
+        return None
 
