@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [-x command] release arguments"
+  echo
+  echo "- This command sets up the given release and then calls basf2"
+  echo "  with the given arguments."
+  echo "- With the -x option a different command than basf2 can be"
+  echo "  executed."
+  echo
+  exit 0
+fi
+
+# check for other command than basf2
+COMMAND=basf2
+if [ $# -ge 2 -a "$1" = "-x" ]; then
+  shift
+  COMMAND=$1
+  shift
+fi
+
+# check number of arguments
+if [ $# -lt 1 ]; then
+  echo "Usage: `basename $0` [-x command] release arguments" 1>&2
+  exit 1
+fi
+
+# get release version
+RELEASE=$1
+shift
+
+# setup tools and release
+source `dirname $0`/b2setup.sh ${RELEASE}
+if [ $? != 0 ]; then
+  echo "ERROR: The setup of release ${RELEASE} failed."
+  exit 2
+fi
+
+# execute command
+${COMMAND} "$@"
+if [ $? != 0 ]; then
+  echo "ERROR: The execution of ${COMMAND} failed."
+  exit 3
+fi
+
