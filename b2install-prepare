@@ -29,8 +29,10 @@ done
 
 # If /etc/os-release is present, read system identifer from it
 OS_RELEASE_ID="<unknown>"
+OS_RELEASE_ID_LIKE="<unknown>"
 if [ -f /etc/os-release ]; then
   OS_RELEASE_ID=`(source /etc/os-release && echo $ID)`
+  OS_RELEASE_ID_LIKE=`(source /etc/os-release && echo $ID_LIKE)`
 fi
 
 
@@ -71,7 +73,7 @@ elif [[ $OS_RELEASE_ID =~ ^(opensuse(-leap|-tumbleweed)?|sles)$ ]]; then
     INSTALL_CMD="zypper in -y"
   fi
 
-elif [ $OS_RELEASE_ID == "ubuntu" ]; then
+elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
   # Ubuntu
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev

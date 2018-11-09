@@ -12,13 +12,17 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
 fi
 
 OS_RELEASE_ID="<unknown>"
+OS_RELEASE_ID_LIKE="<unknown>"
 OS_RELEASE_VERSION="<unknown>"
 
 # If /etc/os-release is present, read system identifer from it
 if [ -f /etc/os-release ]; then
   OS_RELEASE_ID=`(source /etc/os-release && echo $ID)`
+  OS_RELEASE_ID_LIKE=`(source /etc/os-release && echo $ID_LIKE)`
   if [ "${OS_RELEASE_ID}" = "centos" ] || [ "${OS_RELEASE_ID}" = "rhel" ]; then
     OS_RELEASE_ID="el"
+  elif [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
+    OS_RELEASE_ID="ubuntu"
   fi
   OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | sed 's/\.//g')`
   if [ "${OS_RELEASE_ID}" = "el" ]; then
