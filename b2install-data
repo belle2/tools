@@ -42,17 +42,31 @@ if [ -n "${!ENVNAME}" ]; then
       exit 0
     fi
     mkdir -p ${DIR}
+    if [ "$?" != "0" ]; then
+      echo "Error: The creation of the directory ${DIR} failed."
+      echo "-> Make sure the environment variable ${ENVNAME} is set correctly and you have write access to the directory."
+      exit 1
+    fi
   fi
 else
   DIR=${VO_BELLE2_SW_DIR}/${DIRNAME}
   if [ ! -d ${DIR} ]; then
     echo "The environment variable ${ENVNAME} is not set. The default installation directory is ${DIR}, but it does not exit."
+    if [ ! -w ${VO_BELLE2_SW_DIR} ]; then
+      echo "Error: No write permissions to the directory ${VO_BELLE2_SW_DIR}. Make sure the environment variable ${ENVNAME} is set correctly." 1>&2
+      exit 1
+    fi
     read -p "Would you like to create it (y/n)? " -n 1 REPLY
     echo
     if [ "$REPLY" != "y" ]; then
       exit 0
     fi
     mkdir -p ${DIR}
+    if [ "$?" != "0" ]; then
+      echo "Error: The creation of the directory ${DIR} failed."
+      echo "-> Make sure the environment variable ${ENVNAME} is set correctly and you have write access to the directory."
+      exit 1
+    fi
   fi
 fi
 
