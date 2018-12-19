@@ -193,6 +193,8 @@ externals version is set up, e.g. ::
 After creating a development setup or switching to a different release you have
 to :ref:`compile it <using_scons>`.
 
+.. note:: after any update to your analysis code you need recompile it by
+    running ``scons`` again.
 
 .. _using_scons:
 
@@ -207,22 +209,40 @@ Usually you can simply compile the code with running ::
 .. warning:: You have to recompile your code every time you modify, add or
    remove a file. If in doubt just run ``scons`` to be safe.
 
-You can tell the build system how many CPUs to use in parallel by using the ``-j`` parameter::
+You can tell the build system how many CPUs to use in parallel by using the
+``-j`` parameter::
 
   $ scons -j 4
 
-will compile the code with four jobs in parallel. Other parameters you can use are 
+will compile the code with four jobs in parallel.
 
--j N, --jobs=N  Allow N jobs at once.
+
+.. note:: By default, scons will use as many parallel jobs as there are CPUs
+    available on the system. This is fine on a local system but might not be
+    desirable on a shared system like KEKCC or DESY NAF. Please adjust the
+    amount of jobs to not block the whole machine if there are others using it.
+
+    To find out how many CPUs are available you can run ::
+
+        $ nproc
+
+To find out what other options you can use please run ::
+
+    $ scons --help
+
+Some of the parameters you can use are
+
+--help         Show a list of all available options.
+-j N           Allow N jobs at once.
 -D             search of the directory tree for the ``SConstruct`` file. Use
-               this to run scons from a sub directory of your code 
+               this to run scons from a sub directory of your code
 -Q             be more quiet which will omit some status messages
 --verbose      show full commands passed to the compiler
 --color=color  change the color of the log messages. Possible values are: off, light, dark
---light        build a :ref:`light release <light_releases>`. Useful to speed up compilation if you are 
-               developing high level analysis tools.
+--light        build a :ref:`light release <light_releases>`. Useful to speed
+               up compilation if you are developing high level analysis tools.
 --sphinx       also build the sphinx documentation in the ``build/html`` sub directory.
---extra-libpath=PATH        can be used to add additional search path for 
+--extra-libpath=PATH        can be used to add additional search path for
                             libraries not included in the externals
 --extra-ccflags=FLAGS       can be used to pass additional arguments to the
                             compiler for each compilation step.
@@ -232,12 +252,14 @@ will compile the code with four jobs in parallel. Other parameters you can use a
 --check-missing-libraries   if given all libraries will be checked for
                             missing direct dependencies after build
 
-.. note:: if you change any of the arguments ``--light``, ``--extra-libpath`` or ``--extra-ccflags`` scons will recompile most of the code. So best keep the arguments consistent to avoid lengthy recompiles.
+.. note:: if you change any of the arguments ``--light``, ``--extra-libpath``
+    or ``--extra-ccflags`` scons will recompile most of the code. So best keep
+    the arguments consistent to avoid lengthy recompiles.
 
 You can also supply a package name to only build the given package. For example
 if you know you only modified a file in the ``pxd`` package you can run ``scons
 pxd`` to only compile the pxd package. This is faster but will ignore some
-dependencies. 
+dependencies.
 
 .. warning:: Always run a full ``scons`` before committing anything
 
