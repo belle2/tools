@@ -242,10 +242,6 @@ Some of the parameters you can use are
 --light        build a :ref:`light release <light_releases>`. Useful to speed
                up compilation if you are developing high level analysis tools.
 --sphinx       also build the sphinx documentation in the ``build/html`` sub directory.
---extra-libpath=PATH        can be used to add additional search path for
-                            libraries not included in the externals
---extra-ccflags=FLAGS       can be used to pass additional arguments to the
-                            compiler for each compilation step.
 --check-extra-libraries     if given all libraries will be checked for
                             dependencies in the SConscript which are not
                             actually needed
