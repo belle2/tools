@@ -101,11 +101,12 @@ A major version of the software may contain non-backward-compatible changes to t
         If you do not know what release you need to use, then the newest supported full release should be your default choice.
         The command ``b2help-releases`` with no arguments, shows this.
 
+.. _light_releases:
 
 Light releases
 **************
 
-A light release (``light-YYMM-CODENAME``) is a release made from only the `analysis`, `skim`, `mdst`, `mva`, and `framework` packages.
+A light release (``light-YYMM-CODENAME``) is a release made from only the ``analysis``, ``skim``, ``mdst``, ``mva``, and ``framework`` packages.
 
 They are suitable for doing high-level analysis tasks which do not require the generation or reconstruction of data.
 If you are running over some MC or data that already exists (e.g. was produced by the data production group)
@@ -144,7 +145,7 @@ objects, methods, and descriptions for doxygen comments. If unsure you can
 usually just hit enter. The ``b2code-module`` command will create a skeleton header
 and source file of your module and include them in the files known to git.
 
-To compile your code simply type ::
+To :ref:`compile your code <using_scons>` simply type ::
 
   $ scons
 
@@ -164,9 +165,8 @@ directory, use the command  ::
 
   $ git pull --rebase
 
-
-
-
+.. note:: after any update to your analysis code you need recompile it by
+    running ``scons`` again.
 
 
 Development Setup
@@ -183,16 +183,81 @@ this version using ::
   $ cd development
   $ b2setup
 
-And you can compile the code with  ::
-
-  $ scons
-
 If you want to do the development from a certain version or branch just use
 ``git checkout`` to obtain it and run ``b2setup`` to make sure the correct
 externals version is set up, e.g. ::
 
   $ git checkout release-XX-YY-ZZ
   $ b2setup
+
+After creating a development setup or switching to a different release you have
+to :ref:`compile it <using_scons>`.
+
+.. note:: after any update to your analysis code you need recompile it by
+    running ``scons`` again.
+
+.. _using_scons:
+
+Compiling your Code
+...................
+
+To compile the code we use the `SCons <https://scons.org>`_ build system.
+Usually you can simply compile the code with running ::
+
+  $ scons
+
+.. warning:: You have to recompile your code every time you modify, add or
+   remove a file. If in doubt just run ``scons`` to be safe.
+
+You can tell the build system how many CPUs to use in parallel by using the
+``-j`` parameter::
+
+  $ scons -j 4
+
+will compile the code with four jobs in parallel.
+
+
+.. note:: By default, scons will use as many parallel jobs as there are CPUs
+    available on the system. This is fine on a local system but might not be
+    desirable on a shared system like KEKCC or DESY NAF. Please adjust the
+    amount of jobs to not block the whole machine if there are others using it.
+
+    To find out how many CPUs are available you can run ::
+
+        $ nproc
+
+To find out what other options you can use please run ::
+
+    $ scons --help
+
+Some of the parameters you can use are
+
+--help         Show a list of all available options.
+-j N           Allow N jobs at once.
+-D             search of the directory tree for the ``SConstruct`` file. Use
+               this to run scons from a sub directory of your code
+-Q             be more quiet which will omit some status messages
+--verbose      show full commands passed to the compiler
+--color=color  change the color of the log messages. Possible values are: off, light, dark
+--light        build a :ref:`light release <light_releases>`. Useful to speed
+               up compilation if you are developing high level analysis tools.
+--sphinx       also build the sphinx documentation in the ``build/html`` sub directory.
+--check-extra-libraries     if given all libraries will be checked for
+                            dependencies in the SConscript which are not
+                            actually needed
+--check-missing-libraries   if given all libraries will be checked for
+                            missing direct dependencies after build
+
+.. note:: if you change any of the arguments ``--light``, ``--extra-libpath``
+    or ``--extra-ccflags`` scons will recompile most of the code. So best keep
+    the arguments consistent to avoid lengthy recompiles.
+
+You can also supply a package name to only build the given package. For example
+if you know you only modified a file in the ``pxd`` package you can run ``scons
+pxd`` to only compile the pxd package. This is faster but will ignore some
+dependencies.
+
+.. warning:: Always run a full ``scons`` before committing anything
 
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
