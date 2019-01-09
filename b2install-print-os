@@ -14,6 +14,7 @@ fi
 OS_RELEASE_ID="<unknown>"
 OS_RELEASE_ID_LIKE="<unknown>"
 OS_RELEASE_VERSION="<unknown>"
+UBUNTU_CODENAME="<none>"
 
 # If /etc/os-release is present, read system identifer from it
 if [ -f /etc/os-release ]; then
@@ -23,10 +24,15 @@ if [ -f /etc/os-release ]; then
     OS_RELEASE_ID="el"
   elif [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
     OS_RELEASE_ID="ubuntu"
+    UBUNTU_CODENAME=`(source /etc/os-release && echo $UBUNTU_CODENAME)`
   fi
   OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | sed 's/\.//g')`
   if [ "${OS_RELEASE_ID}" = "el" ]; then
     OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | cut -c 1)`
+  elif [ "${UBUNTU_CODENAME}" = "bionic" ]; then
+    OS_RELEASE_VERSION=1804
+  elif [ "${UBUNTU_CODENAME}" = "xenial" ]; then
+    OS_RELEASE_VERSION=1604
   fi
 
 # Else if /etc/redhat-release is present, assume SL and read version number fron it
