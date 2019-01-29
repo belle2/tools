@@ -151,3 +151,11 @@ if release is not None and release != 'head':
     supported = supported_release(release)
     if supported != release:
         print('echo "Warning: The release %s is not supported any more. Please update to %s"' % (release, supported))
+
+# deprecate central + local
+if local_release is not None and local_release != 'head' and not is_analysis:
+    print('echo')
+    print('echo "Warning: You are setting up a central + local release. This feature is broken and will soon be removed."')
+    print('echo "Recommendation:"')
+    print('echo "  If you are developing code for basf2    => convert to a fully local release directory with the command b2code-local."')
+    print('echo "  If you are writing code for an analysis => create an analysis directory with b2analysis-create and move the code there."')

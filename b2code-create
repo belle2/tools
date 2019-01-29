@@ -9,16 +9,13 @@ function version_greater_equal
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [--light] directory [release]"
+  echo "Usage: `basename $0` [--light] directory"
   echo
   echo "- This command creates a local directory with the given name"
   echo "  as basis for a working copy of the Belle II software."
   echo "  It also prepares the build system."
-  echo "- If the basis for the code development should be a particular release,"
-  echo "  the version can be given as second argument."
-  echo "- If no second argument is given, the latest version of the code"
-  echo "  (head of git master) is taken. In this case the --light option can be"
-  echo "  used to check out only the packages of a light release."
+  echo "- The --light option can be used to check out only the packages"
+  echo "  of a light release."
   echo
   exit 0
 fi
@@ -31,8 +28,11 @@ if [ "$1" = "--light" ]; then
 fi
 
 # check number of arguments
-if [ $# -lt 1 -o $# -gt 2 ]; then
-  echo "Usage: `basename $0` [--light] directory [release]" 1>&2
+if [ $# -lt 1 -o $# -gt 1 ]; then
+  echo "Usage: `basename $0` [--light] directory" 1>&2
+  if [ $# -eq 2 ]; then
+    echo "The creation of central + local releases is not supprted any more."
+  fi
   exit 1
 fi
 
@@ -47,6 +47,7 @@ fi
 DIR=$1
 RELEASE=head
 if [ $# -gt 1 ]; then
+  echo "Warning: You are creating a central + local release. This feature is broken and will soon be removed."
   RELEASE=$2
   RELEASE_EXISTS=`git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} ${RELEASE} | wc -l`
   if [ "${RELEASE_EXISTS}" = "0" ]; then
