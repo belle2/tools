@@ -28,7 +28,7 @@ if [ "$1" = "--light" ]; then
 fi
 
 # check number of arguments
-if [ $# -lt 1 -o $# -gt 1 ]; then
+if [ $# -ne 1 ]; then
   echo "Usage: `basename $0` [--light] directory" 1>&2
   if [ $# -eq 2 ]; then
     echo "The creation of central + local releases is not supprted any more."
@@ -45,25 +45,6 @@ fi
 
 # read arguments
 DIR=$1
-RELEASE=head
-if [ $# -gt 1 ]; then
-  echo "Warning: You are creating a central + local release. This feature is broken and will soon be removed."
-  RELEASE=$2
-  RELEASE_EXISTS=`git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} ${RELEASE} | wc -l`
-  if [ "${RELEASE_EXISTS}" = "0" ]; then
-    echo "Error: The release ${RELEASE} does not exist." 1>&2
-    exit 1
-  fi
-  SUPPORTED_RELEASE=`python -c 'from versioning import supported_release;import sys;print(supported_release(sys.argv[1]))' ${RELEASE}`
-  if [ "${RELEASE}" != "${SUPPORTED_RELEASE}" ]; then
-    echo "Warning: The release ${RELEASE} is not supported any more. It is reccommended to use ${SUPPORTED_RELEASE} instead." 1>&2
-    read -p "Would you like to continue nevertheless (y/n)? " -n 1 REPLY
-    echo
-    if [ "$REPLY" != "y" ]; then
-      exit 0
-    fi
-  fi
-fi
 
 # create release directory and write release version to .release
 if [ -d ${DIR} ]; then
@@ -82,26 +63,20 @@ else
   echo "Warning: Because your git version (${GIT_VERSION}) is older than 1.7.4 the support of sparse checkouts is disabled."
   echo "=> When you have set up a git version >= 1.7.4, e.g. from the externals development version, you can re-enable it by executing 'git config core.sparsecheckout true' in your local release directory."
 fi
-if [ "${RELEASE}" == "head" ]; then
-  if [ "${LIGHT}" == "1" ]; then
-    echo "/.light" >> .git/info/sparse-checkout
-    git checkout master
-    rm -f .git/info/sparse-checkout
-    ln -s ${PWD}/.light .git/info/sparse-checkout
-  else
-    echo "/*" >> .git/info/sparse-checkout
-    for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
-      echo "!/${PACKAGE}/" >> .git/info/sparse-checkout
-    done
-  fi
+if [ "${LIGHT}" == "1" ]; then
+  echo "/.light" >> .git/info/sparse-checkout
   git checkout master
+  rm -f .git/info/sparse-checkout
+  ln -s ${PWD}/.light .git/info/sparse-checkout
 else
-  touch .git/info/sparse-checkout
-  ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/.externals .
-  ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
+  echo "/*" >> .git/info/sparse-checkout
+  for PACKAGE in ${BELLE2_EXCLUDE_PACKAGES}; do
+    echo "!/${PACKAGE}/" >> .git/info/sparse-checkout
+  done
 fi
+git checkout master
 
-echo ${RELEASE} > .release
+echo head > .release
 ln -s site_scons/SConstruct .
 
 # install hooks
@@ -109,5 +84,5 @@ rm -rf .git/hooks
 ln -sf ${BELLE2_TOOLS}/hooks .git/hooks
 
 # inform user about successful completion
-echo "New local directory created for ${RELEASE} release: ${DIR}"
+echo "New local directory created for head version: ${DIR}"
 echo "-> change to the new directory and set up the environment: cd ${DIR}; b2setup"
