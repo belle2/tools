@@ -51,3 +51,5 @@ else:
     analysis_file = open(analysis, 'w')
     analysis_file.write(release + '\n')
     analysis_file.close()
+    os.remove('site_scons')
+    os.symlink(os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release, 'site_scons'), 'site_scons')
