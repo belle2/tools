@@ -11,11 +11,13 @@ def get_remote_versioning(repository):
     if os.environ.get('BELLE2_NO_TOOLS_CHECK', False):
         return None
 
+    devnull = open('/dev/null', 'w')
     command = ['git', 'archive', '--remote=' + repository, 'HEAD', 'versioning.py']
-    git = subprocess.Popen(command, stdout=subprocess.PIPE)
-    tar = subprocess.Popen(['tar', '-xO', 'versioning.py'], stdin=git.stdout, stdout=subprocess.PIPE)
+    git = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=devnull)
+    tar = subprocess.Popen(['tar', '-xO', 'versioning.py'], stdin=git.stdout, stdout=subprocess.PIPE, stderr=devnull)
     git.stdout.close() 
     versioning = tar.communicate()[0]
+    devnull.close()
     if tar.returncode == 0:
         return versioning
     else:
