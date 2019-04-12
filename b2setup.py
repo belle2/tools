@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-from setup_tools import get_var, unsetup_old_release, update_environment, csh
+from setup_tools import get_var, update_environment
 from versioning import supported_release
 
 # check for help option
@@ -10,18 +10,16 @@ if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
 Usage: b2setup [release]
 
-This command sets up the environment for a central and/or local release
+This command sets up the environment for a central or local release
 of the Belle II software or for an Belle II analysis.
 
 -> Central release setup:
 
   Execute the b2setup command with the central release version as argument.
 
--> Local (+ central) release setup:
+-> Local release setup:
 
-  Execute the b2setup command in the local release directory. If a centrally
-  installed release with the same version as the local one exists, it is set
-  up, too.
+  Execute the b2setup command in the local release directory.
 
 -> Analysis setup:
 
@@ -62,79 +60,71 @@ if len(sys.argv) == 2:
 elif 'MY_BELLE2_RELEASE' in os.environ:
     release = os.environ['MY_BELLE2_RELEASE']
 
+# determine local/analysis directory by looking for .externals or .analysis file in current and parent directories
+local_dir = None
+if release is None:
+    local_dir = os.path.abspath(os.getcwd())
+    while len(local_dir) > 1 and not (os.path.isfile(os.path.join(local_dir, '.analysis')) or os.path.isfile(os.path.join(local_dir, '.externals'))):
+        local_dir = os.path.dirname(local_dir)
+    if os.path.isfile(os.path.join(local_dir, '.analysis')):
+        release = open(os.path.join(local_dir, '.analysis')).readline().strip()
+    if len(local_dir) <= 1:
+        local_dir = None
+
+# check that at least one of central release and local/analysis is given
+if not release and not local_dir:
+    sys.stderr.write('Error: Neither in a development or analysis directory nor a release specified.\n')
+    sys.exit(1)
+
 # check whether the central release exists
-if release and not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
-                                              'releases', release)):
+if release and not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release)):
     sys.stderr.write('Error: No central release %s found.\n' % release)
     sys.exit(1)
 
-# determine local release version and directory by looking for .release or .analysis file in current and parent directories
-local_dir = os.path.abspath(os.getcwd())
-local_release = None
-is_analysis = False
-while len(local_dir) > 1 and not (os.path.isfile(os.path.join(local_dir, '.analysis')) or os.path.isfile(os.path.join(local_dir, '.release'))):
-    local_dir = os.path.dirname(local_dir)
-if os.path.isfile(os.path.join(local_dir, '.analysis')):
-    local_release = open(os.path.join(local_dir, '.analysis')).readline().strip()
-    is_analysis = True
-elif os.path.isfile(os.path.join(local_dir, '.release')):
-    local_release = open(os.path.join(local_dir, '.release')).readline().strip()
-
-# check that at least one of central and local release is given
-if not release and not local_release:
-    sys.stderr.write('Error: Neither in a release or analysis directory nor a release specified.\n')
-    sys.exit(1)
-
-if local_release:
-    # check local release/analysis is not empty
-    if len(local_release) == 0:
-        sys.stderr.write('Error: The .%s file is empty.\n' % 'analysis' if is_analysis else 'release')
-        sys.exit(1)
-
-    # check whether central and local releases match if both are given
-    if release and local_release != release:
-        sys.stderr.write('Warning: The local release in the current directory (%s) will not be set up because it differs from the release given as argument (%s). If you want to set up the local release call b2setup without argument.\n'
-                         % (local_release, release))
-        local_release = None
-
-    else:
-        # check whether the local release exists
-        if local_release != 'head' and not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'],
-                                                                      'releases', local_release)):
-            sys.stderr.write('Error: No central release %s found.\n' % local_release)
-            sys.exit(1)
-
-        release = local_release
-
-# remove old release from the environment
-unsetup_old_release()
-
-# add the new release
-update_environment(release, 'analysis' if is_analysis else local_release, local_dir)
-
-# check SConstruct is a symlink to site_scons/SConstruct
-if not is_analysis and local_release and not os.path.islink(os.path.join(local_dir, 'SConstruct')):
-    sys.stderr.write(
-        'ERROR: "SConstruct" should be a symbolic link to site_scons/SConstruct, but it doesn\'t exist or is a copy.\n')
-    sys.stderr.write('Please remove it and recreate the link with\n')
-    sys.stderr.write(' ln -s site_scons/SConstruct .\n')
-    sys.exit(1)
+# setup environment for release
+update_environment(release, local_dir)
 
 # inform user about successful completion
-if is_analysis:
+if release and local_dir:
     print('echo "Environment setup for analysis : ${BELLE2_ANALYSIS_DIR}"')
     print('echo "Central release directory      : ${BELLE2_RELEASE_DIR}"')
 else:
-    print('echo "Environment setup for release: ${BELLE2_RELEASE}"')
+    if len(get_var('BELLE2_RELEASE')) > 0:
+        print('echo "Environment setup for release: ${BELLE2_RELEASE}"')
     if len(get_var('BELLE2_RELEASE_DIR')) > 0:
         print('echo "Central release directory    : ${BELLE2_RELEASE_DIR}"')
     if len(get_var('BELLE2_LOCAL_DIR')) > 0:
-        print('echo "Local release directory      : ${BELLE2_LOCAL_DIR}"')
+        print('echo "Local development directory  : ${BELLE2_LOCAL_DIR}"')
+    if len(get_var('BELLE2_ANALYSIS_DIR')) > 0:
+        print('echo "Analysis directory           : ${BELLE2_ANALYSIS_DIR}"')
 
 # set the build option if a .option file exists in the local release directory
+if not local_dir:
+    local_dir = os.path.abspath(os.getcwd())
 if os.path.isfile(os.path.join(local_dir, '.option')):
     build_option = open(os.path.join(local_dir, '.option')).readline().strip()
     print('b2code-option %s' % build_option)
+
+# check SConstruct is a symlink to site_scons/SConstruct
+if local_dir:
+    sconstruct = os.path.join(local_dir, 'SConstruct')
+    target = os.path.realpath(os.path.join(local_dir, 'site_scons', 'SConstruct'))
+    if not os.path.islink(sconstruct) or os.path.realpath(sconstruct) != target:
+        sys.stderr.write(
+           'Error: "SConstruct" should be a symbolic link to site_scons/SConstruct, but it doesn\'t exist or is a copy or points to the wrong location.\n')
+        sys.stderr.write('Please recreate the link with\n')
+        sys.stderr.write(' ln -sf site_scons/SConstruct .\n')
+    # for analyses check site_scons is a symlink to the release site_scons
+    if release:
+        site_scons = os.path.join(local_dir, 'site_scons')
+        release_dir = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release)
+        target = os.path.realpath(os.path.join(release_dir, 'site_scons'))
+        if not os.path.islink(site_scons) or os.path.realpath(site_scons) != target:
+            sys.stderr.write(
+               'Error: "site_scons" should be a symbolic link to %s/site_scons, but it doesn\'t exist or is a copy or points to the wrong location.\n' % release_dir)
+            sys.stderr.write('Please recreate the link with\n')
+            sys.stderr.write(' ln -sf %s/site_scons .\n' % release_dir)
+
 
 # check the externals and warn the user if the check fails
 try:
@@ -147,15 +137,7 @@ except:
     sys.stderr.write('Error: Check of externals at %s failed.\n' % extdir)
 
 # check whether the central release is supported
-if release is not None and release != 'head':
+if release is not None:
     supported = supported_release(release)
     if supported != release:
         print('echo "Warning: The release %s is not supported any more. Please update to %s"' % (release, supported))
-
-# deprecate central + local
-if local_release is not None and local_release != 'head' and not is_analysis:
-    print('echo')
-    print('echo "Warning: You are setting up a central + local release. This feature is broken and will soon be removed."')
-    print('echo "Recommendation:"')
-    print('echo "  If you are developing code for basf2    => convert to a fully local release directory with the command b2code-local."')
-    print('echo "  If you are writing code for an analysis => create an analysis directory with b2analysis-create and move the code there."')

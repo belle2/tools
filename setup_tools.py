@@ -19,7 +19,7 @@ lib_path_name = 'LD_LIBRARY_PATH'
 if os.uname()[0] == 'Darwin':
     lib_path_name = 'DYLD_LIBRARY_PATH'
 
-# dictionary for envionment variables
+# dictionary for environment variables
 env_vars = {}
 
 # list of [sh, csh] scripts that should be sourced
@@ -34,16 +34,13 @@ def set_var(var, value):
 
 
 def get_var(var):
-    return env_vars[var]
+    return env_vars.get(var, '')
 
 
 def copy_from_environment(var, default=None):
     """helper function to take a variable from the environment or a default, and to split paths"""
 
-    if var in os.environ:
-        env_vars[var] = os.environ[var]
-    else:
-        env_vars[var] = default
+    env_vars[var] = os.environ.get(var, default)
     if env_vars[var] and env_vars[var].find(':') >= 0:
         env_vars[var] = env_vars[var].split(':')
 
@@ -85,10 +82,7 @@ def add_option(var, option):
     """helper function to add an option to a variable"""
 
     if var not in env_vars:
-        if var in os.environ:
-            env_vars[var] = os.environ[var]
-        else:
-            env_vars[var] = ''
+        env_vars[var] = os.environ.get(var, '')
     env_vars[var] = (env_vars[var] + ' ' + option).strip()
 
 
@@ -101,107 +95,6 @@ def remove_option(var, option):
         else:
             return
     env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, '').strip()
-
-
-def unsetup_release(location):
-    """function to unsetup a release directory"""
-
-    subdir = os.environ['BELLE2_SUBDIR']
-
-    # remove release directory to path, library path, and python path
-    remove_path('PATH', os.path.join(location, 'bin', subdir))
-    remove_path(lib_path_name, os.path.join(location, 'lib', subdir))
-    remove_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
-    # for root6, add both the location and the include folder, otherwise
-    # ROOT's header lookup might perform a fallback to the headers at the
-    # compile location
-    remove_path('ROOT_INCLUDE_PATH', location)
-    remove_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
-
-
-def setup_release(location):
-    """function to setup a release directory"""
-
-    subdir = os.environ['BELLE2_SUBDIR']
-
-    # add release directory to path, library path, and python path
-    add_path('PATH', os.path.join(location, 'bin', subdir))
-    add_path(lib_path_name, os.path.join(location, 'lib', subdir))
-    add_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
-    # for root6, add both the location and the include folder, otherwise
-    # ROOT's header lookup might perform a fallback to the headers at the
-    # compile location
-    add_path('ROOT_INCLUDE_PATH', location)
-    add_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
-
-
-def unsetup_old_release():
-    """remove path settings from old release"""
-
-    # central release
-    if 'BELLE2_RELEASE_DIR' in os.environ:
-        unsetup_release(os.environ['BELLE2_RELEASE_DIR'])
-    env_vars['BELLE2_RELEASE_DIR'] = ''
-
-    # local release
-    if 'BELLE2_LOCAL_DIR' in os.environ:
-        unsetup_release(os.environ['BELLE2_LOCAL_DIR'])
-    env_vars['BELLE2_LOCAL_DIR'] = ''
-
-    # analysis
-    if 'BELLE2_ANALYSIS_DIR' in os.environ:
-        unsetup_release(os.environ['BELLE2_ANALYSIS_DIR'])
-    env_vars['BELLE2_ANALYSIS_DIR'] = ''
-
-    # externals
-    if 'BELLE2_EXTERNALS_DIR' in os.environ:
-        try:
-            sys.path[:0] = [os.environ['BELLE2_EXTERNALS_DIR']]
-            from externals import unsetup_externals
-            unsetup_externals(os.environ['BELLE2_EXTERNALS_DIR'])
-        except:
-            sys.stderr.write('Warning: Unsetup of externals at %s failed.\n'
-                             % os.environ['BELLE2_EXTERNALS_DIR'])
-    env_vars['BELLE2_EXTERNALS_DIR'] = ''
-
-
-def setup_central_release(release):
-    """setup the central release if it exists"""
-
-    if release and release != 'head':
-        location = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases',
-                                release)
-        if not os.path.isdir(location):
-            sys.stderr.write('Warning: No central release %s found.\n'
-                             % release)
-            release = None
-        else:
-
-            setup_release(location)
-            env_vars['BELLE2_RELEASE_DIR'] = location
-
-            externals_file = os.path.join(location, '.externals')
-            if not os.path.isfile(externals_file):
-                sys.stderr.write('Warning: No externals version is defined for the central release.\n'
-                                 )
-            else:
-                env_vars['BELLE2_EXTERNALS_VERSION'] = \
-                    open(externals_file).readline().strip()
-
-
-def setup_local_release(location):
-    """setup a local release directory"""
-
-    setup_release(location)
-    env_vars['BELLE2_LOCAL_DIR'] = location
-
-    externals_file = os.path.join(location, '.externals')
-    if not os.path.isfile(externals_file):
-        sys.stderr.write('Warning: No externals version is defined for the local release.\n'
-                         )
-    else:
-        env_vars['BELLE2_EXTERNALS_VERSION'] = \
-            open(externals_file).readline().strip()
 
 
 def export_environment():
@@ -247,24 +140,100 @@ def export_environment():
             print('unset SAVEOLDPWD')
 
 
-def update_environment(release, local_release, local_dir, externals_version=None):
-    """update the environment for the given central and local release or analysis"""
+def unsetup_release(location):
+    """function to unsetup a release directory"""
 
-    if externals_version is None:
+    subdir = os.environ['BELLE2_SUBDIR']
+
+    # remove release directory to path, library path, and python path
+    remove_path('PATH', os.path.join(location, 'bin', subdir))
+    remove_path(lib_path_name, os.path.join(location, 'lib', subdir))
+    remove_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
+    # for root6, add both the location and the include folder, otherwise
+    # ROOT's header lookup might perform a fallback to the headers at the
+    # compile location
+    remove_path('ROOT_INCLUDE_PATH', location)
+    remove_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
+
+
+def setup_release(location):
+    """function to setup a release directory"""
+
+    subdir = os.environ['BELLE2_SUBDIR']
+
+    # add release directory to path, library path, and python path
+    add_path('PATH', os.path.join(location, 'bin', subdir))
+    add_path(lib_path_name, os.path.join(location, 'lib', subdir))
+    add_path('PYTHONPATH', os.path.join(location, 'lib', subdir))
+    # for root6, add both the location and the include folder, otherwise
+    # ROOT's header lookup might perform a fallback to the headers at the
+    # compile location
+    add_path('ROOT_INCLUDE_PATH', location)
+    add_path('ROOT_INCLUDE_PATH', os.path.join(location, 'include'))
+
+    externals_file = os.path.join(location, '.externals')
+    if os.path.isfile(externals_file):
+        env_vars['BELLE2_EXTERNALS_VERSION'] = open(externals_file).readline().strip()
+
+
+def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None):
+    """update the environment for the given central and local release or analysis and options"""
+
+    # no change of release and local_dir if are both None (only change of options)
+    if release is None and local_dir is None:
+        release = os.environ.get('BELLE2_RELEASE_DIR', None)
+        local_dir = os.environ.get('BELLE2_ANALYSIS_DIR', os.environ.get('BELLE2_LOCAL_DIR', None))
+
+    # remove old central release and local/analysis
+    for var in ['BELLE2_RELEASE_DIR', 'BELLE2_LOCAL_DIR', 'BELLE2_ANALYSIS_DIR']:
+        if var in os.environ:
+            unsetup_release(os.environ[var])
+            env_vars[var] = ''
+    env_vars['BELLE2_RELEASE'] = ''
+
+    # remove old externals
+    if 'BELLE2_EXTERNALS_DIR' in os.environ:
+        try:
+            sys.path[:0] = [os.environ['BELLE2_EXTERNALS_DIR']]
+            from externals import unsetup_externals
+            unsetup_externals(os.environ['BELLE2_EXTERNALS_DIR'])
+        except:
+            sys.stderr.write('Warning: Unsetup of externals at %s failed.\n'
+                             % os.environ['BELLE2_EXTERNALS_DIR'])
+        env_vars['BELLE2_EXTERNALS_DIR'] = ''
+
+    # use explicit externals version if given
+    if externals_version is not None:
+        env_vars['BELLE2_EXTERNALS_VERSION'] = externals_version
+    elif release or local_dir:
         env_vars['BELLE2_EXTERNALS_VERSION'] = ''
     else:
-        env_vars['BELLE2_EXTERNALS_VERSION'] = externals_version
+        env_vars['BELLE2_EXTERNALS_VERSION'] = os.environ['BELLE2_EXTERNALS_VERSION']
+
+    # set build option if given
+    if option:
+        set_var('BELLE2_OPTION', option)
+        set_var('BELLE2_SUBDIR', os.path.join(os.environ.get('BELLE2_ARCH'), option))
+
+    # set externals build option if given
+    if externals_option:
+        set_var('BELLE2_EXTERNALS_OPTION', externals_option)
+        set_var('BELLE2_EXTERNALS_SUBDIR', os.path.join(os.environ.get('BELLE2_ARCH'), externals_option))
 
     # add the new central release to the environment
-    setup_central_release(release)
+    if release:
+        location = os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release)
+        setup_release(location)
+        env_vars['BELLE2_RELEASE_DIR'] = location
+        env_vars['BELLE2_RELEASE'] = release
 
     # take care of the local release or analysis
-    if local_release and local_release != 'analysis':
-        release = local_release
-        setup_local_release(local_dir)
-
-    # export release version
-    env_vars['BELLE2_RELEASE'] = release
+    if local_dir:
+        setup_release(local_dir)
+        if release:
+            env_vars['BELLE2_ANALYSIS_DIR'] = local_dir
+        else:
+            env_vars['BELLE2_LOCAL_DIR'] = local_dir
 
     # setup externals
     if len(env_vars['BELLE2_EXTERNALS_VERSION']) == 0:
@@ -294,10 +263,6 @@ def update_environment(release, local_release, local_dir, externals_version=None
             sys.stderr.write('Error: Setup of externals at %s failed.\n'
                              % extdir)
             raise
-
-    if local_release == 'analysis':
-        setup_release(local_dir)
-        env_vars['BELLE2_ANALYSIS_DIR'] = local_dir
 
     # setup environment for the release, including the externals
     export_environment()
