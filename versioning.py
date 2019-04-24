@@ -46,7 +46,7 @@ if versioning is None:
 if versioning is not None:
     exec(versioning)
 else:
-    sys.stderr.write('Warning: Could not get versioning information. Check that you have ssh access to stash, see https://confluence.desy.de/x/2o4iAg.00\n')
+    sys.stderr.write('Warning: Could not get versioning information. Check that you have ssh access to stash, see https://confluence.desy.de/x/2o4iAg\n')
     def supported_release(release):
         return None
     def recommended_global_tags(release, mc=False, analysis=True, input_tags=[]):
