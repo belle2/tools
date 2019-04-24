@@ -11,11 +11,13 @@ def get_remote_versioning(repository):
     if os.environ.get('BELLE2_NO_TOOLS_CHECK', False):
         return None
 
+    devnull = open('/dev/null', 'w')
     command = ['git', 'archive', '--remote=' + repository, 'HEAD', 'versioning.py']
-    git = subprocess.Popen(command, stdout=subprocess.PIPE)
-    tar = subprocess.Popen(['tar', '-xO', 'versioning.py'], stdin=git.stdout, stdout=subprocess.PIPE)
+    git = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=devnull)
+    tar = subprocess.Popen(['tar', '-xO', 'versioning.py'], stdin=git.stdout, stdout=subprocess.PIPE, stderr=devnull)
     git.stdout.close() 
     versioning = tar.communicate()[0]
+    devnull.close()
     if tar.returncode == 0:
         return versioning
     else:
@@ -44,7 +46,7 @@ if versioning is None:
 if versioning is not None:
     exec(versioning)
 else:
-    sys.stderr.write('Warning: Could not get versioning information\n')
+    sys.stderr.write('Warning: Could not get versioning information. Check that you have ssh access to stash, see https://confluence.desy.de/x/2o4iAg\n')
     def supported_release(release):
         return None
     def recommended_global_tags(release, mc=False, analysis=True, input_tags=[]):
