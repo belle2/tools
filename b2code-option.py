@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-from setup_tools import get_var, set_var, unsetup_old_release, \
-    update_environment, export_environment
+from setup_tools import update_environment
 
 # allowed options
 options = ['debug', 'opt', 'intel', 'clang']
@@ -31,33 +30,8 @@ if len(sys.argv) != 2 or sys.argv[1] not in options:
                      % os.environ.get('BELLE2_OPTION', ''))
     sys.exit(1)
 
-# get current setup variables
-release = None
-if 'BELLE2_RELEASE_DIR' in os.environ:
-    release = os.path.split(os.environ['BELLE2_RELEASE_DIR'])[-1]
-local_release = None
-local_dir = None
-if 'BELLE2_LOCAL_DIR' in os.environ:
-    local_release = os.environ['BELLE2_RELEASE']
-    local_dir = os.environ['BELLE2_LOCAL_DIR']
-if 'BELLE2_ANALYSIS_DIR' in os.environ:
-    local_release = 'analysis'
-    local_dir = os.environ['BELLE2_ANALYSIS_DIR']
-
-# remove old release from the environment
-if release or local_release:
-    unsetup_old_release()
-
-# set new compilation option
-set_var('BELLE2_OPTION', sys.argv[1])
-set_var('BELLE2_SUBDIR', os.path.join(os.environ.get('BELLE2_ARCH'),
-                                      sys.argv[1]))
-
-# update environment with new
-if release or local_release:
-    update_environment(release, local_release, local_dir)
-else:
-    export_environment()
+# update environment with new option
+update_environment(option=sys.argv[1])
 
 # inform user about successful completion
 print('echo "Environment setup for build option: ${BELLE2_OPTION}"')

@@ -3,7 +3,7 @@
 import sys
 import os
 import glob
-from setup_tools import get_var, unsetup_old_release, update_environment, csh
+from setup_tools import get_var, update_environment
 
 # prepare list of available versions
 top_dir = os.environ["BELLE2_EXTERNALS_TOPDIR"]
@@ -24,9 +24,9 @@ if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     print >> sys.stderr, """
 Usage: b2setup-externals [externals_version]
 
-This command sets up the Belle2 externals to be used without any specific release
+This command sets up the Belle II externals to be used without any specific release
 of the Belle II software. It's useful if you just want to enable the software
-included in the Belle2 externals like an updated ROOT or git version. Without an
+included in the Belle II externals like an updated ROOT or git version. Without an
 argument it will setup the latest version it can find, otherwise it will setup
 the specified version"""
     if available_versions:
@@ -46,6 +46,11 @@ if len(sys.argv) > 2:
     print >> sys.stderr, 'Usage: b2setup-externals [--help] [version]'
     sys.exit(1)
 
+# check that no Belle II software is set up
+if 'BELLE2_RELEASE' in os.environ.keys() or 'BELLE2_LOCAL_DIR' in os.environ.keys():
+    print >> sys.stderr, 'Error: This command can only be used of no Belle II software is set up.'
+    sys.exit(1)
+
 # check which version we want
 version = default_version
 if len(sys.argv) == 2:
@@ -57,11 +62,8 @@ You can try installing it by using 'b2install-externals {0}'""".format(version, 
 
         sys.exit(1)
 
-# remove old release from the environment
-unsetup_old_release()
-
-# add the new release
-update_environment(None, None, None, externals_version=version)
+# setup externals
+update_environment(externals_version=version)
 
 try:
     extdir = get_var('BELLE2_EXTERNALS_DIR')
