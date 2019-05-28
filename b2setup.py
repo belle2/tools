@@ -98,10 +98,8 @@ else:
     if len(get_var('BELLE2_ANALYSIS_DIR')) > 0:
         print('echo "Analysis directory           : ${BELLE2_ANALYSIS_DIR}"')
 
-# set the build option if a .option file exists in the local release directory
-if not local_dir:
-    local_dir = os.path.abspath(os.getcwd())
-if os.path.isfile(os.path.join(local_dir, '.option')):
+# set the build option if a .option file exists in the analysis or development directory
+if local_dir and os.path.isfile(os.path.join(local_dir, '.option')):
     build_option = open(os.path.join(local_dir, '.option')).readline().strip()
     print('b2code-option %s' % build_option)
 
