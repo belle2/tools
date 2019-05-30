@@ -9,14 +9,14 @@ fi
 # Check the tools setup (needed for checkstyle)
 if [ -z "${BELLE2_TOOLS}" ]; then
   echo "The tools are not set up, aborting commit."
-  echo "Source tools/setup_belle2 to set up the tools."
+  echo "Source tools/b2setup to set up the tools."
   exit 1
 fi
 
 # Check the externals setup (needed for astyle and pep8)
 if [ -z "${BELLE2_EXTERNALS_DIR}" ]; then
   echo "The externals are not set up, aborting commit."
-  echo "Set up a release with 'setuprel' or the extenals with 'setupext'."
+  echo "Set up a release with 'b2setup' or the externals with 'b2setup-externals'."
   exit 1
 fi
 
