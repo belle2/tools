@@ -216,7 +216,7 @@ For developers
 
       Usage: b2setup [release]
 
-   Execute the setuprel command in a local release directory to set it up. If a centrally
+   Execute the b2setup command in a local release directory to set it up. If a centrally
    installed release with the same version as the local one exists, it is set
    up, too. If a release version is given as argument this is used as version
    for the central release instead of the one matching the local release.
