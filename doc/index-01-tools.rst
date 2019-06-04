@@ -168,6 +168,16 @@ directory, use the command  ::
 .. note:: after any update to your analysis code you need recompile it by
     running ``scons`` again.
 
+To switch to a newer release for your analysis you can use the command ::
+
+  $ b2analysis-update release_version
+
+If no release version is given as argument the currently recommended one is
+taken.
+
+.. note:: after changing the release version you may have to adjust
+    your analysis code to the new release.
+
 
 Development Setup
 .................
