@@ -21,7 +21,7 @@ fi
 unset TAPE
 
 # check for debug option
-DEBUG_SELECTION="--exclude=debug --exclude=.debug"
+DEBUG_SELECTION="--anchored --exclude='*/Linux*/debug' --exclude='*/Linux*/*/.debug'"
 if [ "$1" = "--debug" ]; then
   DEBUG_SELECTION=""
   shift
