@@ -168,6 +168,14 @@ directory, use the command  ::
 .. note:: after any update to your analysis code you need recompile it by
     running ``scons`` again.
 
+Periodically you should update the release version of the software which your 
+analysis is based upon. See `Choosing a release` for detailed explaination.
+You can update your analysis project to a newer release using::
+
+  $ b2analysis-update newer_release_version
+
+after setting up your analysis (``b2setup`` from your analysis directory).
+
 
 Development Setup
 .................
