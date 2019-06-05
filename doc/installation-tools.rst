@@ -48,7 +48,7 @@ sourcing ``tools/setup_belle2``::
 
 .. warning:: This has to be done in every shell you plan on using the Belle II Software.
 
-The behaviour of the tools can be customized by setting the following
+The behavior of the tools can be customized by setting the following
 environment variables before sourcing ``tools/setup_belle2``:
 
 .. envvar:: BELLE2_USER
@@ -60,7 +60,7 @@ environment variables before sourcing ``tools/setup_belle2``:
 
 .. envvar:: BELLE2_GIT_ACCESS
 
-   This cariable can be set to either ``http`` or ``ssh`` to specify the
+   This variable can be set to either ``http`` or ``ssh`` to specify the
    protocol to be used for git commands. Please have a look at `Git/Stash
    Introduction`_ for details on the meanings.
 
@@ -128,6 +128,16 @@ For users
 
   The optional second argument can be used to specify a user name e.g. to check 
   out the analysis code created by somebody else.
+
+.. describe:: b2analysis-update
+
+  ::
+
+      Usage: b2analysis-update [release]
+
+  This command changes the central release version for the currently set up
+  analysis. If no central release version is given as argument the recommended
+  release version is taken.
 
 .. describe:: b2setup
 
