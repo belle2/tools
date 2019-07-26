@@ -101,6 +101,8 @@ A major version of the software may contain non-backward-compatible changes to t
         If you do not know what release you need to use, then the newest supported full release should be your default choice.
         The command ``b2help-releases`` with no arguments, shows this.
 
+.. tip:: We support the most recent patch to the last two major releases.
+
 .. _light_releases:
 
 Light releases
@@ -115,13 +117,15 @@ and want access to newer features, you should consider using a light release.
 .. warning:: 
         Unfortunately from light release to light release the syntax may change and you might have to update your analysis scripts.
 
+.. tip:: We support the last two light releases.
+
 For more technical information about light releases, see `BELLE2-NOTE-TE-2018-013`_.
 
 
 Physics Analysis Setup
 ......................
 
-If you want to develop your analysis you can setup your own analysis project with ::
+If you want to develop your analysis you can setup your own *analysis project* with ::
 
   $ b2analysis-create analysis_name release_version
 
@@ -165,18 +169,31 @@ directory, use the command  ::
 
   $ git pull --rebase
 
-.. note:: after any update to your analysis code you need recompile it by
+.. note:: After any update to your analysis code you need recompile it by
     running ``scons`` again.
 
-To switch to a newer release for your analysis you can use the command ::
 
-  $ b2analysis-update release_version
+Keeping your analysis up-to-date
+********************************
 
-If no release version is given as argument the currently recommended one is
+Periodically you should update the release version of the software which your 
+analysis is based upon. You will want to keep on top of improvements and 
+bug-fixes. At the very least, you should update before your current release 
+becomes unsupported. See `Choosing a release` for detailed explanation.
+
+You can update your analysis project to a newer release using ::
+
+  $ b2analysis-update newer_release_version
+
+after setting up your analysis (``b2setup`` from your analysis directory).
+If no ``newer_release_version`` is specified the currently recommended one is
 taken.
 
-.. note:: after changing the release version you may have to adjust
+.. note:: After updating the release version you may have to adjust
     your analysis code to the new release.
+
+    A newer major release, or newer light release may contain 
+    non-backward-compatible changes to the user interface.
 
 
 Development Setup
