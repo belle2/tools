@@ -8,6 +8,12 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "- This command installs or updates the given type of basf2 data."
   echo "  Supported data types are 'validation' and 'examples'."
+  echo "- The command requires that you have access to the DESY cloud:"
+  echo "    https://desycloud.desy.de"
+  echo "  Contact daniel.knittel@desy.de or uco@desy.de to request access."
+  echo "- Your password will be stored in the rclone configuration file."
+  echo "  To update the password just delete the configuration file:"
+  echo "    ${HOME}/.config/rclone/rclone.conf"
   echo
   exit 0
 fi
@@ -94,5 +100,7 @@ echo "Syncing ${DATATYPE} data to ${DIR}"
 rclone sync --progress desycloud:/data/${DIRNAME}/ .
 if [ "$?" != 0 ]; then
   echo "Error: The synchronization of the ${DATATYPE} data failed." 1>&2
+  echo "       Make sure you have access to the DESY cloud and your password is correct." 1>&2
+  echo "       Use --help option for more information." 1>&2
   exit 1
 fi
