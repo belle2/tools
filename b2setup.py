@@ -122,6 +122,15 @@ if local_dir:
                'Error: "site_scons" should be a symbolic link to %s/site_scons, but it doesn\'t exist or is a copy or points to the wrong location.\n' % release_dir)
             sys.stderr.write('Please recreate the link with\n')
             sys.stderr.write(' ln -sf %s/site_scons .\n' % release_dir)
+    else:
+        # for development directories check .git/hooks is a link to ${BELLE2_TOOLS}/hooks
+        hooks = os.path.join(local_dir, '.git/hooks')
+        target = os.path.realpath(os.path.join(os.environ['BELLE2_TOOLS'], 'hooks'))
+        if not os.path.islink(hooks) or os.path.realpath(hooks) != target:
+            sys.stderr.write(
+               'Error: ".git/hooks" should be a symbolic link to ${BELLE2_TOOLS}/hooks, but it doesn\'t exist or is a copy or points to the wrong location.\n')
+            sys.stderr.write('Please recreate the link with\n')
+            sys.stderr.write(' ln -sf ${BELLE2_TOOLS}/hooks .git/hooks\n')
 
 
 # check the externals and warn the user if the check fails
