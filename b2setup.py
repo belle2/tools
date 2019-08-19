@@ -130,7 +130,7 @@ if local_dir:
             sys.stderr.write(
                'Warning: ".git/hooks" should be a symbolic link to ${BELLE2_TOOLS}/hooks, but it doesn\'t exist or is a copy or points to the wrong location.\n')
             sys.stderr.write('Please recreate the link with\n')
-            sys.stderr.write(' ln -sf ${BELLE2_TOOLS}/hooks .git/hooks\n')
+            sys.stderr.write(' rm -rf .git/hooks && ln -sf ${BELLE2_TOOLS}/hooks .git/hooks\n')
 
 
 # check the externals and warn the user if the check fails
