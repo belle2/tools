@@ -128,7 +128,7 @@ if local_dir:
         target = os.path.realpath(os.path.join(os.environ['BELLE2_TOOLS'], 'hooks'))
         if not os.path.islink(hooks) or os.path.realpath(hooks) != target:
             sys.stderr.write(
-               'Error: ".git/hooks" should be a symbolic link to ${BELLE2_TOOLS}/hooks, but it doesn\'t exist or is a copy or points to the wrong location.\n')
+               'Warning: ".git/hooks" should be a symbolic link to ${BELLE2_TOOLS}/hooks, but it doesn\'t exist or is a copy or points to the wrong location.\n')
             sys.stderr.write('Please recreate the link with\n')
             sys.stderr.write(' ln -sf ${BELLE2_TOOLS}/hooks .git/hooks\n')
 
