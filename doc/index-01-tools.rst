@@ -18,7 +18,7 @@ local machine following the `CVMFS Client Quick Start`_ guide.
 If you want to install the Belle II Software without CVMFS please have a look at
 the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs-setup`
 
-.. toctree:: 
+.. toctree::
    :maxdepth: 1
 
    installation-tools
@@ -79,7 +79,7 @@ Releases come in four kinds:
 4) A prerelease, name of the form ``prerelease-AA-00-00abc``.
 
 Monthly builds are made from the development version of the code, they are a `CI`_ tool.
-Pre-releases are for testing and validation before a full release. 
+Pre-releases are for testing and validation before a full release.
 
 .. warning::
        Neither monthly builds nor prereleases are supported for use in analysis.
@@ -114,7 +114,11 @@ They are suitable for doing high-level analysis tasks which do not require the g
 If you are running over some MC or data that already exists (e.g. was produced by the data production group)
 and want access to newer features, you should consider using a light release.
 
-.. warning:: 
+.. warning::
+        By construction, a light release can only be used to process files in the **mdst** format.
+	Reading any other file format (e.g., cdst) will cause a crash.
+
+.. warning::
         Unfortunately from light release to light release the syntax may change and you might have to update your analysis scripts.
 
 .. tip:: We support the last two light releases.
@@ -160,8 +164,8 @@ any other location and continue your work there. The git repository takes care
 of synchronizing the multiple local version of the code. To get the code of an
 existing analysis with a certain name type ::
 
-  $ b2analysis-get <analysis name> 
-  
+  $ b2analysis-get <analysis name>
+
 Again, changes can be submitted to the git repository with git commit followed
 by git push. To get the changes made in a different local version and
 committed to the central repository to your current local analysis working
@@ -176,9 +180,9 @@ directory, use the command  ::
 Keeping your analysis up-to-date
 ********************************
 
-Periodically you should update the release version of the software which your 
-analysis is based upon. You will want to keep on top of improvements and 
-bug-fixes. At the very least, you should update before your current release 
+Periodically you should update the release version of the software which your
+analysis is based upon. You will want to keep on top of improvements and
+bug-fixes. At the very least, you should update before your current release
 becomes unsupported. See `Choosing a release` for detailed explanation.
 
 You can update your analysis project to a newer release using ::
@@ -192,7 +196,7 @@ taken.
 .. note:: After updating the release version you may have to adjust
     your analysis code to the new release.
 
-    A newer major release, or newer light release may contain 
+    A newer major release, or newer light release may contain
     non-backward-compatible changes to the user interface.
 
 
