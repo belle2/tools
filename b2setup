@@ -3,7 +3,7 @@
 #
 
 # sh type shells
-test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && . `python -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' $(dirname ${BASH_SOURCE:-$0})`/b2setup.sh
+test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && . `dirname $(readlink -f ${BASH_SOURCE:-$0})`/b2setup.sh
 test "`ps -p $$ -o comm= | grep csh | wc -l`" = "0" && return
 
 # tcsh shell
@@ -25,4 +25,3 @@ else
   exit 1
 endif
 source `dirname ${FILENAME}`/b2setup.csh
-

@@ -1,0 +1,12 @@
+#!/bin/sh
+if [ -z $PYTHON ]; then
+  PYTHON=`command -v python3`
+fi
+if [ -z $PYTHON ]; then
+  PYTHON=`command -v python2`
+fi
+if [ -z $PYTHON ]; then
+  echo "Cannot find a python executable" 1>2
+  exit 1
+fi
+$PYTHON "$@"
