@@ -10,4 +10,4 @@ if [ -z $PYTHON ]; then
   echo "Cannot find a python executable" 1>&2
   exit 1
 fi
-$PYTHON "$"
+$PYTHON "$@"
