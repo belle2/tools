@@ -1,12 +1,13 @@
 #!/bin/sh
+for executable in python3 python2 python; do
+  if [ -z $PYTHON ]; then
+    PYTHON=`command -v ${executable}`
+  else
+    break
+  fi
+done
 if [ -z $PYTHON ]; then
-  PYTHON=`command -v python3`
-fi
-if [ -z $PYTHON ]; then
-  PYTHON=`command -v python2`
-fi
-if [ -z $PYTHON ]; then
-  echo "Cannot find a python executable" 1>2
+  echo "Cannot find a python executable" 1>&2
   exit 1
 fi
-$PYTHON "$@"
+$PYTHON "$"
