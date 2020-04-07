@@ -81,7 +81,7 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
     libxft-dev libncurses-dev libssl-dev libreadline-dev lsof"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
-  if [ $OS_RELEASE_VERSION > "18.04" ]; then
+  if [[ $OS_RELEASE_VERSION > "18.04" ]]; then
     PACKAGES=${PACKAGES/python/python2}
   fi;
   CHECK_CMD="dpkg -s"
