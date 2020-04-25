@@ -1,5 +1,5 @@
 # use python3 if we don't have python
-if [ -z `which python` ]; then
+if [ -z `which python 2> /dev/null` ]; then
   alias python=python3
 fi
 

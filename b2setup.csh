@@ -1,9 +1,8 @@
 # use python3 if we don't have python
-set PYTHON=`which python`
-if ( ! $?PYTHON ) then
+which python >& /dev/null
+if ( "$?" != "0" ) then
   alias python python3
 endif
-unset PYTHON
 
 # determine tools directory
 set COMMAND=`echo $_`
