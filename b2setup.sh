@@ -1,6 +1,10 @@
+# use python3 if we don't have python
+if [ -z `which python` ]; then
+  alias python=python3
+fi
+
 # determine tools directory
-PYTHON=$(dirname ${BASH_SOURCE:-$0})/b2anypython
-BELLE2_TOOLS=`$PYTHON -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' $(dirname ${BASH_SOURCE:-$0})`
+BELLE2_TOOLS=`python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' $(dirname ${BASH_SOURCE:-$0})`
 
 # check for pre setup script
 BELLE2_SETUP_DIRS="${PWD} ${HOME} ${BELLE2_TOOLS} ${BELLE2_CONFIG_DIR} /etc /sw/belle2"
@@ -25,7 +29,7 @@ export PYTHONPATH=${BELLE2_TOOLS}
 
 # set top directory of Belle II software installation
 if [ -z "${VO_BELLE2_SW_DIR}" ]; then
-  export VO_BELLE2_SW_DIR=`$PYTHON -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
+  export VO_BELLE2_SW_DIR=`python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
 fi
 
 # set top directory of external software
@@ -77,25 +81,25 @@ fi
 # define function for release/analysis setup
 function b2setup
 {
-  eval "`$PYTHON ${BELLE2_TOOLS}/b2setup.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/b2setup.py $* || echo 'return 1'`"
 }
 
 # define function for option selection
 function b2code-option
 {
-  eval "`$PYTHON ${BELLE2_TOOLS}/b2code-option.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/b2code-option.py $* || echo 'return 1'`"
 }
 
 # define function for externals option selection
 function b2code-option-externals
 {
-  eval "`$PYTHON ${BELLE2_TOOLS}/b2code-option-externals.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/b2code-option-externals.py $* || echo 'return 1'`"
 }
 
 # define function for externals setup without release
 function b2setup-externals
 {
-  eval "`$PYTHON ${BELLE2_TOOLS}/b2setup-externals.py $* || echo 'return 1'`"
+  eval "`python ${BELLE2_TOOLS}/b2setup-externals.py $* || echo 'return 1'`"
 }
 
 # inform user about successful setup

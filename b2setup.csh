@@ -1,3 +1,10 @@
+# use python3 if we don't have python
+set PYTHON=`which python`
+if ( ! $?PYTHON ) then
+  alias python python3
+endif
+unset PYTHON
+
 # determine tools directory
 set COMMAND=`echo $_`
 if ( "${COMMAND}" != "" ) then
@@ -17,8 +24,7 @@ else
   exit 1
 endif
 set DIRNAME=`dirname ${FILENAME}`
-set PYTHON=${DIRNAME}/b2anypython
-setenv BELLE2_TOOLS `$PYTHON -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${DIRNAME}`
+setenv BELLE2_TOOLS `python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${DIRNAME}`
 unset DIRNAME
 unset FILENAME
 
@@ -55,7 +61,7 @@ setenv PYTHONPATH ${BELLE2_TOOLS}
 
 # set top directory of Belle II software installation
 if ( ! ${?VO_BELLE2_SW_DIR} ) then
-  setenv VO_BELLE2_SW_DIR `$PYTHON -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
+  setenv VO_BELLE2_SW_DIR `python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
 endif
 
 # set top directory of external software
@@ -108,16 +114,16 @@ if ( ! ${?BELLE2_EXCLUDE_PACKAGES} ) then
 endif
 
 # define alias for release/analysis setup
-alias b2setup "source ${BELLE2_TOOLS}/source.csh $PYTHON ${BELLE2_TOOLS}/b2setup.py"
+alias b2setup "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/b2setup.py"
 
 # define alias for option selection
-alias b2code-option "source ${BELLE2_TOOLS}/source.csh $PYTHON ${BELLE2_TOOLS}/b2code-option.py"
+alias b2code-option "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/b2code-option.py"
 
 # define alias for externals option selection
-alias b2code-option-externals "source ${BELLE2_TOOLS}/source.csh $PYTHON ${BELLE2_TOOLS}/b2code-option-externals.py"
+alias b2code-option-externals "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/b2code-option-externals.py"
 
 # define alias for externals setup without release
-alias b2setup-externals "source ${BELLE2_TOOLS}/source.csh $PYTHON ${BELLE2_TOOLS}/b2setup-externals.py"
+alias b2setup-externals "source ${BELLE2_TOOLS}/source.csh python ${BELLE2_TOOLS}/b2setup-externals.py"
 
 # make PATH changes active
 rehash
