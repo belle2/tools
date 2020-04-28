@@ -1,3 +1,9 @@
+# use python3 if we don't have python
+which python >& /dev/null
+if ( "$?" != "0" ) then
+  alias python python3
+endif
+
 # determine tools directory
 set COMMAND=`echo $_`
 if ( "${COMMAND}" != "" ) then

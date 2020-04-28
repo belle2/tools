@@ -1,3 +1,8 @@
+# use python3 if we don't have python
+if [ -z `which python 2> /dev/null` ]; then
+  alias python=python3
+fi
+
 # determine tools directory
 BELLE2_TOOLS=`python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' $(dirname ${BASH_SOURCE:-$0})`
 
