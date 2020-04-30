@@ -4,7 +4,7 @@ set -o pipefail
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [--debug] [version [system]]"
+  echo "Usage: `basename $0` [--debug] [--binary] [version [system]]"
   echo
   echo "- This command installs the given release or build version of basf2"
   echo "  in the directory $VO_BELLE2_SW_DIR/releases."
@@ -12,6 +12,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  the current system. A binary version can be selected explicitly"
   echo "  with the second argument."
   echo "- Debug information is removed unless the --debug option is used."
+  echo "- With the --binary option no compilation of the source will be attempted."
   echo "- If no version is given it lists the available versions."
   echo
   exit 0
@@ -24,6 +25,13 @@ unset TAPE
 DEBUG_SELECTION="--anchored --exclude='*/Linux*/debug' --exclude='*/Linux*/*/.debug'"
 if [ "$1" = "--debug" ]; then
   DEBUG_SELECTION=""
+  shift
+fi
+
+# check for binary option
+BINARY_ONLY="no"
+if [ "$1" = "--binary" ]; then
+  BINARY_ONLY="yes"
   shift
 fi
 
@@ -87,6 +95,8 @@ if [ "${SYSTEM}" != "<unknown><unknown>" ]; then
   wget -O - --tries=3 ${BELLE2_DOWNLOAD}/releases/${VERSION}_${SYSTEM}.tgz | tar xz ${DEBUG_SELECTION}
   if [ "$?" = "0" ]; then
     exit 0
+  elif [ "${BINARY_ONLY}" = "yes" ]; then
+    exit 2
   fi
 fi
 
