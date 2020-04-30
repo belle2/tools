@@ -4,13 +4,14 @@ set -o pipefail
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [version [system]]"
+  echo "Usage: `basename $0` [--binary] [version [system]]"
   echo
   echo "- This command installs the given version of the externals in the"
   echo "  directory given by the environment variable BELLE2_EXTERNALS_TOPDIR."
   echo "- By default it tries to install the precompiled binary version for"
   echo "  the current system. A binary version can be selected explicitly"
   echo "  with the second argument."
+  echo "- With the --binary option no compilation of the source will be attempted."
   echo "- If no version is given it lists the available externals versions."
   echo
   exit 0
@@ -18,6 +19,13 @@ fi
 
 # make sure tar uses stdin
 unset TAPE
+
+# check for binary option
+BINARY_ONLY="no"
+if [ "$1" = "--binary" ]; then
+  BINARY_ONLY="yes"
+  shift
+fi
 
 # check number of arguments
 if [ $# -gt 2 ]; then
@@ -110,6 +118,8 @@ else
     RESULT=$?
     if [ "${RESULT}" = "0" ]; then
       exit 0
+    elif [ "${BINARY_ONLY}" = "yes" ]; then
+      exit 2
     fi
   fi
 
