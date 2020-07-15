@@ -6,11 +6,16 @@ from setup_tools import update_environment
 # allowed options
 options = ['debug', 'opt', 'intel']
 
+using_csh = False
+if len(sys.argv)>1 and sys.argv[1] == '--csh':
+    using_csh = True
+    del sys.argv[1]
+
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
 Usage: b2code-option-externals %s
-    
+
 Set up the environment for selected compiler options for the externals:
 
   debug   : include debug symbols, no optimization
@@ -30,7 +35,7 @@ if len(sys.argv) != 2 or sys.argv[1] not in options:
     sys.exit(1)
 
 # update environment with new externals option
-update_environment(externals_option=sys.argv[1])
+update_environment(externals_option=sys.argv[1], csh=using_csh)
 
 # inform user about successful completion
 print('echo "Environment setup for externals option: %s"' % sys.argv[1])

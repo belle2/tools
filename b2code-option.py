@@ -6,6 +6,11 @@ from setup_tools import update_environment
 # allowed options
 options = ['debug', 'opt', 'intel', 'clang']
 
+using_csh = False
+if len(sys.argv)>1 and sys.argv[1] == '--csh':
+    using_csh = True
+    del sys.argv[1]
+
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
@@ -30,7 +35,7 @@ if len(sys.argv) != 2 or sys.argv[1] not in options:
     sys.exit(1)
 
 # update environment with new option
-update_environment(option=sys.argv[1])
+update_environment(option=sys.argv[1], csh=using_csh)
 
 # inform user about successful completion
 print('echo "Environment setup for build option: ${BELLE2_OPTION}"')

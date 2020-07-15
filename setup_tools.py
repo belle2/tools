@@ -8,11 +8,6 @@ try:
 except ImportError:
     pass
 
-# determine whether we have a csh family kind of shell
-shell = (subprocess.Popen(('ps -p %d -o comm=' % os.getppid()).split(),
-                          stdout=subprocess.PIPE).communicate()[0])[:-1]
-csh = shell in ['csh', 'tcsh']
-
 # determine library path environment variable
 lib_path_name = 'LD_LIBRARY_PATH'
 if os.uname()[0] == 'Darwin':
@@ -96,7 +91,7 @@ def remove_option(var, option):
     env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, '').strip()
 
 
-def export_environment():
+def export_environment(csh=False):
     """generate shell commands for environment settings"""
 
     for var in env_vars.keys():
@@ -175,7 +170,7 @@ def setup_release(location):
         env_vars['BELLE2_EXTERNALS_VERSION'] = open(externals_file).readline().strip()
 
 
-def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None):
+def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None, csh=False):
     """update the environment for the given central and local release or analysis and options"""
 
     # no change of release and local_dir if are both None (only change of options)
@@ -264,4 +259,4 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
             raise
 
     # setup environment for the release, including the externals
-    export_environment()
+    export_environment(csh=csh)

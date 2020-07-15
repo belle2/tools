@@ -4,6 +4,11 @@ import os
 import glob
 from setup_tools import get_var, update_environment
 
+using_csh = False
+if len(sys.argv)>1 and sys.argv[1] == '--csh':
+    using_csh = True
+    del sys.argv[1]
+
 # prepare list of available versions
 top_dir = os.environ["BELLE2_EXTERNALS_TOPDIR"]
 # get sorted list of directories in externals directory
@@ -14,7 +19,7 @@ except:
 
 # and chose the latest one as default
 if available_versions:
-    default_version = available_versions[-1] 
+    default_version = available_versions[-1]
 else:
     default_version = None
 
@@ -62,7 +67,7 @@ You can try installing it by using 'b2install-externals {0}'""".format(version, 
         sys.exit(1)
 
 # setup externals
-update_environment(externals_version=version)
+update_environment(externals_version=version, csh=using_csh)
 
 try:
     extdir = get_var('BELLE2_EXTERNALS_DIR')

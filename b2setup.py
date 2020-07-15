@@ -4,6 +4,11 @@ import os
 from setup_tools import get_var, update_environment
 from versioning import supported_release
 
+using_csh = False
+if len(sys.argv)>1 and sys.argv[1] == '--csh':
+    using_csh = True
+    del sys.argv[1]
+
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
     sys.stderr.write("""
@@ -81,7 +86,7 @@ if release and not os.path.isdir(os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'r
     sys.exit(1)
 
 # setup environment for release
-update_environment(release, local_dir)
+update_environment(release, local_dir, csh=using_csh)
 
 # inform user about successful completion
 if release and local_dir:
