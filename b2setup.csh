@@ -166,6 +166,16 @@ if ( ! ${?BELLE2_NO_TOOLS_CHECK} ) then
   popd  > /dev/null
 endif
 
+# check encoding
+set ENCODING=`b2anypython -c 'import locale;print(locale.getpreferredencoding())'`
+if ( "${ENCODING}" != "UTF-8" ) then
+  echo
+  echo "WARNING: Your preferred character encoding is not UTF-8."
+  echo "-------> It is recommended to enable UFT-8 encoding, see 'man locale' for instructions."
+  echo
+endif
+
+
 # check for post setup script
 foreach DIR ( ${BELLE2_SETUP_DIRS} )
   if ( -f ${DIR}/b2postsetup.csh ) then
