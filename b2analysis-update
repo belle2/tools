@@ -23,8 +23,8 @@ analysis = None
 for path in ['.', os.environ.get('BELLE2_ANALYSIS_DIR', '.')]:
     filename = os.path.join(path, '.analysis')
     if os.path.isfile(filename):
-	analysis = filename
-	break
+        analysis = filename
+        break
 
 if analysis is None:
     sys.stderr.write('Error: No analysis directory found.')
@@ -40,7 +40,7 @@ if release is None:
 else:
     supported = supported_release(release)
     if release != supported:
-	print('Warning: %s is not supported, instead %s is recommended' % (release, supported))
+        print('Warning: %s is not supported, instead %s is recommended' % (release, supported))
 
 # do the update if the release differs from the current one
 if release == current_release:
