@@ -110,7 +110,7 @@ endif
 
 # list of packages that are excluded by default
 if ( ! ${?BELLE2_EXCLUDE_PACKAGES} ) then
-  setenv BELLE2_EXCLUDE_PACKAGES "daq eutel topcaf testbeam"
+  setenv BELLE2_EXCLUDE_PACKAGES "daq"
 endif
 
 # define alias for release/analysis setup

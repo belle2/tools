@@ -70,7 +70,7 @@ fi
 
 # list of packages that are excluded by default
 if [ -z "${BELLE2_EXCLUDE_PACKAGES}" ]; then
-  export BELLE2_EXCLUDE_PACKAGES="daq eutel topcaf testbeam"
+  export BELLE2_EXCLUDE_PACKAGES="daq"
 fi
 
 # define function for release/analysis setup
