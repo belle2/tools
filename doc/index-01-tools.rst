@@ -16,7 +16,7 @@ local machine following the `CVMFS Client Quick Start`_ guide.
 .. note:: In the following it is assumed that you have configured your `access to the code repository`_
 
 If you want to install the Belle II Software without CVMFS please have a look at
-the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs-setup`
+the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs_setup`
 
 .. toctree::
    :maxdepth: 1
