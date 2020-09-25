@@ -16,7 +16,7 @@ local machine following the `CVMFS Client Quick Start`_ guide.
 .. note:: In the following it is assumed that you have configured your `access to the code repository`_
 
 If you want to install the Belle II Software without CVMFS please have a look at
-the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs-setup`
+the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs_setup`
 
 .. toctree::
    :maxdepth: 1
@@ -27,7 +27,7 @@ the following documents, otherwise if you have CVMFS available please continue w
 Alternatively you can use `Jan's docker container`_ to get the Belle II software, for example on Mac or Windows machines.
 
 
-.. _cvmfs-setup:
+.. _cvmfs_setup:
 
 Setup of the Belle II Software
 ------------------------------
@@ -55,6 +55,8 @@ To only set up the tools without a release use ::
   $ source /cvmfs/belle.cern.ch/tools/b2setup
 
 .. warning:: The setup of tools and releases has to be done in every shell you plan on using the Belle II Software.
+
+.. _choosing_a_release:
 
 Choosing a release
 ..................
@@ -183,7 +185,7 @@ Keeping your analysis up-to-date
 Periodically you should update the release version of the software which your
 analysis is based upon. You will want to keep on top of improvements and
 bug-fixes. At the very least, you should update before your current release
-becomes unsupported. See `Choosing a release` for detailed explanation.
+becomes unsupported. See :ref:`choosing_a_release` for detailed explanation.
 
 You can update your analysis project to a newer release using ::
 
