@@ -66,7 +66,7 @@ elif [[ $OS_RELEASE_ID =~ ^(opensuse(-leap|-tumbleweed)?|sles)$ ]]; then
   PACKAGES="binutils gcc gcc-c++ git make patch pattern:devel_perl
     python subversion tar gzip bzip2 xz unzip wget libpng-devel libX11-devel
     libXext-devel libXpm-devel libXft-devel ncurses-devel libopenssl-devel
-    readline-devel zip java-11-openjdk-devel man libtool makeinfo"
+    readline-devel zip pattern:devel_java man libtool makeinfo"
   OPTIONALS="tk-devel tcl-devel glew-devel Mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
