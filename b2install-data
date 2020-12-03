@@ -21,6 +21,13 @@ fi
 # check number of arguments
 if [ $# -gt 2 ]; then
   echo "Usage: `basename $0` datatype" 1>&2
+  echo "For more information use `basename $0` --help."
+  exit 1
+fi
+
+if [ $# -lt 1 ]; then
+  echo "Usage: `basename $0` datatype" 1>&2
+  echo "For more information use `basename $0` --help."
   exit 1
 fi
 
