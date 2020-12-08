@@ -50,6 +50,7 @@ of the Belle II software or for an Belle II analysis.
 
 # check number of arguments
 if len(sys.argv) > 2:
+    sys.stderr.write('Error: too many arguments\n')
     sys.stderr.write('Usage: b2setup [release]\n')
     sys.exit(1)
 
