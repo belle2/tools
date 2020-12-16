@@ -44,7 +44,7 @@ if [ "${RELEASE}" = "head" ]; then
 fi
 
 # loop over packages
-PACKAGES=`git ls-tree --name-only ${RELEASE} | grep -v "^\."`
+PACKAGES=`git ls-tree --name-only ${RELEASE} | grep -v "^\.\|\.rst$"`
 PACKAGE_LIST=""
 for PACKAGE in ${PACKAGES}; do
   if [ -n "${PACKAGE}" ]; then
