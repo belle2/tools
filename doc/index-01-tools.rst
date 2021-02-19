@@ -297,21 +297,31 @@ dependencies.
 Best practices for pull requests
 ................................
 
-To make your development part of the official software, you have to open a pull request.
-The librarians of all packages that you touched have to be included as reviewers.
-You can find a list of the current librarians `here <https://b2-master.belle2.org/development_build/>`_.
+To make your development part of the official software, you have to open a
+pull request. The librarians of all packages that you touched have to be
+included as reviewers. You can find a list of the current librarians `here
+<https://b2-master.belle2.org/development_build/>`_. Alternatively, you can
+look directly into the ``.librarians`` files of the corresponding packages or,
+after opening the pull request, click on the grayed out ``Merge`` button in
+the top right corner, which should provide you with the necessary information
+as well.
 
-Before the pull request can be merged, all reviewers must have approved and the build has to be successful.
-After you opened a pull request, each time you push new commits to your branch, a new build is initiated.
-In order to not unnecessarily overload the build server here is a list of best practices:
+Before the pull request can be merged, all reviewers must have approved and
+the build has to be successful. After you opened a pull request, each time you
+push new commits to your branch, a new build is initiated. In order to not
+unnecessarily overload the build server here is a list of best practices:
 
  * Split changes of different issues into different commits.
- * Provide meaningful commit messages so that the reviewers know what was intended with those changes.
- * It should go without saying that the commit message must not contain inappropriate or even offensive language.
+ * Provide meaningful commit messages so that the reviewers know what was
+   intended with those changes.
+ * It should go without saying that the commit message must not contain
+   inappropriate or even offensive language.
  * Make sure that your code compiles before pushing it.
- * Run at least the unit-tests of the packages that you touched (see :ref:`testing_tools`)
+ * Run at least the unit-tests of the packages that you touched (see
+   :ref:`testing_tools`)
  * Bundle commits and do not push them individually.
- * After pushing new commits check whether there are not yet started builds. It might make sense to skip them.
+ * After pushing new commits check whether there are not yet started builds.
+   It might make sense to skip them.
 
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
