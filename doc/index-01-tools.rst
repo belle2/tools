@@ -318,7 +318,7 @@ unnecessarily overload the build server here is a list of best practices:
    inappropriate or even offensive language.
  * Make sure that your code compiles before pushing it.
  * Run at least the unit-tests of the packages that you touched (see
-   :ref:`testing_tools`)
+   :ref:`framework/doc/tools/03-b2test:Testing Tools`)
  * Bundle commits and do not push them individually.
  * After pushing new commits check whether there are not yet started builds.
    It might make sense to skip them.
