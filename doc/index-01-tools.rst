@@ -319,7 +319,9 @@ unnecessarily overload the build server here is a list of best practices:
  * Make sure that your code compiles before pushing it.
  * Run at least the unit-tests of the packages that you touched (see
    :ref:`framework/doc/tools/03-b2test:Testing Tools`)
- * Bundle commits and do not push them individually.
+ * Once you have opened a pull request, try not to push commits individually.
+   Instead, make commits locally and push them once you have finished all of your
+   work.
  * After pushing new commits check whether there are not yet started builds.
    It might make sense to skip them.
 
