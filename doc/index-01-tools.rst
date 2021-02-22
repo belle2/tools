@@ -294,22 +294,43 @@ dependencies.
 
 .. _pr_best_practices:
 
-Best practices for pull requests
-................................
+Opening a pull request
+......................
 
 To make your development part of the official software, you have to open a
-pull request. The librarians of all packages that you touched have to be
-included as reviewers. You can find a list of the current librarians `here
-<https://b2-master.belle2.org/development_build/>`_. Alternatively, you can
-look directly into the ``.librarians`` files of the corresponding packages or,
-after opening the pull request, click on the grayed out ``Merge`` button in
-the top right corner, which should provide you with the necessary information
-as well.
+pull request. Before you can do this, you have to create a branch prefixed
+``bugfix/`` or ``feature/``. Ideally, you should have created a JIRA issue for
+your development. Then, you can directly create a branch from there. If you
+already have local changes, execute the following sequence of git commands:
+
+ 1. git stash
+ 2. git pull
+ 3. git checkout <branchname>
+ 4. git stash pop
+ 5. git add
+ 6. git commit
+ 7. git push
+
+Usually, it's best to open the pull request only after you think
+that all the work has been completed and it is ready for review. However,
+there might be situations where you would like to get input from others. In
+that case, you might already open a pull request in an earlier stage. But
+please state in the description or in the title of the pull request that this
+is still work in progress (WIP) and which type of feedback you would like to
+receive from the reviewers.
+
+Speaking about reviewers, the librarians of all packages that you touched have
+to be included as reviewers. You can find a list of the current librarians
+`here <https://b2-master.belle2.org/development_build/>`_. Alternatively, you
+can look directly into the ``.librarians`` files of the corresponding packages
+or, after opening the pull request, click on the grayed out ``Merge`` button
+in the top right corner, which should provide you with the necessary
+information as well.
 
 Before the pull request can be merged, all reviewers must have approved and
 the build has to be successful. After you opened a pull request, each time you
-push new commits to your branch, a new build is initiated. In order to not
-unnecessarily overload the build server here is a list of best practices:
+push new commits to your branch, a new build is initiated. Here is a list of
+best practices to make the review as smooth as possible:
 
  * Split changes of different issues into different commits.
  * Provide meaningful commit messages so that the reviewers know what was
@@ -320,10 +341,8 @@ unnecessarily overload the build server here is a list of best practices:
  * Run at least the unit-tests of the packages that you touched (see
    :ref:`framework/doc/tools/03-b2test:Testing Tools`)
  * Once you have opened a pull request, try not to push commits individually.
-   Instead, make commits locally and push them once you have finished all of your
-   work.
- * After pushing new commits check whether there are not yet started builds.
-   It might make sense to skip them.
+   Instead, make commits locally and push them at the end of the day or when you
+   have finished all of your work.
 
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
