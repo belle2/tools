@@ -20,7 +20,7 @@ fi
 
 # ask for confirmation, unless -f option is given
 if [ "$1" != "-f" ]; then
-  read -p "Delete all built files at ${BELLE2_LOCAL_DIR}? " DECISION
+  read -p "Delete all built files at ${BELLE2_LOCAL_DIR}? [y/N] " DECISION
   if [ "${DECISION}" != "y" ]; then
     exit 0
   fi
