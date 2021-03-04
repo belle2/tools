@@ -10,7 +10,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  Supported data types are 'validation' and 'examples'."
   echo "- The command requires that you have access to the DESY cloud:"
   echo "    https://desycloud.desy.de"
-  echo "  Contact daniel.knittel@desy.de or uco@desy.de to request access."
+  echo "  Contact b2-helpdesk@belle2.org to request access."
   echo "- Your password will be stored in the rclone configuration file."
   echo "  To update the password just delete the configuration file:"
   echo "    ${HOME}/.config/rclone/rclone.conf"
