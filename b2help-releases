@@ -9,7 +9,8 @@ if len(sys.argv) > 1 and sys.argv[1] in ['--help', '-h', '-?']:
 Usage: b2help-releases [release_to_check]
 
 This command just prints the current recommended release of the Belle II software.
-If you provide release_to_check, it will check if you should be using a more recent version.
+If you provide release_to_check, it will check if this version is supported or to which more recent version you should update.
+The release_to_check doesn't have to be complete. It is enough if it contains the prefix 'release-' or 'light'.
 
 The recommended release is:
 """)
@@ -19,11 +20,13 @@ The recommended release is:
 elif len(sys.argv) > 1:
     release = sys.argv[1]
     supported = supported_release(release)
-    if supported != release:
+    if release == 'light':
+        print("The recommended light release is %s" % supported)
+    elif supported != release:
         print("Warning: The release %s is not supported any more. Please update to %s" % (release, supported))
     else:
         print("The release %s is supported" % release)
      
-# if no options provided just print supported releases
+# if no options provided just print the supported release
 else:
     print(supported_release())
