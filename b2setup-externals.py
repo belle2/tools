@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import sys
 import os
 import glob
@@ -25,34 +26,34 @@ else:
 
 # check for help option
 if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
-    print >> sys.stderr, """
+    print("""
 Usage: b2setup-externals [externals_version]
 
 This command sets up the Belle II externals to be used without any specific release
 of the Belle II software. It's useful if you just want to enable the software
 included in the Belle II externals like an updated ROOT or git version. Without an
 argument it will setup the latest version it can find, otherwise it will setup
-the specified version"""
+the specified version""", file=sys.stderr)
     if available_versions:
-        print >> sys.stderr, """
+        print("""
 Available Versions: %s
-Default Version: %s""" % (", ".join(available_versions), default_version)
+Default Version: %s""" % (", ".join(available_versions), default_version), file=sys.stderr)
         sys.exit(0)
 
 if not available_versions:
-    print >> sys.stderr, """
+    print("""
 Error: Cannot find any externals in the top directory '%s'.
-Try installing externals with b2install-externals first""" % top_dir
+Try installing externals with b2install-externals first""" % top_dir, file=sys.stderr)
     sys.exit(1)
 
 # check number of arguments
 if len(sys.argv) > 2:
-    print >> sys.stderr, 'Usage: b2setup-externals [--help] [version]'
+    print('Usage: b2setup-externals [--help] [version]', file=sys.stderr)
     sys.exit(1)
 
 # check that no Belle II software is set up
 if 'BELLE2_RELEASE' in os.environ.keys() or 'BELLE2_LOCAL_DIR' in os.environ.keys():
-    print >> sys.stderr, 'Error: This command can only be used of no Belle II software is set up.'
+    print('Error: This command can only be used of no Belle II software is set up.', file=sys.stderr)
     sys.exit(1)
 
 # check which version we want
@@ -60,9 +61,9 @@ version = default_version
 if len(sys.argv) == 2:
     version = sys.argv[1]
     if version not in available_versions:
-        print >> sys.stderr, """
+        print("""
 Error: Externals version '{0}' is not available, available versions are {1}.\n
-You can try installing it by using 'b2install-externals {0}'""".format(version, ", ".join(available_versions))
+You can try installing it by using 'b2install-externals {0}'""".format(version, ", ".join(available_versions)), file=sys.stderr)
 
         sys.exit(1)
 
