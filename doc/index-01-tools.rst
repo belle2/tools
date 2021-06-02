@@ -143,7 +143,7 @@ with the release version your analysis will be based on. After this you can ::
   $ cd analysis_name
   $ b2setup
 
-to setup your analysis project. You can add your own basf2 `Module` to this
+to setup your analysis project. You can add your own basf2 `Module <basf2.Module>` to this
 analysis by running ::
 
   $ b2code-module ModuleName
