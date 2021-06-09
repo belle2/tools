@@ -66,7 +66,7 @@ elif [[ $OS_RELEASE_ID =~ ^(opensuse(-leap|-tumbleweed)?|sles)$ ]]; then
   PACKAGES="binutils gcc gcc-c++ git make patch pattern:devel_perl
     python subversion tar gzip bzip2 xz unzip wget libpng-devel libX11-devel
     libXext-devel libXpm-devel libXft-devel ncurses-devel libopenssl-devel
-    readline-devel zip pattern:devel_java man libtool makeinfo"
+    readline-devel zip pattern:devel_java man-db libtool makeinfo"
   OPTIONALS="tk-devel tcl-devel glew-devel Mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
@@ -79,7 +79,7 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
   # Ubuntu
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
-    libxft-dev libncurses-dev libssl-dev libreadline-dev lsof man"
+    libxft-dev libncurses-dev libssl-dev libreadline-dev lsof man-db texinfo"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   if [[ $OS_RELEASE_VERSION > "18.04" ]]; then
     PACKAGES=${PACKAGES/python/python2}
@@ -99,8 +99,9 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libpng-dev libx11-dev libxext-dev libxpm-dev
-    libxft-dev libncurses-dev libssl-dev libreadline-dev lsof man zip"
-  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison man"
+    libxft-dev libncurses-dev libssl-dev libreadline-dev lsof man-db zip
+    texinfo"
+  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
@@ -112,7 +113,8 @@ elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [ $OS_RELEASE_VERSION -ge 8 ]; then
   # CentOS, RHEL starting with version 8
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python2 subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
-    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel which lsof man"
+    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel
+    which lsof man-db texinfo"
   OPTIONALS="tk-devel tcl-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
@@ -128,7 +130,8 @@ else
   # RH, SL, CentOS
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
-    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel which lsof man"
+    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel
+    which lsof man-db texinfo"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
