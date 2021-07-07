@@ -92,7 +92,46 @@ environment variables before sourcing ``tools/setup_belle2``:
 
    Where to look for the external software. This only needs to be set if you
    installed the software externals in a different directory. The default is
-   :file:`{$VO_BELLE2_SW_DIR}/externals`
+   :file:`${VO_BELLE2_SW_DIR}/externals`
+
+.. envvar:: BELLE2_EAMXPLES_DATA_DIR
+
+   Where to look for the official examples data. This is assumed to be
+   :file:`${VO_BELLE2_SW_DIR}/examples` but can be set to any location where
+   the data is installed using :program:`b2install-data`
+
+.. envvar:: BELLE2_VALIDATION_DATA_DIR
+
+   Where to look for the official examples data. This is assumed to be
+   :file:`${VO_BELLE2_SW_DIR}/examples` but can be set to any location where
+   the data is installed using :program:`b2install-data`
+
+.. envvar:: BELLE2_BACKGROUND_DIR
+
+   Where to look for background files.
+
+
+In addition the tools will set or honor the following environment variables
+
+.. envvar:: BELLE2_TOOLS
+   
+   Directory where the tools are located.
+
+.. envvar:: BELLE2_LOCAL_DIR
+   
+   If a local release is setup this variable will be set to the directory
+   containing this local release
+
+.. envvar:: BELLE2_RELEASE_DIR
+
+   If a central release is setup this variable will be set to the directory
+   containing the central release
+
+.. envvar:: BELLE2_EXTERNALS_DIR
+
+   Directory containing the external software package necessary for the
+   currently setup software version (or standalone if using
+   :program:`b2setup-externals`
 
 
 Provided Scripts
@@ -201,6 +240,14 @@ For users
 
   If no version is given it lists the available externals versions.
 
+.. describe:: b2install-data
+
+  :: 
+   
+      Usage:: b2install-data datatype
+
+  This command installs or updates the given type of basf2 data.
+  Supported data types are 'validation' and 'examples'.
 
 For developers
 ++++++++++++++
