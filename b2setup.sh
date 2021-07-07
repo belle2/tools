@@ -56,7 +56,7 @@ if [ -z "${BELLE2_GIT_SERVER}" ]; then
   fi
 fi
 if [ -z "${BELLE2_SOFTWARE_REPOSITORY}" ]; then
-  export BELLE2_SOFTWARE_REPOSITORY=${BELLE2_GIT_SERVER}/b2/software.git
+  export BELLE2_SOFTWARE_REPOSITORY=${BELLE2_GIT_SERVER}/b2/basf2.git
 fi
 if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" ]; then
   export BELLE2_EXTERNALS_REPOSITORY=${BELLE2_GIT_SERVER}/b2/externals.git

@@ -40,7 +40,7 @@ if [ ! -f .release ]; then
 fi
 RELEASE=`cat .release`
 if [ "${RELEASE}" = "head" ]; then
-  RELEASE="master"
+  RELEASE="main"
 fi
 
 # loop over packages

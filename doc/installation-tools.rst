@@ -265,7 +265,7 @@ For developers
    If the basis for the code development should be a particular release,
    the version can be given as second argument.
    If no second argument is given, the latest version of the code
-   (head of git master) is taken.
+   (head of git main) is taken.
 
 .. describe:: b2setup
 
