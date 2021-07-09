@@ -52,7 +52,7 @@ fi
 # check support of release version
 SUPPORTED_RELEASE=`b2anypython -c 'from versioning import supported_release;import sys;print(supported_release(sys.argv[1]))' ${RELEASE}`
 if [ "${RELEASE}" != "${SUPPORTED_RELEASE}" ]; then
-  echo "Warning: The release ${RELEASE} is not supported any more. It is reccommended to use ${SUPPORTED_RELEASE} instead." 1>&2
+  echo "Warning: The release ${RELEASE} is not supported any more. It is recommended to use ${SUPPORTED_RELEASE} instead." 1>&2
   read -p "Would you like to continue nevertheless (y/n)? " -n 1 REPLY
   echo
   if [ "$REPLY" != "y" ]; then
@@ -81,9 +81,9 @@ ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 ln -s site_scons/SConstruct .
 cat > SConscript <<EOT
 Import('env')
-# This file specifies the dependencies of your Analyis code to parts of the
-# Belle 2 Software. It should be fine for most analysis but if you need to link
-# against additional libraries pleas put them here.
+# This file specifies the dependencies of your analysis code to parts of the
+# Belle 2 Software. It should be fine for most analyses but if you need to link
+# against additional libraries please put them here.
 env['LIBS'] = [
     'mdst_dataobjects',
     'analysis_dataobjects',

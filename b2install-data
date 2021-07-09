@@ -44,7 +44,7 @@ DATATYPE=$1
 DIRNAME="${DATATYPE,,}-data"
 ENVNAME="BELLE2_${DATATYPE^^}_DATA_DIR"
 
-# check existance of directory and create it if missing and approved by user
+# check existence of directory and create it if missing and approved by user
 if [ -n "${!ENVNAME}" ]; then
   DIR=${!ENVNAME}
   if [ ! -d ${DIR} ]; then
