@@ -74,6 +74,7 @@ else
   mkdir ${DIR}
   cd ${DIR}
   git init
+  git checkout -b main
   git remote add origin ${ANALYSIS_REPOSITORY}
 fi
 
@@ -102,7 +103,8 @@ echo SConstruct >> .gitignore
 git add .analysis .gitignore SConscript
 git commit -a -m "Analysis ${DIR} by ${BELLE2_USER}"
 if [ "${REMOTE_EXISTS}" = "1" ]; then
-  git push origin master
+  git branch -m master main
+  git push -u origin main
 fi
 
 # inform user about successful completion
