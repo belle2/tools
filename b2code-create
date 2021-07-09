@@ -37,7 +37,7 @@ if [ $# -ne 1 ]; then
 fi
 
 # check remote git access
-git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} master > /dev/null
+git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} main > /dev/null
 if [ "$?" != "0" ]; then
   echo "Error: Could not access the remote git repository." 1>&2
   exit 1
@@ -55,7 +55,7 @@ fi
 # clone the repository and checkout site-scons
 git clone --no-checkout ${BELLE2_SOFTWARE_REPOSITORY} ${DIR}
 cd ${DIR}
-git config branch.master.rebase true
+git config branch.main.rebase true
 GIT_VERSION=$(git --version | awk '{print $3}')
 if version_greater_equal ${GIT_VERSION} 1.7.4 ; then
   git config core.sparsecheckout true
@@ -65,7 +65,7 @@ else
 fi
 if [ "${LIGHT}" == "1" ]; then
   echo "/.light" >> .git/info/sparse-checkout
-  git checkout master
+  git checkout main
   rm -f .git/info/sparse-checkout
   ln -s ${PWD}/.light .git/info/sparse-checkout
 else
@@ -74,7 +74,7 @@ else
     echo "!/${PACKAGE}/" >> .git/info/sparse-checkout
   done
 fi
-git checkout master
+git checkout main
 
 echo head > .release
 ln -s site_scons/SConstruct .

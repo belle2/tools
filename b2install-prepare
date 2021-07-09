@@ -27,7 +27,7 @@ EOT
 done
 
 
-# If /etc/os-release is present, read system identifer from it
+# If /etc/os-release is present, read system identifier from it
 OS_RELEASE_ID="<unknown>"
 OS_RELEASE_ID_LIKE="<unknown>"
 OS_RELEASE_VERSION="<unknown>"

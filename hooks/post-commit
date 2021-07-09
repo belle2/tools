@@ -7,9 +7,9 @@ if [ "$COMMIT" != "$MERGE" ]; then
   exit 0
 fi
 
-# Merge commits to the master are already checked in the pre-commit hook
+# Merge commits to the main are already checked in the pre-commit hook
 BRANCH=`git rev-parse --abbrev-ref HEAD`
-if [ "$BRANCH" = "master" ]; then
+if [ "$BRANCH" = "main" ]; then
   exit 0
 fi
 

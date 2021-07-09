@@ -96,7 +96,7 @@ if ( ! ${?BELLE2_GIT_SERVER} ) then
   endif
 endif
 if ( ! ${?BELLE2_SOFTWARE_REPOSITORY} ) then
-  setenv BELLE2_SOFTWARE_REPOSITORY ${BELLE2_GIT_SERVER}/b2/software.git
+  setenv BELLE2_SOFTWARE_REPOSITORY ${BELLE2_GIT_SERVER}/b2/basf2.git
 endif
 if ( ! ${?BELLE2_EXTERNALS_REPOSITORY} ) then
   setenv BELLE2_EXTERNALS_REPOSITORY ${BELLE2_GIT_SERVER}/b2/externals.git
