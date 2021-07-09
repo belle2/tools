@@ -34,7 +34,7 @@ if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
 fi
 
 # check git access
-git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} master > /dev/null
+git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} main > /dev/null
 if [ "$?" != "0" ]; then
   echo "Error: Could not access the git server." 1>&2
   exit 1
