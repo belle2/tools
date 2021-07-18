@@ -1,7 +1,7 @@
 basf2 tools
 ===========
 
-This repository contains the scripts to install and set up the [Belle II Analysis Software (basf2)](https://github.com/belle2/basf2).
+This repository contains the scripts to install and set up the [Belle II Analysis Software Framework (basf2)](https://github.com/belle2/basf2).
 
 The basf2 tools are set up by sourcing `b2setup`.
 
