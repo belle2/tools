@@ -85,21 +85,36 @@ if ( ! ${?BELLE2_USER} ) then
 endif
 
 # set location of Belle II code repositories
+git -C ${BELLE2_TOOLS} remote -v | grep github.com >& /dev/null
+set BELLE2_INTERNAL=$?
 if ( ! ${?BELLE2_GIT_SERVER} ) then
   if ( ! ${?BELLE2_GIT_ACCESS} ) then
     set BELLE2_GIT_ACCESS=""
   endif
-  if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
-    setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm
+  if ( "${BELLE2_INTERNAL}" != "0" ) then
+    if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
+      setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm/
+    else
+      setenv BELLE2_GIT_SERVER ssh://git@stash.desy.de:7999/
+    endif
+    set BELLE2_GIT_PROJECT=b2
   else
-    setenv BELLE2_GIT_SERVER ssh://git@stash.desy.de:7999
+    if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
+      setenv BELLE2_GIT_SERVER https://github.com/
+    else
+      setenv BELLE2_GIT_SERVER git@github.com:
+    endif
+    set BELLE2_GIT_PROJECT=belle2
   endif
 endif
 if ( ! ${?BELLE2_SOFTWARE_REPOSITORY} ) then
-  setenv BELLE2_SOFTWARE_REPOSITORY ${BELLE2_GIT_SERVER}/b2/basf2.git
+  setenv BELLE2_SOFTWARE_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/basf2.git
 endif
 if ( ! ${?BELLE2_EXTERNALS_REPOSITORY} ) then
-  setenv BELLE2_EXTERNALS_REPOSITORY ${BELLE2_GIT_SERVER}/b2/externals.git
+  setenv BELLE2_EXTERNALS_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/externals.git
+endif
+if ( ! ${?BELLE2_VERSIONING_REPOSITORY} ) then
+  setenv BELLE2_VERSIONING_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/versioning.git
 endif
 if ( ! ${?BELLE2_ANALYSES_PROJECT} ) then
   setenv BELLE2_ANALYSES_PROJECT b2a
