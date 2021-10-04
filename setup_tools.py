@@ -133,6 +133,13 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
+    if env_vars['BELLE2_EXTERNALS_VERSION'][:6] == 'v01-10':
+        # overwrite JUPYTER config directory to fix bug in ROOT v6.24
+        value = os.path.join(os.environ.get('HOME'), '.jupyter')
+        if csh:
+            print('setenv JUPYTER_CONFIG_DIR "%s"' % value)
+        else:
+            print('export JUPYTER_CONFIG_DIR="%s"' % value)
 
 def unsetup_release(location):
     """function to unsetup a release directory"""
