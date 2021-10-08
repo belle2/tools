@@ -8,12 +8,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "- This command installs or updates the given type of basf2 data."
   echo "  Supported data types are 'validation' and 'examples'."
-  echo "- The command requires that you have access to the DESY cloud:"
-  echo "    https://desycloud.desy.de"
-  echo "  Contact b2-helpdesk@belle2.org to request access."
-  echo "- Your password will be stored in the rclone configuration file."
-  echo "  To update the password just delete the configuration file:"
-  echo "    ${HOME}/.config/rclone/rclone.conf"
+  echo "- The command requires that you have access to the DESY gitlab with ssh key:"
+  echo "    https://gitlab.desy.de"
   echo
   exit 0
 fi
@@ -84,30 +80,21 @@ else
 fi
 
 
-# check rclone
-which rclone >& /dev/null
-if [ "$?" != 0 ]; then
-  echo "Error: rclone not found. Please set up an externals version >= v01-07-00."
-  exit 1
-fi
-
-# check rclone config
-rclone config show 2> /dev/null | grep desycloud > /dev/null
-if [ "$?" != 0 ]; then
-  echo "No rclone config found."
-  read -s -p "Please type your DESY password to create a config file: " PASSWORD
-  echo ""
-  rclone config create desycloud webdav url https://desycloud.desy.de/remote.php/webdav vendor nextcloud user ${BELLE2_USER} &> /dev/null
-  rclone config password desycloud pass ${PASSWORD} &> /dev/null
-fi
-
-# sync data from cloud
+# connect to git repository
 cd ${DIR}
+if [ ! -d .git ]; then
+  git clone --no-checkout git@gitlab.desy.de:b2/${DIRNAME}.git tmp
+  mv tmp/.git .
+  rm -rf tmp
+  git lfs install
+fi
+
+# sync data
 echo "Syncing ${DATATYPE} data to ${DIR}"
-rclone sync --progress desycloud:/data/${DIRNAME}/ .
+git fetch
+git checkout -f main
 if [ "$?" != 0 ]; then
   echo "Error: The synchronization of the ${DATATYPE} data failed." 1>&2
-  echo "       Make sure you have access to the DESY cloud and your password is correct." 1>&2
-  echo "       Use --help option for more information." 1>&2
+  echo "       Make sure you have access to the DESY gitlab." 1>&2
   exit 1
 fi
