@@ -86,7 +86,7 @@ endif
 
 # set location of Belle II code repositories
 pushd ${BELLE2_TOOLS} > /dev/null
-set ORIGIN_URL=`git remote get-url origin`
+set ORIGIN_URL=`git remote -v`
 popd > /dev/null
 if ( ! ${?BELLE2_GIT_SERVER} ) then
   if ( ! ${?BELLE2_GIT_ACCESS} ) then

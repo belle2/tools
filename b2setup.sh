@@ -49,10 +49,10 @@ fi
 
 # set location of Belle II code repositories
 pushd ${BELLE2_TOOLS} &> /dev/null
-ORIGIN_URL=`git remote get-url origin`
+ORIGIN_URL=`git remote -v`
 popd &> /dev/null
 if [ -z "${BELLE2_GIT_SERVER}" ]; then
-  if [ "${ORIGIN_URL}" =~ "desy" ]; then
+  if [[ "${ORIGIN_URL}" =~ "desy" ]]; then
     if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
       export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm/
     else
