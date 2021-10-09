@@ -85,13 +85,14 @@ if ( ! ${?BELLE2_USER} ) then
 endif
 
 # set location of Belle II code repositories
-git -C ${BELLE2_TOOLS} remote -v | grep github.com >& /dev/null
-set BELLE2_INTERNAL=$?
+pushd ${BELLE2_TOOLS} > /dev/null
+set ORIGIN_URL=`git remote get-url origin`
+popd > /dev/null
 if ( ! ${?BELLE2_GIT_SERVER} ) then
   if ( ! ${?BELLE2_GIT_ACCESS} ) then
     set BELLE2_GIT_ACCESS=""
   endif
-  if ( "${BELLE2_INTERNAL}" != "0" ) then
+  if ( "${ORIGIN_URL}" =~ "*desy*" ) then
     if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
       setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm/
     else
