@@ -4,25 +4,20 @@ set -o pipefail
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` datatype"
+  echo "Usage: `basename $0` datatype [token]"
   echo
   echo "- This command installs or updates the given type of basf2 data."
   echo "  Supported data types are 'validation' and 'examples'."
   echo "- The command requires that you have access to the DESY gitlab with ssh key:"
   echo "    https://gitlab.desy.de"
+  echo "- Alternatively a token can be used to access the repository."
   echo
   exit 0
 fi
 
 # check number of arguments
-if [ $# -gt 2 ]; then
-  echo "Usage: `basename $0` datatype" 1>&2
-  echo "For more information use `basename $0` --help."
-  exit 1
-fi
-
-if [ $# -lt 1 ]; then
-  echo "Usage: `basename $0` datatype" 1>&2
+if [ $# -gt 2 ] || [ $# -lt 1 ]; then
+  echo "Usage: `basename $0` datatype [token]" 1>&2
   echo "For more information use `basename $0` --help."
   exit 1
 fi
@@ -34,6 +29,12 @@ if [ -z "${VO_BELLE2_SW_DIR}" ]; then
   exit 1
 fi
 
+
+# check for optional token
+GIT_URL="git@gitlab.desy.de:"
+if [ $# -gt 1 ]; then
+  GIT_URL="https://oauth2:${2}@gitlab.desy.de/"
+fi
 
 # get data type and corresponding directory and environment variable names
 DATATYPE=$1
@@ -83,7 +84,7 @@ fi
 # connect to git repository
 cd ${DIR}
 if [ ! -d .git ]; then
-  git clone --no-checkout git@gitlab.desy.de:b2/${DIRNAME}.git tmp
+  git clone --no-checkout ${GIT_URL}b2/${DIRNAME}.git tmp
   mv tmp/.git .
   rm -rf tmp
   git lfs install
