@@ -143,7 +143,7 @@ def export_environment(csh=False):
                 print('export JUPYTER_CONFIG_DIR="%s"' % value)
         except KeyError:
             print(
-                "Warning: HOME environment variable is not set, therefore could not set JUPYTER_CONFIG_DIR.",
+                "Info: HOME environment variable is not set, therefore can't set JUPYTER_CONFIG_DIR to $HOME/.jupyter.",
                 file=sys.stderr
             )
 
