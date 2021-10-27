@@ -94,7 +94,7 @@ environment variables before sourcing ``tools/setup_belle2``:
    installed the software externals in a different directory. The default is
    :file:`${VO_BELLE2_SW_DIR}/externals`
 
-.. envvar:: BELLE2_EAMXPLES_DATA_DIR
+.. envvar:: BELLE2_EXAMPLES_DATA_DIR
 
    Where to look for the official examples data. This is assumed to be
    :file:`${VO_BELLE2_SW_DIR}/examples` but can be set to any location where

@@ -3,7 +3,7 @@
 Installation and Setup
 ======================
 
-The Belle II Software is meant to work an any recent 64 bit Linux system but it is only
+The Belle II Software is meant to work on any recent 64 bit Linux system but it is only
 tested and provided in binary form for a few select distributions
 
 .. include:: supported-distributions.rst-fragment
