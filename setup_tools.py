@@ -143,8 +143,7 @@ def export_environment(csh=False):
                 print('export JUPYTER_CONFIG_DIR="%s"' % value)
         except KeyError:
             print(
-                "Info: HOME environment variable is not set, therefore can't set JUPYTER_CONFIG_DIR to $HOME/.jupyter.",
-                file=sys.stderr
+                "Info: HOME environment variable is not set, therefore can't set JUPYTER_CONFIG_DIR to $HOME/.jupyter."
             )
 
 def unsetup_release(location):
