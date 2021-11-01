@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import subprocess
 
 try:
     from importlib import reload
@@ -143,8 +142,10 @@ def export_environment(csh=False):
                 print('export JUPYTER_CONFIG_DIR="%s"' % value)
         except KeyError:
             print(
-                "Info: HOME environment variable is not set, therefore can't set JUPYTER_CONFIG_DIR to $HOME/.jupyter."
+                'echo "Warning: HOME environment variable is not set, therefore can not set '
+                'JUPYTER_CONFIG_DIR to \\$HOME/.jupyter."'
             )
+
 
 def unsetup_release(location):
     """function to unsetup a release directory"""
@@ -203,7 +204,7 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
             sys.path[:0] = [os.environ['BELLE2_EXTERNALS_DIR']]
             from externals import unsetup_externals
             unsetup_externals(os.environ['BELLE2_EXTERNALS_DIR'])
-        except:
+        except BaseException:
             sys.stderr.write('Warning: Unsetup of externals at %s failed.\n'
                              % os.environ['BELLE2_EXTERNALS_DIR'])
         env_vars['BELLE2_EXTERNALS_DIR'] = ''
@@ -265,7 +266,7 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
             # force reload of module from new file here
             reload(externals)
             externals.setup_externals(extdir)
-        except:
+        except BaseException:
             sys.stderr.write('Error: Setup of externals at %s failed.\n'
                              % extdir)
             raise
