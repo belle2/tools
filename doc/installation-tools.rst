@@ -80,7 +80,7 @@ environment variables before sourcing ``tools/setup_belle2``:
    tools version is up to date. This option is useful for laptops without
    permanent internet connection.
 
-   .. warning:: If you set this on your machine please check regularely that
+   .. warning:: If you set this on your machine please check regularly that
       the tools are up to date by running ``git pull`` in the tools directory.
 
 .. envvar:: VO_BELLE2_SW_DIR
@@ -187,7 +187,7 @@ For users
    This command sets up the environment for the given central release
    of the Belle II software.
 
-   .. hint:: The b2setup command is also used to set up local relases for developers.
+   .. hint:: The b2setup command is also used to set up local releases for developers.
 
 .. describe:: b2setup-externals
 
@@ -296,9 +296,9 @@ For developers
 
   ::
 
-    Usage: b2code-style-fix [-n|-p [-d command]] [files]
+    Usage: b2code-style-fix [-n|-p|-f [-d command]] [files]
 
-  The b2code-style-fix tool formats the layout of C++ and python code.  It helps
+  The b2code-style-fix tool formats the layout of C++ and python code. It helps
   developers to achieve a common style of all Belle II software.
 
   By default it checks all C++ and python files in the current directory and
@@ -312,6 +312,9 @@ For developers
   -p
      This option is equivalent to ``-n`` except that it will print the
      pep8 output instead of the code changes.
+  -f
+     This option is equivalent to ``-n`` except that it will print the
+     flake8 output instead of the code changes.
   -d command
      This option can be used to specify the diff command that is called to
      report changes. Has to be given after the ``-n`` or ``-p``
