@@ -296,7 +296,7 @@ For developers
 
   ::
 
-    Usage: b2code-style-fix [-n|-p|-f [-d command]] [files]
+    Usage: b2code-style-fix [-n|-p [-d command]] [files]
 
   The b2code-style-fix tool formats the layout of C++ and python code. It helps
   developers to achieve a common style of all Belle II software.
@@ -311,10 +311,7 @@ For developers
      number of files that would be changed.
   -p
      This option is equivalent to ``-n`` except that it will print the
-     pep8 output instead of the code changes.
-  -f
-     This option is equivalent to ``-n`` except that it will print the
-     flake8 output instead of the code changes.
+     pep8 and flake8 output instead of the code changes.
   -d command
      This option can be used to specify the diff command that is called to
      report changes. Has to be given after the ``-n`` or ``-p``

@@ -16,4 +16,3 @@ fi
 
 # call b2code-style-fix in check mode
 b2code-style-fix -p $*
-b2code-style-fix -f $*

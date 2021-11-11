@@ -3,7 +3,7 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` [-n|-p|-f [-d command]] [files]"
+  echo "Usage: `basename $0` [-n|-p [-d command]] [files]"
   echo
   echo "- The b2code-style-fix tool formats the layout of C++ and python code."
   echo "  It helps developers to achieve a common style of all Belle II software."
@@ -16,9 +16,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  are printed. The files are not modified. The return code gives the number"
   echo "  of files that would be changed."
   echo "- The -p option is equivalent to the -n option except that it reports the"
-  echo "  pep8 output instead of the code changes."
-  echo "- The -f option is equivalent to the -n option except that it reports the"
-  echo "  flake8 output instead of the code changes."
+  echo "  pep8 and flake8 output instead of the code changes."
   echo "- The -d option can be used to specify the diff command that is called to"
   echo "  report changes. Has to be given after the -n or -p option."
   echo
@@ -190,7 +188,6 @@ function Pep8Check ()
 # define function for pep8 checking
 function Flake8Check ()
 {
-  FAIL=0
   if [ ! -L $1 ]; then
     IsImported "$1"
     if [ "$?" = 1 ]; then
@@ -199,26 +196,22 @@ function Flake8Check ()
     TMP=`mktemp`
     ${FLAKE8} $1 > $TMP 2> /dev/null
     if [ "$?" != 0 ]; then
-      FAIL=1
+      COUNT+=1
       cat $TMP
     fi
     rm -f $TMP
-
-    if [ "$FAIL" != 0 ]; then
-      COUNT+=1
-    fi
   fi
 }
 
 
 # if run in check mode
-if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-f" ]; then
+if [ "$1" = "-n" -o "$1" = "-p" ]; then
 
   PYTHONCHECK=Autopep8Check
+  CHECKFLAKE8=false
   if [ "$1" = "-p" ]; then
     PYTHONCHECK=Pep8Check
-  elif [ "$1" = "-f" ]; then
-    PYTHONCHECK=Flake8Check
+    CHECKFLAKE8=true
   fi
   shift
 
@@ -238,6 +231,9 @@ if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-f" ]; then
      done
     for i in `find . -name \\*.py`; do
       ${PYTHONCHECK} $i
+      if [ "${CHECKFLAKE8}" = true ]; then
+        Flake8Check $i
+      fi
     done
 
   # check the specified files
@@ -257,6 +253,9 @@ if [ "$1" = "-n" -o "$1" = "-p" -o "$1" = "-f" ]; then
         echo "The file $i does not exist"
       elif [ "${CHECK}" != "None" ]; then
         ${CHECK} "${FILE}"
+        if [ "${CHECKFLAKE8}" = true ]; then
+          Flake8Check "${FILE}"
+        fi
       else
         echo "File of unknown type not checked: $i"
       fi
@@ -299,7 +298,6 @@ else
       fi
       ${AUTOPEP8} "$i"
       b2code-style-check "$i" || echo "Some problems in '$i' could not be fixed, please resolve them manually."
-      b2code-style-fix -f "$i"
     done
 
   # fix the specified files
