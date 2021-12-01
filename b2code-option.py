@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import argparse
 import textwrap
-from setup_tools import update_environment
+import argparse
+from setup_tools import update_environment, SetupToolsArgumentParser
 
 # Allowed options
 options = ['debug', 'opt', 'intel', 'clang']
+
 
 
 def arg_parser():
@@ -19,12 +20,14 @@ Set up the environment for selected compiler options:
   intel : use intel compiler, no debug symbols
   clang : use clang compiler (LLVM), no debug symbols, turn on -O3 optimization
 ''')
-    parser = argparse.ArgumentParser(prog='b2code-option',
+    parser = SetupToolsArgumentParser(prog='b2code-option',
                                      description=description,
-                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     state_env_var='BELLE2_OPTION')
     parser.add_argument('option',
                         metavar='OPTION',
                         type=str,
+                        choices=options,
                         help='Environment for the compiler option: {}'.format('|'.join(options)))
     parser.add_argument('--csh',
                         default=False,
@@ -36,11 +39,6 @@ Set up the environment for selected compiler options:
 if __name__ == '__main__':
 
     args = arg_parser().parse_args()
-
-    if args.option not in options:
-        sys.stderr.write('The chosen option ({}) is not available.\n'.format(args.option))
-        sys.stderr.write('The current option is {}.\n'.format(os.environ.get('BELLE2_OPTION', '')))
-        sys.exit(1)
 
     # Update the environment with the new option.
     update_environment(option=args.option,
