@@ -36,9 +36,9 @@ if [[ "$DUPLICATES" != "" ]]; then
   exit 1
 fi
 
-# Do not check merge commits to non-master branches
+# Do not check merge commits to non-main branches
 BRANCH=`git rev-parse --abbrev-ref HEAD`
-if [ "$BRANCH" != "master" ]; then
+if [ "$BRANCH" != "main" ]; then
   MERGE=`git rev-parse -q --verify MERGE_HEAD`
   if [ -n "$MERGE" ]; then
     exit 0
@@ -66,7 +66,7 @@ for FILE in ${FILES_MODIFIED}; do
 done
 
 # Add librarians and authors information
-git archive -o ${TMPDIR}/access.tar --prefix=access/ master `git ls-tree --name-only -r master | grep ".authors\|.librarians"`
+git archive -o ${TMPDIR}/access.tar --prefix=access/ main `git ls-tree --name-only -r main | grep ".authors\|.librarians"`
 
 RESULT=0
 
@@ -83,7 +83,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check the access rights
-if [ "$BRANCH" = "master" ]; then
+if [ "$BRANCH" = "main" ]; then
   if [ "$BELLE2_ACCESS_CHECK" != "no" ]; then
     ${BELLE2_TOOLS}/hooks/check_access.py ${TMPDIR}
     if [ $? -ne 0 ]; then

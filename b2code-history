@@ -1,0 +1,45 @@
+#!/bin/bash
+
+# check for help option
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0`"
+  echo
+  echo "This command fetches and connects the git history."
+  echo
+  exit 0
+fi
+
+# check that we are in a local release directory
+if [ ! -f .release ]; then
+  echo "Error: not in a local release directory" 1>&2
+  exit 1
+fi
+
+# set the url and commits of the history repository
+git remote -v | grep github.com &> /dev/null
+BELLE2_INTERNAL=$?
+if [ "${BELLE2_INTERNAL}" != "0" ]; then
+  HISTORY_URL=ssh://git@stash.desy.de:7999/b2/software.git
+  HISTORY_MAIN=0dd0dff307ed4e25f092e35e6dcab44f37e63b9a
+  HISTORY_UPGRADE=a637af175915542e398c314491ffda556af3866f
+
+  # fetch the history
+  git remote add history ${HISTORY_URL} 2> /dev/null
+  if [ "$?" != "0" ]; then
+    git remote set-url history ${HISTORY_URL}
+  fi
+  git fetch history
+
+else
+  HISTORY_MAIN=origin/history
+
+  # fetch the history
+  git fetch origin history
+fi
+
+# connect the history
+git replace 8e4687925a48e5fe4d4cbf27c352503b9f8a84bf ${HISTORY_MAIN}
+if [ -n "${HISTORY_UPGRADE}" ]; then
+  git replace bb5014a281d117d8becc9447e7dd101a81089145 ${HISTORY_UPGRADE}
+fi

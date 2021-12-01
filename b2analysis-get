@@ -33,9 +33,10 @@ fi
 
 # verify that the git repository exists and is an analysis repository
 ANALYSIS_NAME=${USERNAME}_${DIR}
-ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
-REPOSITORY_EXISTS=`git ls-remote ${ANALYSIS_REPOSITORY} master | wc -l`
-if [ "${REPOSITORY_EXISTS}" = "0" ]; then
+ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master | wc -l`
+REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main | wc -l`
+if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
   echo "Error: The git repository ${ANALYSIS_NAME} does not exist." 1>&2
   exit 1
 fi

@@ -35,7 +35,7 @@ def get_local_versioning(directory):
 
 
 # try different sources of versioning.py
-versioning = get_remote_versioning(os.environ['BELLE2_GIT_SERVER'] + '/b2/versioning.git')
+versioning = get_remote_versioning(os.environ['BELLE2_VERSIONING_REPOSITORY'])
 if versioning is None:
     for directory in ['/cvmfs/belle.cern.ch', os.environ['VO_BELLE2_SW_DIR']]:
         versioning = get_local_versioning(directory)

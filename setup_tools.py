@@ -160,6 +160,20 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
+    if env_vars['BELLE2_EXTERNALS_VERSION'][:6] == 'v01-10':
+        # overwrite JUPYTER config directory to fix bug in ROOT v6.24
+        try:
+            value = os.path.join(os.environ['HOME'], '.jupyter')
+            if csh:
+                print('setenv JUPYTER_CONFIG_DIR "%s"' % value)
+            else:
+                print('export JUPYTER_CONFIG_DIR="%s"' % value)
+        except KeyError:
+            print(
+                'echo "Info: HOME environment variable is not set, therefore can not set '
+                'JUPYTER_CONFIG_DIR to \\$HOME/.jupyter."'
+            )
+
 
 def unsetup_release(location):
     """function to unsetup a release directory"""
@@ -218,7 +232,7 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
             sys.path[:0] = [os.environ['BELLE2_EXTERNALS_DIR']]
             from externals import unsetup_externals
             unsetup_externals(os.environ['BELLE2_EXTERNALS_DIR'])
-        except:
+        except BaseException:
             sys.stderr.write('Warning: Unsetup of externals at %s failed.\n'
                              % os.environ['BELLE2_EXTERNALS_DIR'])
         env_vars['BELLE2_EXTERNALS_DIR'] = ''
@@ -280,7 +294,7 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
             # force reload of module from new file here
             reload(externals)
             externals.setup_externals(extdir)
-        except:
+        except BaseException:
             sys.stderr.write('Error: Setup of externals at %s failed.\n'
                              % extdir)
             raise

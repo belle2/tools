@@ -50,7 +50,15 @@ of the Belle II software or for an Belle II analysis.
 
 # check number of arguments
 if len(sys.argv) > 2:
-    sys.stderr.write('Usage: b2setup [release]\n')
+    sys.stderr.write("""Error: too many arguments
+
+Usage: b2setup [release]
+
+Note: When running b2setup inside a script without any argument, the arguments given to the containing script will be forwarded to b2setup automatically. To avoid this, please use
+
+b2setup ""
+
+""")
     sys.exit(1)
 
 # if the MY_BELLE2_DIR environment variable is set use it as local release directory

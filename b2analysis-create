@@ -34,7 +34,7 @@ if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
 fi
 
 # check git access
-git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} master > /dev/null
+git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} main > /dev/null
 if [ "$?" != "0" ]; then
   echo "Error: Could not access the git server." 1>&2
   exit 1
@@ -42,9 +42,10 @@ fi
 
 # check whether this analysis git repository already exists
 ANALYSIS_NAME=${BELLE2_USER}_${DIR}
-ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}/${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
-REPOSITORY_EXISTS=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
-if [ "${REPOSITORY_EXISTS}" = "1" ]; then
+ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
+REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
+if [ "${REPOSITORY_EXISTS_MASTER}" = "1" ] || [ "${REPOSITORY_EXISTS_MAIN}" = "1" ]; then
   echo "Error: The analysis git repository for analysis ${DIR} already exists." 1>&2
   exit 1
 fi
@@ -52,7 +53,7 @@ fi
 # check support of release version
 SUPPORTED_RELEASE=`b2anypython -c 'from versioning import supported_release;import sys;print(supported_release(sys.argv[1]))' ${RELEASE}`
 if [ "${RELEASE}" != "${SUPPORTED_RELEASE}" ]; then
-  echo "Warning: The release ${RELEASE} is not supported any more. It is reccommended to use ${SUPPORTED_RELEASE} instead." 1>&2
+  echo "Warning: The release ${RELEASE} is not supported any more. It is recommended to use ${SUPPORTED_RELEASE} instead." 1>&2
   read -p "Would you like to continue nevertheless (y/n)? " -n 1 REPLY
   echo
   if [ "$REPLY" != "y" ]; then
@@ -73,6 +74,7 @@ else
   mkdir ${DIR}
   cd ${DIR}
   git init
+  git checkout -b main
   git remote add origin ${ANALYSIS_REPOSITORY}
 fi
 
@@ -81,9 +83,9 @@ ln -s ${VO_BELLE2_SW_DIR}/releases/${RELEASE}/site_scons .
 ln -s site_scons/SConstruct .
 cat > SConscript <<EOT
 Import('env')
-# This file specifies the dependencies of your Analyis code to parts of the
-# Belle 2 Software. It should be fine for most analysis but if you need to link
-# against additional libraries pleas put them here.
+# This file specifies the dependencies of your analysis code to parts of the
+# Belle 2 Software. It should be fine for most analyses but if you need to link
+# against additional libraries please put them here.
 env['LIBS'] = [
     'mdst_dataobjects',
     'analysis_dataobjects',
@@ -101,7 +103,8 @@ echo SConstruct >> .gitignore
 git add .analysis .gitignore SConscript
 git commit -a -m "Analysis ${DIR} by ${BELLE2_USER}"
 if [ "${REMOTE_EXISTS}" = "1" ]; then
-  git push origin master
+  git branch -m master main
+  git push -u origin main
 fi
 
 # inform user about successful completion

@@ -3,7 +3,7 @@
 Installation and Setup
 ======================
 
-The Belle II Software is meant to work an any recent 64 bit Linux system but it is only
+The Belle II Software is meant to work on any recent 64 bit Linux system but it is only
 tested and provided in binary form for a few select distributions
 
 .. include:: supported-distributions.rst-fragment
@@ -16,7 +16,7 @@ local machine following the `CVMFS Client Quick Start`_ guide.
 .. note:: In the following it is assumed that you have configured your `access to the code repository`_
 
 If you want to install the Belle II Software without CVMFS please have a look at
-the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs-setup`
+the following documents, otherwise if you have CVMFS available please continue with the :ref:`cvmfs_setup`
 
 .. toctree::
    :maxdepth: 1
@@ -27,7 +27,7 @@ the following documents, otherwise if you have CVMFS available please continue w
 Alternatively you can use `Jan's docker container`_ to get the Belle II software, for example on Mac or Windows machines.
 
 
-.. _cvmfs-setup:
+.. _cvmfs_setup:
 
 Setup of the Belle II Software
 ------------------------------
@@ -55,6 +55,8 @@ To only set up the tools without a release use ::
   $ source /cvmfs/belle.cern.ch/tools/b2setup
 
 .. warning:: The setup of tools and releases has to be done in every shell you plan on using the Belle II Software.
+
+.. _choosing_a_release:
 
 Choosing a release
 ..................
@@ -108,7 +110,7 @@ A major version of the software may contain non-backward-compatible changes to t
 Light releases
 **************
 
-A light release (``light-YYMM-CODENAME``) is a release made from only the ``analysis``, ``skim``, ``mdst``, ``mva``, ``b2ii``, and ``framework`` packages.
+A light release (``light-YYMM-CODENAME``) is a release made from only the ``analysis``, ``b2ii``, ``framework``, ``geometry``, ``online_book``, ``mdst``, ``mva``, and ``skim`` packages.
 
 They are suitable for doing high-level analysis tasks which do not require the generation or reconstruction of data.
 If you are running over some MC or data that already exists (e.g. was produced by the data production group)
@@ -141,7 +143,7 @@ with the release version your analysis will be based on. After this you can ::
   $ cd analysis_name
   $ b2setup
 
-to setup your analysis project. You can add your own basf2 `Module` to this
+to setup your analysis project. You can add your own basf2 `Module <basf2.Module>` to this
 analysis by running ::
 
   $ b2code-module ModuleName
@@ -183,7 +185,7 @@ Keeping your analysis up-to-date
 Periodically you should update the release version of the software which your
 analysis is based upon. You will want to keep on top of improvements and
 bug-fixes. At the very least, you should update before your current release
-becomes unsupported. See `Choosing a release` for detailed explanation.
+becomes unsupported. See :ref:`choosing_a_release` for detailed explanation.
 
 You can update your analysis project to a newer release using ::
 
@@ -289,6 +291,58 @@ pxd`` to only compile the pxd package. This is faster but will ignore some
 dependencies.
 
 .. warning:: Always run a full ``scons`` before committing anything
+
+.. _pr_best_practices:
+
+Opening a pull request
+......................
+
+To make your development part of the official software, you have to open a
+pull request. Before you can do this, you have to create a branch prefixed
+``bugfix/`` or ``feature/``. Ideally, you should have created a JIRA issue for
+your development. Then, you can directly create a branch from there. If you
+already have local changes, execute the following sequence of git commands:
+
+ 1. git stash
+ 2. git pull
+ 3. git checkout <branchname>
+ 4. git stash pop
+ 5. git add
+ 6. git commit
+ 7. git push
+
+Usually, it's best to open the pull request only after you think
+that all the work has been completed and it is ready for review. However,
+there might be situations where you would like to get input from others. In
+that case, you might already open a pull request in an earlier stage. But
+please state in the description or in the title of the pull request that this
+is still work in progress (WIP) and which type of feedback you would like to
+receive from the reviewers.
+
+Speaking about reviewers, the librarians of all packages that you touched have
+to be included as reviewers. You can find a list of the current librarians
+`here <https://b2-master.belle2.org/development_build/>`_. Alternatively, you
+can look directly into the ``.librarians`` files of the corresponding packages
+or, after opening the pull request, click on the grayed out ``Merge`` button
+in the top right corner, which should provide you with the necessary
+information as well.
+
+Before the pull request can be merged, all reviewers must have approved and
+the build has to be successful. After you opened a pull request, each time you
+push new commits to your branch, a new build is initiated. Here is a list of
+best practices to make the review as smooth as possible:
+
+ * Split changes of different issues into different commits.
+ * Provide meaningful commit messages so that the reviewers know what was
+   intended with those changes.
+ * It should go without saying that the commit message must not contain
+   inappropriate or even offensive language.
+ * Make sure that your code compiles before pushing it.
+ * Run at least the unit-tests of the packages that you touched (see
+   :ref:`framework/doc/tools/03-b2test:Testing Tools`)
+ * Once you have opened a pull request, try not to push commits individually.
+   Instead, make commits locally and push them at the end of the day or when you
+   have finished all of your work.
 
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart

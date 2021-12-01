@@ -10,7 +10,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  Supported data types are 'validation' and 'examples'."
   echo "- The command requires that you have access to the DESY cloud:"
   echo "    https://desycloud.desy.de"
-  echo "  Contact daniel.knittel@desy.de or uco@desy.de to request access."
+  echo "  Contact b2-helpdesk@belle2.org to request access."
   echo "- Your password will be stored in the rclone configuration file."
   echo "  To update the password just delete the configuration file:"
   echo "    ${HOME}/.config/rclone/rclone.conf"
@@ -21,6 +21,13 @@ fi
 # check number of arguments
 if [ $# -gt 2 ]; then
   echo "Usage: `basename $0` datatype" 1>&2
+  echo "For more information use `basename $0` --help."
+  exit 1
+fi
+
+if [ $# -lt 1 ]; then
+  echo "Usage: `basename $0` datatype" 1>&2
+  echo "For more information use `basename $0` --help."
   exit 1
 fi
 
@@ -37,7 +44,7 @@ DATATYPE=$1
 DIRNAME="${DATATYPE,,}-data"
 ENVNAME="BELLE2_${DATATYPE^^}_DATA_DIR"
 
-# check existance of directory and create it if missing and approved by user
+# check existence of directory and create it if missing and approved by user
 if [ -n "${!ENVNAME}" ]; then
   DIR=${!ENVNAME}
   if [ ! -d ${DIR} ]; then

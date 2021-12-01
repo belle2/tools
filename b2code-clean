@@ -20,20 +20,21 @@ fi
 
 # ask for confirmation, unless -f option is given
 if [ "$1" != "-f" ]; then
-  read -p "Delete all built files at ${BELLE2_LOCAL_DIR}? " DECISION
+  read -r -n 1 -p "Delete all built files at ${BELLE2_LOCAL_DIR}? [y/N] " DECISION
+  echo
   if [ "${DECISION}" != "y" ]; then
     exit 0
   fi
 fi
 
 # delete the built local release files and directories
-echo "Cleaning ${BELLE2_LOCAL_DIR}/include"
-rm -rf ${BELLE2_LOCAL_DIR}/include
-echo "Cleaning ${BELLE2_LOCAL_DIR}/build/${BELLE2_SUBDIR}"
-rm -rf ${BELLE2_LOCAL_DIR}/build/${BELLE2_SUBDIR}
-echo "Cleaning ${BELLE2_LOCAL_DIR}/lib/${BELLE2_SUBDIR}"
-rm -rf ${BELLE2_LOCAL_DIR}/lib/${BELLE2_SUBDIR}
-echo "Cleaning ${BELLE2_LOCAL_DIR}/bin/${BELLE2_SUBDIR}"
-rm -rf  ${BELLE2_LOCAL_DIR}/bin/${BELLE2_SUBDIR}
-echo "Cleaning ${BELLE2_LOCAL_DIR}/modules/${BELLE2_SUBDIR}"
-rm -rf  ${BELLE2_LOCAL_DIR}/modules/${BELLE2_SUBDIR}
+echo "Cleaning ${BELLE2_LOCAL_DIR:?}/include"
+rm -rf "${BELLE2_LOCAL_DIR:?}/include"
+echo "Cleaning ${BELLE2_LOCAL_DIR:?}/build/${BELLE2_SUBDIR}"
+rm -rf "${BELLE2_LOCAL_DIR:?}/build/${BELLE2_SUBDIR?}"
+echo "Cleaning ${BELLE2_LOCAL_DIR:?}/lib/${BELLE2_SUBDIR:?}"
+rm -rf "${BELLE2_LOCAL_DIR:?}/lib/${BELLE2_SUBDIR:?}"
+echo "Cleaning ${BELLE2_LOCAL_DIR:?}/bin/${BELLE2_SUBDIR:?}"
+rm -rf "${BELLE2_LOCAL_DIR:?}/bin/${BELLE2_SUBDIR:?}"
+echo "Cleaning ${BELLE2_LOCAL_DIR:?}/modules/${BELLE2_SUBDIR:?}"
+rm -rf "${BELLE2_LOCAL_DIR:?}/modules/${BELLE2_SUBDIR:?}"

@@ -48,18 +48,34 @@ if [ -z "${BELLE2_USER}" ]; then
 fi
 
 # set location of Belle II code repositories
+pushd ${BELLE2_TOOLS} &> /dev/null
+ORIGIN_URL=`git remote -v`
+popd &> /dev/null
 if [ -z "${BELLE2_GIT_SERVER}" ]; then
-  if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
-    export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm
+  if [[ "${ORIGIN_URL}" =~ "desy" ]]; then
+    if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
+      export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm/
+    else
+      export BELLE2_GIT_SERVER=ssh://git@stash.desy.de:7999/
+    fi
+    BELLE2_GIT_PROJECT=b2
   else
-    export BELLE2_GIT_SERVER=ssh://git@stash.desy.de:7999
+    if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
+      export BELLE2_GIT_SERVER=https://github.com/
+    else
+      export BELLE2_GIT_SERVER=git@github.com:
+    fi
+    BELLE2_GIT_PROJECT=belle2
   fi
 fi
 if [ -z "${BELLE2_SOFTWARE_REPOSITORY}" ]; then
-  export BELLE2_SOFTWARE_REPOSITORY=${BELLE2_GIT_SERVER}/b2/software.git
+  export BELLE2_SOFTWARE_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/basf2.git
 fi
 if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" ]; then
-  export BELLE2_EXTERNALS_REPOSITORY=${BELLE2_GIT_SERVER}/b2/externals.git
+  export BELLE2_EXTERNALS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/externals.git
+fi
+if [ -z "${BELLE2_VERSIONING_REPOSITORY}" ]; then
+  export BELLE2_VERSIONING_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/versioning.git
 fi
 if [ -z "${BELLE2_ANALYSES_PROJECT}" ]; then
   export BELLE2_ANALYSES_PROJECT=b2a
@@ -70,7 +86,7 @@ fi
 
 # list of packages that are excluded by default
 if [ -z "${BELLE2_EXCLUDE_PACKAGES}" ]; then
-  export BELLE2_EXCLUDE_PACKAGES="daq eutel topcaf testbeam"
+  export BELLE2_EXCLUDE_PACKAGES="daq"
 fi
 
 # define function for release/analysis setup
@@ -130,6 +146,15 @@ if [ -z "${BELLE2_NO_TOOLS_CHECK}" ]; then
   fi
   rm -f $tmp
   popd  > /dev/null
+fi
+
+# check encoding
+ENCODING=`b2anypython -c 'import locale;print(locale.getpreferredencoding())'`
+if [ "${ENCODING}" != "UTF-8" ]; then
+  echo
+  echo "WARNING: Your preferred character encoding is not UTF-8."
+  echo "-------> It is recommended to enable UFT-8 encoding, see 'man locale' for instructions."
+  echo
 fi
 
 # check for post setup script
