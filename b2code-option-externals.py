@@ -8,13 +8,13 @@ options = ['debug', 'opt', 'intel']
 
 def get_argument_parser():
     description = textwrap.dedent('''
-Set up the environment for selected compiler options for the externals:
+    Set up the environment for selected compiler options for the externals:
 
-  debug   : include debug symbols, no optimization
-  opt     : turn on optimization (-O3), no debug symbols
-  intel   : use the intel compiler
+      debug   : include debug symbols, no optimization
+      opt     : turn on optimization (-O3), no debug symbols
+      intel   : use the intel compiler
 
-''')
+    ''')
     parser = SetupToolsArgumentParser(prog='b2code-option-externals',
                                       description=description,
                                       state_env_var='BELLE2_EXTERNALS_OPTION')
