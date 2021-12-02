@@ -1,32 +1,62 @@
 #!/usr/bin/env b2anypython
 # -*- coding: utf-8 -*-
 import sys
+import textwrap
+import argparse
 from versioning import supported_release
 
-# check for help option
-if len(sys.argv) > 1 and sys.argv[1] in ['--help', '-h', '-?']:
-    sys.stderr.write("""
-Usage: b2help-releases [release_to_check]
 
-This command just prints the current recommended release of the Belle II software.
-If you provide release_to_check, it will check if this version is supported or to which more recent version you should update.
-The release_to_check doesn't have to be complete. It is enough if it contains the prefix 'release-' or 'light'.
+class NoExitHelpAction(argparse.Action):
+    """
+    Don't exit when help is needed. Also sets args.help = True.
+    """
 
-The recommended release is:
-""")
-    print(supported_release())
+    def __call__(self, parser, namespace, values, option_string=None):
+        parser.print_help()
+        setattr(namespace, self.dest, True)
 
-# check whether the provided release is supported
-elif len(sys.argv) > 1:
-    release = sys.argv[1]
-    supported = supported_release(release)
-    if release == 'light':
-        print("The recommended light release is %s" % supported)
-    elif supported != release:
-        print("Warning: The release %s is not supported any more. Please update to %s" % (release, supported))
+
+def get_argument_parser():
+    description = textwrap.dedent('''\n
+    This command just prints the current recommended release of the Belle II software.
+    If you provide release_to_check, it will check if this version is supported or to which more recent version you should update.
+    The RELEASE_TO_CHECK doesn't have to be complete. It is enough if it contains the prefix 'release-' or 'light'.
+    ''')
+    parser = argparse.ArgumentParser(prog='b2help-releases',
+                                     description=description,
+                                     add_help=False,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    parser.add_argument('release',
+                        metavar='RELEASE_TO_CHECK',
+                        type=str,
+                        nargs='?',
+                        help='Allows providing a release to check.')
+    parser.add_argument('--help', '-h', '-?',
+                        nargs=0,
+                        action=NoExitHelpAction)
+    return parser
+
+
+if __name__ == '__main__':
+
+    args = get_argument_parser().parse_args()
+
+    if args.help:
+        print("\nThe recommended release is:", file=sys.stderr)
+        print(supported_release())
+
+    # check whether the provided release is supported
+    elif args.release:
+        release = sys.argv[1]
+        supported = supported_release(release)
+        if release == 'light':
+            print("The recommended light release is %s" % supported)
+        elif supported != release:
+            print("Warning: The release %s is not supported any more. Please update to %s" % (release, supported))
+        else:
+            print("The release %s is supported" % release)
+
+    # if no options provided just print the supported release
     else:
-        print("The release %s is supported" % release)
-     
-# if no options provided just print the supported release
-else:
-    print(supported_release())
+        print(supported_release())
