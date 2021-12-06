@@ -84,7 +84,7 @@ fi
 # connect to git repository
 cd ${DIR}
 if [ ! -d .git ]; then
-  git clone --no-checkout ${GIT_URL}b2/${DIRNAME}.git tmp
+  git clone --no-checkout ${GIT_URL}belle2/software/${DIRNAME}.git tmp
   mv tmp/.git .
   rm -rf tmp
   git lfs install
