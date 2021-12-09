@@ -5,8 +5,8 @@ import os
 import textwrap
 from setup_tools import get_var, update_environment, SetupToolsArgumentParser
 
-def get_argument_parser(available=None, default=None):
 
+def get_argument_parser(available=None, default=None):
     description = textwrap.dedent('''\n
     This command sets up the Belle II externals to be used without any specific release
     of the Belle II software. It's useful if you just want to enable the software
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         extdir = get_var('BELLE2_EXTERNALS_DIR')
         sys.path[:0] = [extdir]
         from externals import check_externals
+
         if not check_externals(extdir):
             sys.stderr.write('Error: Check of externals at %s failed.\n' % extdir)
     except:

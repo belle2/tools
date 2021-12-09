@@ -23,11 +23,12 @@ source_scripts = []
 
 class SetupToolsArgumentParser(argparse.ArgumentParser):
 
-    def __init__(self, *args,
+    def __init__(self,
                  state_env_var=None, 
                  error_message=None,
+                 *args,
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        super(SetupToolsArgumentParser, self).__init__(*args, **kwargs)
         self.formatter_class = argparse.RawDescriptionHelpFormatter
         self.state_env_var = state_env_var 
         self.error_message = error_message
