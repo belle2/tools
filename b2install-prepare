@@ -120,9 +120,9 @@ elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [ $OS_RELEASE_VERSION -ge 8 ]; then
   OPTIONALS="tk-devel tcl-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
-  INSTALL_CMD="dnf install"
+  INSTALL_CMD="dnf install --enablerepo=powertools"
   if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="dnf install -y"
+    INSTALL_CMD="dnf install --enablerepo=powertools -y"
   fi
 
 else
