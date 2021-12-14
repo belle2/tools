@@ -12,10 +12,9 @@ which will start a CentOS 8 container, mount the tools directory in /data and
 share `/cvmfs`, run all tests and remove the container when after it stops. The
 platform can be replaced by any of the supported platforms:
 
-* `centos:6` for CentOS 6, compatible with scientific linux 6
 * `centos:7` for CentOS 7, compatible with enterprise linux 7
 * `centos:8` for CentOS 8, compatible with enterprise linux 8
-* `ubuntu:16.04`, `ubuntu:18.04` and `ubuntu:20.04` for the different ubuntu versions.
+* `ubuntu:18.04` and `ubuntu:20.04` for the different ubuntu versions.
 
 To debug problems one can directly start a shell in the container instead of
 running the tests which is very similar to the command above:
