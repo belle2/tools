@@ -16,7 +16,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  are printed. The files are not modified. The return code gives the number"
   echo "  of files that would be changed."
   echo "- The -p option is equivalent to the -n option except that it reports the"
-  echo "  pep8 output instead of the code changes."
+  echo "  pep8 and flake8 output instead of the code changes."
   echo "- The -d option can be used to specify the diff command that is called to"
   echo "  report changes. Has to be given after the -n or -p option."
   echo
@@ -72,6 +72,9 @@ AUTOPEP8="${AUTOPEP8CHECK} --in-place"
 
 # pep8 command
 PEP8="pep8 --config=${BELLE2_TOOLS}/pep8.cfg"
+
+# flake8 command
+FLAKE8="flake8 --config=${BELLE2_TOOLS}/pep8.cfg"
 
 # diff command
 DIFF="diff -u"
@@ -182,13 +185,33 @@ function Pep8Check ()
   fi
 }
 
+# define function for pep8 checking
+function Flake8Check ()
+{
+  if [ ! -L $1 ]; then
+    IsImported "$1"
+    if [ "$?" = 1 ]; then
+      return
+    fi
+    TMP=`mktemp`
+    ${FLAKE8} $1 > $TMP 2> /dev/null
+    if [ "$?" != 0 ]; then
+      COUNT+=1
+      cat $TMP
+    fi
+    rm -f $TMP
+  fi
+}
+
 
 # if run in check mode
 if [ "$1" = "-n" -o "$1" = "-p" ]; then
 
   PYTHONCHECK=Autopep8Check
+  CHECKFLAKE8=false
   if [ "$1" = "-p" ]; then
     PYTHONCHECK=Pep8Check
+    CHECKFLAKE8=true
   fi
   shift
 
@@ -208,6 +231,9 @@ if [ "$1" = "-n" -o "$1" = "-p" ]; then
      done
     for i in `find . -name \\*.py`; do
       ${PYTHONCHECK} $i
+      if [ "${CHECKFLAKE8}" = true ]; then
+        Flake8Check $i
+      fi
     done
 
   # check the specified files
@@ -227,6 +253,9 @@ if [ "$1" = "-n" -o "$1" = "-p" ]; then
         echo "The file $i does not exist"
       elif [ "${CHECK}" != "None" ]; then
         ${CHECK} "${FILE}"
+        if [ "${CHECKFLAKE8}" = true ]; then
+          Flake8Check "${FILE}"
+        fi
       else
         echo "File of unknown type not checked: $i"
       fi
