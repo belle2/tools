@@ -243,8 +243,12 @@ if [ "$1" = "-n" -o "$1" = "-p" ]; then
       CHECK=None
       if [ `echo ${FILE}| grep "\.py$"` ]; then
         CHECK=${PYTHONCHECK}
+        if [ "${CHECK}" == "Pep8Check" ]; then
+          CHECKFLAKE8=true
+        fi
       elif [ `echo ${FILE}| grep "\.h$\|\.cc$"` ]; then
         CHECK=AstyleCheck
+        CHECKFLAKE8=false
       fi
       if [ ! -e ${FILE} -a "${CHECK}" != "None" ]; then
         FILE=${FILE%.*}
