@@ -245,6 +245,7 @@ if [ "$1" = "-n" -o "$1" = "-p" ]; then
         CHECK=${PYTHONCHECK}
       elif [ `echo ${FILE}| grep "\.h$\|\.cc$"` ]; then
         CHECK=AstyleCheck
+        CHECKFLAKE8=false
       fi
       if [ ! -e ${FILE} -a "${CHECK}" != "None" ]; then
         FILE=${FILE%.*}
