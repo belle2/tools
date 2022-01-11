@@ -1,41 +1,43 @@
 # -*- coding: utf-8 -*-
-import sys
-import os
-from setup_tools import update_environment
+from __future__ import print_function
+import textwrap
+from setup_tools import update_environment, SetupToolsArgumentParser
 
-# allowed options
+# Allowed options
 options = ['debug', 'opt', 'intel', 'clang']
 
-using_csh = False
-if len(sys.argv)>1 and sys.argv[1] == '--csh':
-    using_csh = True
-    del sys.argv[1]
 
-# check for help option
-if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
-    sys.stderr.write("""
-Usage: b2code-option %s
+def get_argument_parser():
 
-Set up the environment for selected compiler options:
+    description = textwrap.dedent('''\n
+    Set up the environment for selected compiler options:
 
-  debug : include debug symbols, no optimization
-  opt   : turn on optimization (-O3), no debug symbols
-  intel : use the intel compiler
-  clang : use clang (LLVM)
+      debug : use gcc compiler, include debug symbols, no optimization
+      opt   : use gcc compiler, no debug symbols, turn on -O3 optimization
+      intel : use intel compiler, no debug symbols
+      clang : use clang compiler (LLVM), no debug symbols, turn on -O3 optimization
+    ''')
+    parser = SetupToolsArgumentParser(prog='b2code-option',
+                                      description=description,
+                                      state_env_var='BELLE2_OPTION')
+    parser.add_argument('option',
+                        metavar='OPTION',
+                        type=str,
+                        choices=options,
+                        help='Environment for the compiler option.')
+    parser.add_argument('--csh',
+                        default=False,
+                        action='store_true',
+                        help='To be used with csh shells.')
+    return parser
 
-"""
-                     % '|'.join(options))
-    sys.exit(0)
 
-# check arguments
-if len(sys.argv) != 2 or sys.argv[1] not in options:
-    sys.stderr.write('Usage: setoption %s\n' % '|'.join(options))
-    sys.stderr.write('The current option is: %s\n'
-                     % os.environ.get('BELLE2_OPTION', ''))
-    sys.exit(1)
+if __name__ == '__main__':
+    args = get_argument_parser().parse_args()
 
-# update environment with new option
-update_environment(option=sys.argv[1], csh=using_csh)
+    # Update the environment with the new option.
+    update_environment(option=args.option,
+                       csh=args.csh)
 
-# inform user about successful completion
-print('echo "Environment setup for build option: ${BELLE2_OPTION}"')
+    # Inform the user about successful completion.
+    print('echo "Environment setup for build option: ${BELLE2_OPTION}"')

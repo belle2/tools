@@ -2,54 +2,65 @@
 # -*- coding: utf-8 -*-
 
 import sys, os
+import textwrap
 from versioning import supported_release
+import argparse
 
-# check for help option
-if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
-    sys.stderr.write("""
-Usage: b2analysis-update [release]
 
-This command changes the central release version for the current analysis
-to the given or recommended version.
+def get_argument_parser():
 
-""")
-    sys.exit(0)
+    description = textwrap.dedent('''\n
+This command changes the central release version for the currently set up
+analysis. If no central release version is given as argument the recommended
+release version is taken.
+    ''')
+    parser = argparse.ArgumentParser(prog='b2analysis-update',
+                                     formatter_class=argparse.RawDescriptionHelpFormatter,
+                                     description=description)
+    parser.add_argument('release',
+                        metavar='RELEASE',
+                        type=str,
+                        nargs='?',
+                        help='A centrally produced release used instead of the recommended one')
+    return parser
 
-# get argument
-release = None if len(sys.argv) < 2 else sys.argv[1]
 
-# get .analysis file and its content
-analysis = None
-for path in ['.', os.environ.get('BELLE2_ANALYSIS_DIR', '.')]:
-    filename = os.path.join(path, '.analysis')
-    if os.path.isfile(filename):
-        analysis = filename
-        break
+if __name__ == '__main__':
 
-if analysis is None:
-    sys.stderr.write('Error: No analysis directory found.')
-    sys.exit(1)
+    args = get_argument_parser().parse_args()
 
-current_release = open(analysis).readline().strip()
+    # get .analysis file and its content
+    analysis = None
+    for path in ['.', os.environ.get('BELLE2_ANALYSIS_DIR', '.')]:
+        filename = os.path.join(path, '.analysis')
+        if os.path.isfile(filename):
+            analysis = filename
+            break
 
-# if no release is given take the recommended one
-if release is None:
-    release = supported_release(current_release)
+    if analysis is None:
+        sys.stderr.write('Error: No analysis directory found.\n')
+        sys.exit(1)
 
-# if a release is given check whether it is supported
-else:
-    supported = supported_release(release)
-    if release != supported:
-        print('Warning: %s is not supported, instead %s is recommended' % (release, supported))
+    current_release = open(analysis).readline().strip()
 
-# do the update if the release differs from the current one
-if release == current_release:
-    print('The analysis is already set to %s. No update is done.' % release)
-else:
-    print('Updating from analysis at %s from %s to %s.' % (os.path.dirname(analysis), current_release, release))
-    print('Please make sure to run b2setup.')
-    analysis_file = open(analysis, 'w')
-    analysis_file.write(release + '\n')
-    analysis_file.close()
-    os.remove('site_scons')
-    os.symlink(os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release, 'site_scons'), 'site_scons')
+    # if no release is given take the recommended one
+    if args.release is None:
+        release = supported_release(current_release)
+    # if a release is given check whether it is supported
+    else:
+        supported = supported_release(args.release)
+        if args.release != supported:
+            print('Warning: %s is not supported, instead %s is recommended' % (args.release, supported))
+        release = args.release
+
+    # do the update if the release differs from the current one
+    if release == current_release:
+        print('The analysis is already set to %s. No update is done.' % release)
+    else:
+        print('Updating from analysis at %s from %s to %s.' % (os.path.dirname(analysis), current_release, release))
+        print('Please make sure to run b2setup.')
+        analysis_file = open(analysis, 'w')
+        analysis_file.write(release + '\n')
+        analysis_file.close()
+        os.remove('site_scons')
+        os.symlink(os.path.join(os.environ['VO_BELLE2_SW_DIR'], 'releases', release, 'site_scons'), 'site_scons')

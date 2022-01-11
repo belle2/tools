@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import subprocess
+import argparse
 
 try:
     from importlib import reload
@@ -17,6 +19,38 @@ env_vars = {}
 
 # list of [sh, csh] scripts that should be sourced
 source_scripts = []
+
+
+class SetupToolsArgumentParser(argparse.ArgumentParser):
+
+    def __init__(self,
+                 state_env_var=None, 
+                 error_message=None,
+                 *args,
+                 **kwargs):
+        super(SetupToolsArgumentParser, self).__init__(*args, **kwargs)
+        self.formatter_class = argparse.RawDescriptionHelpFormatter
+        self.state_env_var = state_env_var 
+        self.error_message = error_message
+
+    def error(self, message):
+        """
+        Allows printing the state of an environment variable variable or and extra message when exiting with error.
+        """
+        self.print_usage(sys.stderr)
+        args = {'prog': self.prog, 'message': message}
+        self._print_message('%(prog)s: error: %(message)s\n' % args, sys.stderr)
+        if self.state_env_var:
+            sys.stderr.write('The current option is {}.\n'.format(os.environ.get(self.state_env_var, '')))
+        if self.error_message:
+            sys.stderr.write(self.error_message)
+        sys.exit(2)
+
+    def print_help(self, file=None):
+        """
+        Adapted so help goes to stderr and doesn't confuse shell wrapper.
+        """
+        self._print_message(self.format_help(), sys.stderr)
 
 
 def set_var(var, value):

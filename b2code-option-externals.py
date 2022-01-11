@@ -1,41 +1,42 @@
 # -*- coding: utf-8 -*-
-import sys
-import os
-from setup_tools import update_environment
+from __future__ import print_function
+import textwrap
+from setup_tools import update_environment, SetupToolsArgumentParser
 
 # allowed options
 options = ['debug', 'opt', 'intel']
 
-using_csh = False
-if len(sys.argv)>1 and sys.argv[1] == '--csh':
-    using_csh = True
-    del sys.argv[1]
 
-# check for help option
-if len(sys.argv) >= 2 and sys.argv[1] in ['--help', '-h', '-?']:
-    sys.stderr.write("""
-Usage: b2code-option-externals %s
+def get_argument_parser():
+    description = textwrap.dedent('''
+    Set up the environment for selected compiler options for the externals:
 
-Set up the environment for selected compiler options for the externals:
+      debug   : include debug symbols, no optimization
+      opt     : turn on optimization (-O3), no debug symbols
+      intel   : use the intel compiler
 
-  debug   : include debug symbols, no optimization
-  opt     : turn on optimization (-O3), no debug symbols
-  intel   : use the intel compiler
+    ''')
+    parser = SetupToolsArgumentParser(prog='b2code-option-externals',
+                                      description=description,
+                                      state_env_var='BELLE2_EXTERNALS_OPTION')
+    parser.add_argument('option',
+                        metavar='OPTION',
+                        type=str,
+                        choices=options,
+                        help='Environment for the compiler option')
+    parser.add_argument('--csh',
+                        default=False,
+                        action='store_true',
+                        help='To be used with csh shells.')
+    return parser
 
-"""
-                     % '|'.join(options))
-    sys.exit(0)
 
-# check arguments
-if len(sys.argv) != 2 or sys.argv[1] not in options:
-    sys.stderr.write('Usage: setextoption %s\n' % '|'.join(options))
-    sys.stderr.write('The current option is: %s\n'
-                     % os.environ.get('BELLE2_EXTERNALS_OPTION',
-                     '***UNDEFINED***'))
-    sys.exit(1)
+if __name__ == '__main__':
+    args = get_argument_parser().parse_args()
 
-# update environment with new externals option
-update_environment(externals_option=sys.argv[1], csh=using_csh)
+    # update environment with new externals option
+    update_environment(externals_option=args.option,
+                       csh=args.csh)
 
-# inform user about successful completion
-print('echo "Environment setup for externals option: %s"' % sys.argv[1])
+    # inform user about successful completion
+    print('echo "Environment setup for externals option: ${BELLE2_EXTERNALS_OPTION}"')
