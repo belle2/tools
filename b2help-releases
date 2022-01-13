@@ -5,16 +5,7 @@ import sys
 import textwrap
 import argparse
 from versioning import supported_release
-
-
-class NoExitHelpAction(argparse.Action):
-    """
-    Don't exit when help is needed. Also sets args.help = True.
-    """
-
-    def __call__(self, parser, namespace, values, option_string=None):
-        parser.print_help()
-        setattr(namespace, self.dest, True)
+from setup_tools import NoExitHelpAction
 
 
 def get_argument_parser():
