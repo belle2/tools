@@ -3,7 +3,7 @@ from __future__ import print_function
 import sys
 import os
 import textwrap
-from setup_tools import get_var, update_environment, SetupToolsArgumentParser
+from setup_tools import get_var, update_environment, SetupToolsArgumentParser, NoExitHelpAction
 
 
 def get_argument_parser(available=None, default=None):
@@ -17,6 +17,7 @@ def get_argument_parser(available=None, default=None):
 
     parser = SetupToolsArgumentParser(prog='b2setup-externals',
                                       error_message="You can try installing unavailable versions by using 'b2install-externals VERSION'",
+                                      add_help=False,
                                       description=description)
     parser.add_argument('release',
                         metavar='RELEASE',
@@ -28,6 +29,9 @@ def get_argument_parser(available=None, default=None):
                         default=False,
                         action='store_true',
                         help='To be used with csh shells.')
+    parser.add_argument('--help', '-h', '-?',
+                        nargs=0,
+                        action=NoExitHelpAction)
 
     return parser
 
@@ -48,10 +52,6 @@ if __name__ == '__main__':
     else:
         default_version = None
 
-    if available_versions:
-        print(textwrap.dedent("""
-        Available Versions: %s
-        Default Version: %s""" % (", ".join(available_versions), default_version)), file=sys.stderr)
 
     if not available_versions:
         print(textwrap.dedent("""
@@ -66,8 +66,13 @@ if __name__ == '__main__':
 
     args = get_argument_parser(available=available_versions, default=default_version).parse_args()
 
+    if args.help and available_versions:
+        print(textwrap.dedent("""
+        Available Versions: %s
+        Default Version: %s""" % (", ".join(available_versions), default_version)), file=sys.stderr)
+
     # setup externals
-    update_environment(externals_version=args.version, csh=args.csh)
+    update_environment(externals_version=args.release, csh=args.csh)
 
     try:
         extdir = get_var('BELLE2_EXTERNALS_DIR')

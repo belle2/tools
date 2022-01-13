@@ -20,6 +20,15 @@ env_vars = {}
 # list of [sh, csh] scripts that should be sourced
 source_scripts = []
 
+class NoExitHelpAction(argparse.Action):
+    """
+    Don't exit when help is needed. Also sets args.help = True. This is used by some scripts to
+    provide additional info after giving the argparse help.
+    """
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        parser.print_help()
+        setattr(namespace, self.dest, True)
 
 class SetupToolsArgumentParser(argparse.ArgumentParser):
 
