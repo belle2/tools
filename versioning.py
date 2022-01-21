@@ -2,7 +2,9 @@
 """Management of software versions and global tags via versioning git repository
 """
 
-import sys, os, subprocess
+import sys
+import os
+import subprocess
 
 
 def get_remote_versioning(repository):
@@ -15,7 +17,7 @@ def get_remote_versioning(repository):
     command = ['git', 'archive', '--remote=' + repository, 'HEAD', 'versioning.py']
     git = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=devnull)
     tar = subprocess.Popen(['tar', '-xO', 'versioning.py'], stdin=git.stdout, stdout=subprocess.PIPE, stderr=devnull)
-    git.stdout.close() 
+    git.stdout.close()
     versioning = tar.communicate()[0]
     devnull.close()
     if tar.returncode == 0:
@@ -46,13 +48,19 @@ if versioning is None:
 if versioning is not None:
     exec(versioning)
 else:
-    sys.stderr.write('Warning: Could not get versioning information. Check that you have ssh access to stash, see https://confluence.desy.de/x/2o4iAg\n')
-    def supported_release(release):
-        return None
-    def recommended_global_tags(release, mc=False, analysis=True, input_tags=[]):
-        return None
-    def upload_global_tag(task):
-        return None
-    def jira_global_tag(task):
+    sys.stderr.write(
+        'Warning: could not get versioning information. Check that you have ssh access to versioning repository.\n'
+        ' - about ssh access: https://software.belle2.org/development/sphinx/online_book/prerequisites/git.html#belle-ii-specifics\n'
+        ' - versioning repository: https://stash.desy.de/projects/B2/repos/versioning')
+
+    def supported_release(release=None):
         return None
 
+    def recommended_global_tags(release=None, mc=None, analysis=None, input_tags=None):
+        return None
+
+    def upload_global_tag(task=None):
+        return None
+
+    def jira_global_tag(task=None):
+        return None
