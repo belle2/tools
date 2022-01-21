@@ -13,3 +13,6 @@ if ( -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ) then
     echo "Trying to run basf2 --info"
     basf2 --info
 endif
+
+# echo execute at least one of the functions intended to modify the environment
+b2code-option --help
