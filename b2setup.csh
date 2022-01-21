@@ -48,7 +48,7 @@ end
 
 # add tools directory to path
 if ( ${?PATH} ) then
-  setenv PATH ${BELLE2_TOOLS}:${PATH}
+  setenv PATH "${BELLE2_TOOLS}:${PATH}"
 else
   setenv PATH ${BELLE2_TOOLS}
 endif
