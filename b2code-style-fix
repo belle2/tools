@@ -48,11 +48,13 @@ fi
 ASTYLE="${ASTYLE_TOOL} \
 --indent=spaces=2 \
 --convert-tabs \
---style=stroustrup \
+--style=kr \
+--attach-namespaces \
+--attach-classes \
 --indent-switches \
 --indent-namespaces \
 --indent-preprocessor \
---max-instatement-indent=60 \
+--max-continuation-indent=60 \
 --min-conditional-indent=0 \
 --pad-oper \
 --pad-header \
