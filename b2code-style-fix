@@ -38,7 +38,7 @@ if [ ! -f "${ASTYLE_TOOL}" ]; then
   fi
 fi
 VERSION=`LC_ALL=C ${ASTYLE_TOOL} -V 2>&1`
-if [ "${VERSION}" != "Artistic Style Version 2.05.1" ]; then
+if [ "${VERSION}" != "Artistic Style Version 3.1" ]; then
   echo "Error: Wrong version of astyle. Setup the latest externals version." 1>&2
   exit 1
 fi
@@ -48,11 +48,13 @@ fi
 ASTYLE="${ASTYLE_TOOL} \
 --indent=spaces=2 \
 --convert-tabs \
---style=stroustrup \
+--style=kr \
+--attach-namespaces \
+--attach-classes \
 --indent-switches \
 --indent-namespaces \
 --indent-preprocessor \
---max-instatement-indent=60 \
+--max-continuation-indent=60 \
 --min-conditional-indent=0 \
 --pad-oper \
 --pad-header \
