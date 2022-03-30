@@ -3,6 +3,7 @@ import sys
 import os
 import subprocess
 import argparse
+from distutils.version import LooseVersion
 
 try:
     from importlib import reload
@@ -175,7 +176,7 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    if env_vars['BELLE2_EXTERNALS_VERSION'][:6] == 'v01-10':
+    if LooseVersion('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'].split('-')[1:])) >= '01.10.00':
         # overwrite JUPYTER config directory to fix bug in ROOT v6.24
         try:
             value = os.path.join(os.environ['HOME'], '.jupyter')
