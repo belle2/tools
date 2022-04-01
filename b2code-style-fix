@@ -26,7 +26,7 @@ fi
 # set tools directory if unset
 BELLE2_TOOLS=${BELLE2_TOOLS:-`dirname $0`}
 
-# check astyle and its version
+# check astyle and its version; set its options accordingly
 ASTYLE_TOOL=${BELLE2_EXTERNALS_DIR}/${BELLE2_ARCH}/common/bin/astyle
 if [ ! -f "${ASTYLE_TOOL}" ]; then
   echo "Warning: astyle is not found in the externals directory."
@@ -38,15 +38,10 @@ if [ ! -f "${ASTYLE_TOOL}" ]; then
   fi
 fi
 VERSION=`LC_ALL=C ${ASTYLE_TOOL} -V 2>&1`
-if [ "${VERSION}" != "Artistic Style Version 3.1" ]; then
-  echo "Error: Wrong version of astyle. Setup the latest externals version." 1>&2
-  exit 1
-fi
-
-
-# astyle command
-ASTYLE="${ASTYLE_TOOL} \
---indent=spaces=2 \
+ASTYLE_OPTIONS=""
+if [ "${VERSION}" == "Artistic Style Version 3.1" ]; then
+  # for externals >= v01-11-00
+  ASTYLE_OPTIONS="--indent=spaces=2 \
 --convert-tabs \
 --style=kr \
 --attach-namespaces \
@@ -67,6 +62,34 @@ ASTYLE="${ASTYLE_TOOL} \
 --max-code-length=132 \
 --lineend=linux \
 --formatted"
+elif [ "${VERSION}" == "Artistic Style Version 2.05.1" ]; then
+  # for externals <= v01-10-02
+  ASTYLE_OPTIONS="--indent=spaces=2 \
+--convert-tabs \
+--style=stroustrup \
+--indent-switches \
+--indent-namespaces \
+--indent-preprocessor \
+--max-instatement-indent=60 \
+--min-conditional-indent=0 \
+--pad-oper \
+--pad-header \
+--unpad-paren \
+--keep-one-line-statements \
+--keep-one-line-blocks \
+--suffix=none \
+--align-pointer=type \
+--align-reference=type \
+--max-code-length=132 \
+--lineend=linux \
+--formatted"
+else
+  echo "Error: Wrong version of astyle. Setup the latest externals version." 1>&2
+  exit 1
+fi
+
+# astyle command
+ASTYLE="${ASTYLE_TOOL} ${ASTYLE_OPTIONS}"
 
 # autopep8 command
 AUTOPEP8CHECK="autopep8 --aggressive --aggressive --ignore-local-config --global-config ${BELLE2_TOOLS}/pep8.cfg"
@@ -80,7 +103,6 @@ FLAKE8="flake8 --config=${BELLE2_TOOLS}/pep8.cfg"
 
 # diff command
 DIFF="diff -u"
-
 
 # count number of files that fail the check
 declare -i COUNT
