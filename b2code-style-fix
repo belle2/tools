@@ -38,7 +38,18 @@ if [ ! -f "${ASTYLE_TOOL}" ]; then
   fi
 fi
 VERSION=`LC_ALL=C ${ASTYLE_TOOL} -V 2>&1`
-if [ "${VERSION}" != "Artistic Style Version 3.1" ]; then
+ADDITIONAL_STYLE=""
+if [ "${VERSION}" == "Artistic Style Version 3.1" ]; then
+  # for externals >= v01-11-00
+  ADDITIONAL_STYLE="--style=kr \
+--attach-namespaces \
+--attach-classes \
+--max-continuation-indent=60"
+elif [ "${VERSION}" == "Artistic Style Version 2.05.1" ]; then
+  # for externals <= v01-10-02
+  ADDITIONAL_STYLE="--style=stroustrup \
+--max-instatement-indent=60"
+else
   echo "Error: Wrong version of astyle. Setup the latest externals version." 1>&2
   exit 1
 fi
@@ -48,13 +59,9 @@ fi
 ASTYLE="${ASTYLE_TOOL} \
 --indent=spaces=2 \
 --convert-tabs \
---style=kr \
---attach-namespaces \
---attach-classes \
 --indent-switches \
 --indent-namespaces \
 --indent-preprocessor \
---max-continuation-indent=60 \
 --min-conditional-indent=0 \
 --pad-oper \
 --pad-header \
@@ -66,7 +73,8 @@ ASTYLE="${ASTYLE_TOOL} \
 --align-reference=type \
 --max-code-length=132 \
 --lineend=linux \
---formatted"
+--formatted \
+${ADDITIONAL_STYLE}"
 
 # autopep8 command
 AUTOPEP8CHECK="autopep8 --aggressive --aggressive --ignore-local-config --global-config ${BELLE2_TOOLS}/pep8.cfg"
