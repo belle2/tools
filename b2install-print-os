@@ -24,7 +24,7 @@ if [ -f /etc/os-release ]; then
     OS_RELEASE_ID="el"
   elif [ "${OS_RELEASE_ID}" = "scientific" ]; then
     OS_RELEASE_ID="el"
-  elif [ "${OS_RELEASE_ID}" = "rocky" ] || [ "${OS_RELEASE_ID}" == "almalinux" ]; then
+  elif [ "${OS_RELEASE_ID}" = "rocky" ] || [ "${OS_RELEASE_ID}" = "almalinux" ]; then
     OS_RELEASE_ID="el"
   elif [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
     OS_RELEASE_ID="ubuntu"
