@@ -10,6 +10,15 @@ test-centos7:
     - echo "Running unit tests for CentOS 7... This will take few minutes."
     - tests/run.sh
 
+test-rockylinux8:
+  stage: test
+  image: rockylinux:8
+  tags:
+    - cvmfs
+  script:
+    - echo "Running unit tests for Rocky Linux 8... This will take few minutes."
+    - tests/run.sh
+
 test-ubuntu1804:
   stage: test
   image: ubuntu:18.04
