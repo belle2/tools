@@ -1,0 +1,38 @@
+stages:
+  - test
+
+test-centos7:
+  stage: test
+  image: centos:7
+  tags:
+    - cvmfs
+  script:
+    - echo "Running unit tests for CentOS 7... This will take few minutes."
+    - tests/run.sh
+
+test-rockylinux8:
+  stage: test
+  image: rockylinux:8
+  tags:
+    - cvmfs
+  script:
+    - echo "Running unit tests for Rocky Linux 8... This will take few minutes."
+    - tests/run.sh
+
+test-ubuntu1804:
+  stage: test
+  image: ubuntu:18.04
+  tags:
+    - cvmfs
+  script:
+    - echo "Running unit tests for Ubuntu 18.04... This will take few minutes."
+    - tests/run.sh
+
+test-ubuntu2004:
+  stage: test
+  image: ubuntu:20.04
+  tags:
+    - cvmfs
+  script:
+    - echo "Running unit tests for Ubuntu 20.04... This will take few minutes."
+    - tests/run.sh
