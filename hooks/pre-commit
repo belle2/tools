@@ -82,20 +82,16 @@ if [ $? -ne 0 ]; then
   RESULT=3
 fi
 
-# Check the access rights
-if [ "$BRANCH" = "main" ]; then
+# Check the branch name
+if ! [[ "$BRANCH" =~ ^(feature|bugfix)/ ]]; then
   if [ "$BELLE2_ACCESS_CHECK" != "no" ]; then
-    ${BELLE2_TOOLS}/hooks/check_access.py ${TMPDIR}
-    if [ $? -ne 0 ]; then
-      if [ "$BELLE2_ACCESS_CHECK" = "warn" ]; then
-        echo "=> WARNING: You will not be able to push your changes to the central repository."
-      else
-        echo "=> You can set BELLE2_ACCESS_CHECK to 'warn' or 'no' to be able to commit to your local repository, BUT:"
-        RESULT=4
-      fi
-      echo "   It is recommended to either ask the librarians of the above listed packages for commit rights"
-      echo "   or commit your changes to a new feature branch and then make a pull request to the librarians."
+    if [ "$BELLE2_ACCESS_CHECK" = "warn" ]; then
+      echo "=> WARNING: You will not be able to push your changes to the central repository."
+    else
+      echo "=> You can set BELLE2_ACCESS_CHECK to 'warn' or 'no' to be able to commit to your local repository, BUT:"
+      RESULT=4
     fi
+    echo "   It is recommended to commit your changes to a new feature or bugfix branch."
   fi
 fi
 
