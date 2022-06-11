@@ -120,10 +120,13 @@ elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [[ ! $OS_RELEASE_VERSION < "8" ]]; th
   OPTIONALS="tk-devel tcl-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
-  INSTALL_CMD="dnf install --enablerepo=crb"
-  if [[ $OS_RELEASE_VERSION < "9" ]]; then
-    INSTALL_CMD="dnf install --enablerepo=powertools"
+  INSTALL_CMD="dnf install"
+  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
+    INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
     PACKAGES="$PACKAGES python2"
+  else # el9 or higher
+    INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
+    PACKAGES="$PACKAGES perl-FindBin"
   fi
   if [ "$NO_PROMPT" = "yes" ]; then
     INSTALL_CMD="$INSTALL_CMD -y"
