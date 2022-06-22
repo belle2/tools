@@ -34,11 +34,20 @@ fi
 # verify that the git repository exists and is an analysis repository
 ANALYSIS_NAME=${USERNAME}_${DIR}
 ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
-REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master | wc -l`
-REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main | wc -l`
+REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
+REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
 if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
-  echo "Error: The git repository ${ANALYSIS_NAME} does not exist." 1>&2
-  exit 1
+  if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
+    ANALYSIS_REPOSITORY=https://${BELLE2_USER}@stash.desy.de/scm/b2a/${ANALYSIS_NAME}.git
+  else
+    ANALYSIS_REPOSITORY=ssh://git@stash.desy.de:7999/b2a/${ANALYSIS_NAME}.git
+  fi
+  REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
+  REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
+  if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
+    echo "Error: The analysis git repository ${ANALYSIS_NAME} does not exist." 1>&2
+    exit 1
+  fi
 fi
 
 # check out the analysis directory

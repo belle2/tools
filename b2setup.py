@@ -3,6 +3,7 @@ import sys
 import os
 import textwrap
 import argparse
+import re
 from setup_tools import get_var, update_environment, SetupToolsArgumentParser
 from versioning import supported_release
 
@@ -124,6 +125,13 @@ if __name__ == '__main__':
             print('echo "Local development directory  : ${BELLE2_LOCAL_DIR}"')
         if len(get_var('BELLE2_ANALYSIS_DIR')) > 0:
             print('echo "Analysis directory           : ${BELLE2_ANALYSIS_DIR}"')
+
+    # check for migration
+    if 'gitlab.desy' in os.environ.get('BELLE2_GIT_SERVER') and local_dir:
+        if re.search('\[remote "origin"\]\n\turl = ssh://git@stash.desy.de', open(os.path.join(local_dir, '.git', 'config')).read()):
+            print('''pushd %s > /dev/null
+            b2code-migrate
+            popd > /dev/null''' % local_dir)
 
     # set the build option if a .option file exists in the analysis or development directory
     if local_dir and os.path.isfile(os.path.join(local_dir, '.option')):
