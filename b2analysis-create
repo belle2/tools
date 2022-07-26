@@ -69,7 +69,7 @@ if [ "$?" = "0" ]; then
   git clone ${ANALYSIS_REPOSITORY} ${DIR}
   cd ${DIR}
 else
-  echo "WARNING: The creation of the analysis directory on the gitlab server failed. Go to https://gitlab.desy.de/belle2/analyses, click \"New project\" and \"Create blanck project\", then enter the Name \"${ANALYSIS_NAME}\" as project name, deactivate the initialization with a README, and click the \"Create project\" button."
+  echo "WARNING: The creation of the analysis directory on the gitlab server failed. Go to https://gitlab.desy.de/belle2/analyses, click \"New project\" and \"Create blank project\", then enter the Name \"${ANALYSIS_NAME}\" as project name, deactivate the initialization with a README, and click the \"Create project\" button."
   REMOTE_EXISTS=0
   mkdir ${DIR}
   cd ${DIR}

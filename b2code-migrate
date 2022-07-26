@@ -3,10 +3,10 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename`"
+  echo "Usage: `basename $0`"
   echo
   echo "- This command updates the remote repository from stash to gitlab."
-  echo "- An analysis respository that does not yet exist on gitlab can be"
+  echo "- An analysis repository that does not yet exist on gitlab can be"
   echo "  migrated from stash."
   echo
   exit 0
