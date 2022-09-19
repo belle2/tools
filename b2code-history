@@ -1,12 +1,18 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+
+      Usage: `basename $0`
+
+  This command fetches and connects the git history.
+
+EOF
+}
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0`"
-  echo
-  echo "This command fetches and connects the git history."
-  echo
+  help
   exit 0
 fi
 

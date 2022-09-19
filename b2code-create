@@ -1,22 +1,30 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+
+      Usage: `basename $0` [--light] directory
+
+  - This command creates a local directory with the given name
+    as basis for a working copy of the Belle II software.
+    It also prepares the build system.
+
+  --light
+     Check out only the packages of a light release.
+
+EOF
+}
+
 # comparison of versions
-function version_greater_equal
+version_greater_equal()
 {
   test "$(echo -e "$1\n$2" | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -n 1)" = "$1"
 }
 
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` [--light] directory"
-  echo
-  echo "- This command creates a local directory with the given name"
-  echo "  as basis for a working copy of the Belle II software."
-  echo "  It also prepares the build system."
-  echo "- The --light option can be used to check out only the packages"
-  echo "  of a light release."
-  echo
+  help
   exit 0
 fi
 

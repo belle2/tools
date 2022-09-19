@@ -1,15 +1,21 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+
+      Usage: `basename $0` [-x command] release arguments
+
+  - This command sets up the given release and then calls basf2
+    with the given arguments.
+  - With the -x option a different command than basf2 can be
+    executed.
+
+EOF
+}
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` [-x command] release arguments"
-  echo
-  echo "- This command sets up the given release and then calls basf2"
-  echo "  with the given arguments."
-  echo "- With the -x option a different command than basf2 can be"
-  echo "  executed."
-  echo
+  help
   exit 0
 fi
 

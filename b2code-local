@@ -1,14 +1,20 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+
+      Usage: `basename $0` [--light]
+
+  - This command converts a directory with a local+central setup
+    to a fully local setup.
+  - If the --light option is used a local light release is set up.
+
+EOF
+}
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` [--light]"
-  echo
-  echo "- This command converts a directory with a local+central setup"
-  echo "  to a fully local setup."
-  echo "- If the --light option is used a local light release is set up."
-  echo
+  help
   exit 0
 fi
 

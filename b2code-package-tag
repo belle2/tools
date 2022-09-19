@@ -1,28 +1,34 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+
+      Usage: `basename $0` ["major"|"minor"|"patch"(=default)|tag]
+
+  - This command tags the current version of the source code of a package
+    and pushes the tag to the central repository.
+    It has to be called in the package directory of the local release.
+    There should be no locally modified files.
+  - If no argument is given, the tag name is chosen automatically by
+    increasing the patch level number, e.g. from v01-01-01 to v01-01-02.
+  - If "minor" is given as argument, the minor version number is increased,
+    e.g. from v01-01-01 to v01-02-01.
+  - If "major" is given as argument, the major version number is increased,
+    e.g. from v01-01-01 to v02-01-01.
+  - Alternatively the name of the tag can be given explicitly as argument.
+
+EOF
+}
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` [\"major\"/\"minor\"/\"patch\"(=default)/tag]"
-  echo
-  echo "- This command tags the current version of the source code of a package"
-  echo "  and pushes the tag to the central repository."
-  echo "  It has to be called in the package directory of the local release."
-  echo "  There should be no locally modified files."
-  echo "- If no argument is given, the tag name is chosen automatically by"
-  echo "  increasing the patch level number, e.g. from v01-01-01 to v01-01-02."
-  echo "- If \"minor\" is given as argument, the minor version number is increased,"
-  echo "  e.g. from v01-01-01 to v01-02-01."
-  echo "- If \"major\" is given as argument, the major version number is increased,"
-  echo "  e.g. from v01-01-01 to v02-01-01."
-  echo "- Alternatively the name of the tag can be given explicitly as argument."
-  echo
+  help
   exit 0
 fi
 
 # check number of arguments
 if [ $# -gt 1 ]; then
-  echo "Usage: `basename $0` [\"major\"/\"minor\"/\"patch\"(=default)/tag]" 1>&2
+  echo "Usage: `basename $0` [\"major\"|\"minor\"|\"patch\"(=default)|tag]" 1>&2
   exit 1
 fi
 

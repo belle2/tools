@@ -1,20 +1,31 @@
 #!/bin/bash
 set -o pipefail
 
+help() {
+cat << EOF
+
+      Usage: `basename $0` [--debug] [--binary] [version [system]]
+
+  - This command installs the given release or build version of basf2
+    in the directory $VO_BELLE2_SW_DIR/releases.
+    If no version is given it lists the available versions.
+
+  - By default it tries to install the precompiled binary version for
+    the current system. A binary version can be selected explicitly
+    with the second argument.
+
+  --debug
+    With this option, debug information is shown
+
+  --binary
+    With this option, no compilation of the source will be attempted
+
+EOF
+}
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` [--debug] [--binary] [version [system]]"
-  echo
-  echo "- This command installs the given release or build version of basf2"
-  echo "  in the directory $VO_BELLE2_SW_DIR/releases."
-  echo "- By default it tries to install the precompiled binary version for"
-  echo "  the current system. A binary version can be selected explicitly"
-  echo "  with the second argument."
-  echo "- Debug information is removed unless the --debug option is used."
-  echo "- With the --binary option no compilation of the source will be attempted."
-  echo "- If no version is given it lists the available versions."
-  echo
+  help
   exit 0
 fi
 
