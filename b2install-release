@@ -15,13 +15,26 @@ cat << EOF
     with the second argument.
 
   --debug
-    With this option, debug information is shown
+     With this option, debug information is shown
 
   --binary
-    With this option, no compilation of the source will be attempted
+     With this option, no compilation of the source will be attempted
 
 EOF
 }
+
+# check for documentation option (help + sphinx)
+if [ "$1" = "--documentation" ]; then
+cat << EOF
+
+.. describe:: `basename $0`
+
+  ::
+EOF
+  help
+  exit 0
+fi
+
 
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then

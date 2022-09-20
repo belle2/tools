@@ -7,10 +7,24 @@ cat << EOF
 
   - This command converts a directory with a local+central setup
     to a fully local setup.
-  - If the --light option is used a local light release is set up.
+
+  --light
+     A local light release is set up.
 
 EOF
 }
+
+# check for documentation option (help + sphinx)
+if [ "$1" = "--documentation" ]; then
+cat << EOF
+
+.. describe:: `basename $0`
+
+  ::
+EOF
+  help
+  exit 0
+fi
 
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then

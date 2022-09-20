@@ -6,14 +6,27 @@ cat << EOF
       Usage: `basename $0` [-l] [-s]"
 
   This command lists the available packages.
-  If the -l option is used, the responsible librarians
-  are printed as well.
-  If the -s option is used, locally installed packages
-  are suppressed.
   It has to be called in the local release directory.
 
+  -l
+    The responsible librarians are printed too. 
+  -s
+    Locally installed packages are suppressed.
+    
 EOF
 }
+
+# check for documentation option (help + sphinx)
+if [ "$1" = "--documentation" ]; then
+cat << EOF
+
+.. describe:: `basename $0`
+
+  ::
+EOF
+  help
+  exit 0
+fi
 
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
