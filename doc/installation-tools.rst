@@ -133,6 +133,42 @@ In addition the tools will set or honor the following environment variables
    currently setup software version (or standalone if using
    :program:`b2setup-externals`
 
+
+Tools to setup and build basf2 
+++++++++++++++++++++++++++++++
+
+``b2setup``: Set up a basf2 release 
+--------------------------------------------------------------------------------
+.. argparse::
+    :filename: build/belle2_tools/b2setup.py
+    :func: get_argument_parser 
+    :prog: b2setup
+
+.. hint:: The b2setup command is also used to set up local releases for developers.
+
+``b2setup-externals``: Set up a release of the basf2 externals  
+--------------------------------------------------------------------------------
+.. argparse::
+    :filename: build/belle2_tools/b2setup-externals.py
+    :func: get_argument_parser 
+    :prog: b2setup-externals
+
+
+``b2code-option``: Set the compiler and options used to build basf2 
+--------------------------------------------------------------------------------
+.. argparse::
+    :filename: build/belle2_tools/b2code-option.py
+    :func: get_argument_parser 
+    :prog: b2code-option
+
+``b2code-option``: Set the compiler and options used to build the basf2 externals
+---------------------------------------------------------------------------------
+.. argparse::
+    :filename: build/belle2_tools/b2code-option-externals.py
+    :func: get_argument_parser 
+    :prog: b2code-option-externals
+
+
 .. include:: provided-scripts.rst
 
 .. _access to the code repository: https://confluence.desy.de/x/2o4iAg
