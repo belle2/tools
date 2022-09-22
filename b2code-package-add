@@ -3,11 +3,11 @@
 help() {
 cat << EOF
 
-      Usage: `basename $0` package"
+      Usage: `basename $0` package
 
-   - This command adds the source code of the given package from the code
-     repository to the local release directory.
-     It has to be called in the local release directory.
+  This command adds the source code of the given package from the code
+  repository to the local release directory.
+  It has to be called in the local release directory.
 
 EOF
 }

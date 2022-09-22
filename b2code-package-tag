@@ -5,17 +5,17 @@ cat << EOF
 
       Usage: `basename $0` ["major"|"minor"|"patch"(=default)|tag]
 
-  - This command tags the current version of the source code of a package
-    and pushes the tag to the central repository.
-    It has to be called in the package directory of the local release.
-    There should be no locally modified files.
-  - If no argument is given, the tag name is chosen automatically by
-    increasing the patch level number, e.g. from v01-01-01 to v01-01-02.
-  - If "minor" is given as argument, the minor version number is increased,
-    e.g. from v01-01-01 to v01-02-01.
-  - If "major" is given as argument, the major version number is increased,
-    e.g. from v01-01-01 to v02-01-01.
-  - Alternatively the name of the tag can be given explicitly as argument.
+  This command tags the current version of the source code of a package
+  and pushes the tag to the central repository.
+  It has to be called in the package directory of the local release.
+  There should be no locally modified files.
+  If no argument is given, the tag name is chosen automatically by
+  increasing the patch level number, e.g. from v01-01-01 to v01-01-02.
+  If ``minor`` is given as argument, the minor version number is increased,
+  e.g. from v01-01-01 to v01-02-01.
+  If ``major`` is given as argument, the major version number is increased,
+  e.g. from v01-01-01 to v02-01-01.
+  Alternatively the name of the tag can be given explicitly as argument.
 
 EOF
 }

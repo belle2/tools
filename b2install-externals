@@ -7,13 +7,14 @@ cat << EOF
 
       Usage: `basename $0` [--binary] [version [system]]
 
-  - This command installs the given version of the externals in the
-    directory given by the environment variable $1.
-    If no version is given it lists the available externals versions.
+  This command installs the given version of the externals in the
+  directory given by the environment variable $1.
+  The given version can also be "development", this checks out the main branch.
+  If no version is given it lists the available externals versions.
 
-  - By default it tries to install the precompiled binary version for
-    the current system. A binary version can be selected explicitly
-    with the second argument.
+  By default it tries to install the precompiled binary version for
+  the current system. A binary version can be selected explicitly
+  with the second argument.
 
   --binary
      With this option, no compilation of the source will be attempted

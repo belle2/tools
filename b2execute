@@ -5,8 +5,8 @@ cat << EOF
 
       Usage: `basename $0` [-x command] release arguments
 
-  - This command sets up the given release and then calls basf2
-    with the given arguments.
+  This command sets up the given release and then calls basf2
+  with the given arguments.
 
   -x
      A different command than basf2 is executed 

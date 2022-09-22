@@ -3,7 +3,7 @@
 help() {
 cat << EOF
 
-      Usage: `basename $0` [-l] [-s]"
+      Usage: `basename $0` [-l] [-s]
 
   This command lists the available packages.
   It has to be called in the local release directory.

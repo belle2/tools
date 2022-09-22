@@ -6,7 +6,7 @@ cat << EOF
       Usage: `basename $0` directory release
 
   This command creates a local directory with the given name for the development
-  of analysis code.  It also prepares the build system and adds the analysis
+  of analysis code. It also prepares the build system and adds the analysis
   directory to git.
 
   The second argument specifies the central release on which the analysis should

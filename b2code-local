@@ -5,8 +5,8 @@ cat << EOF
 
       Usage: `basename $0` [--light]
 
-  - This command converts a directory with a local+central setup
-    to a fully local setup.
+  This command converts a directory with a local+central setup
+  to a fully local setup.
 
   --light
      A local light release is set up.

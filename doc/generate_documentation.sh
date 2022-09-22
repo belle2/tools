@@ -4,6 +4,14 @@
 
 target=$1/provided-scripts.rst
 
+exists_in_list() {
+    LIST=$1
+    DELIMITER=$2
+    VALUE=$3
+    echo "$LIST" | tr "$DELIMITER" '\n' | grep -F -q -x "$VALUE"
+}
+
+
 cat << EOF > "$target"
 Provided Scripts
 ----------------
@@ -15,7 +23,9 @@ For users
 +++++++++
 EOF
 
-for file in b2analysis-create b2analysis-get b2install-release b2install-externals b2install-data ; do
+userscripts="b2analysis-create b2analysis-get b2install-release b2install-externals b2install-data"
+
+for file in $userscripts ; do
 
   # Check it's a file
   if [ -f "${BELLE2_TOOLS}/$file" ]; then
@@ -27,7 +37,7 @@ for file in b2analysis-create b2analysis-get b2install-release b2install-externa
         exit 1
     fi
   else
-    echo "${BELLE2_TOOLS}/$file is not a bash script"
+    echo "${BELLE2_TOOLS}/$file doesn't exist."
     exit 1
   fi
 done
@@ -39,19 +49,18 @@ For developers
 
 EOF
 
-for file in b2code-create b2code-style-check b2code-style-fix b2code-clean b2code-package-list b2code-package-add b2code-package-tag b2install-prepare ; do
-
-  # Check it's a file
-  if [ -f "${BELLE2_TOOLS}/$file" ]; then
-    # Check it's a shell script and not something else
-    if [ "$(head -n 1 "${BELLE2_TOOLS}/$file")" = "#!/bin/bash" ]; then
-        "${BELLE2_TOOLS}/$file" --documentation >> "$target"
-    else
-        echo "${BELLE2_TOOLS}/$file is not a bash script"
-        exit 1
+# Here we'll just loop over everything else that looks like a bash script.
+for filepath in ${BELLE2_TOOLS}/* ; do
+  
+  # Make sure we haven't already processed this shell script	
+  file="$(basename "$filepath")"
+  if ! exists_in_list "$userscripts" " " "$file" ; then
+    # Check it's a file
+    if [ -f "${BELLE2_TOOLS}/$file" ]; then
+      # Check it's a shell script and not something else
+      if [ "$(head -n 1 "${BELLE2_TOOLS}/$file")" = "#!/bin/bash" ]; then
+          "${BELLE2_TOOLS}/$file" --documentation >> "$target"
+      fi
     fi
-  else
-    echo "${BELLE2_TOOLS}/$file is not a bash script"
-    exit 1
   fi
 done

@@ -6,11 +6,10 @@ cat << EOF
 
       Usage: `basename $0` datatype [token]
 
-  - This command installs or updates the given type of basf2 data.
-    Supported data types are 'validation' and 'examples'.
-  - The command requires that you have access to the DESY gitlab with ssh key:
-      https://gitlab.desy.de
-  - Alternatively a token can be used to access the repository.
+  This command installs or updates the given type of basf2 data.
+  Supported data types are "validation" and "examples".
+  The command requires that you have access to the DESY gitlab (https://gitlab.desy.de) with your ssh key.
+  Alternatively a token can be used to access the repository.
 
 EOF
 }
