@@ -32,7 +32,7 @@ for file in b2analysis-create b2analysis-get b2install-release b2install-externa
   fi
 done
 
-cat << EOF > "$target"
+cat << EOF >> "$target"
 
 For developers
 ++++++++++++++
