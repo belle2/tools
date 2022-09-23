@@ -50,7 +50,7 @@ For developers
 EOF
 
 # Here we'll just loop over everything else that looks like a bash script.
-for filepath in ${BELLE2_TOOLS}/* ; do
+for filepath in "${BELLE2_TOOLS}"/* ; do
   
   # Make sure we haven't already processed this shell script	
   file="$(basename "$filepath")"
