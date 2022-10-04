@@ -134,42 +134,98 @@ In addition the tools will set or honor the following environment variables
    :program:`b2setup-externals`
 
 
-Tools to setup and build basf2 
-------------------------------
 
-``b2setup``: Set up a basf2 release 
-+++++++++++++++++++++++++++++++++++
+Provided Scripts
+----------------
+
+The Belle II Software Tools provide a number of scripts common to all software
+versions to setup and use the Belle II Software.
+
+For users
++++++++++
+
+.. describe:: b2setup
 .. argparse::
     :filename: build/belle2_tools/b2setup.py
-    :func: get_argument_parser 
+    :func: get_argument_parser
     :prog: b2setup
 
 .. hint:: The b2setup command is also used to set up local releases for developers.
 
-``b2setup-externals``: Set up a release of the basf2 externals  
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. describe:: b2setup-externals
 .. argparse::
     :filename: build/belle2_tools/b2setup-externals.py
-    :func: get_argument_parser 
+    :func: get_argument_parser
     :prog: b2setup-externals
 
+.. describe:: b2analysis-update
+.. argparse::
+    :filename: build/belle2_tools/b2analysis-update
+    :func: get_argument_parser
+    :prog: b2analysis-update
 
-``b2code-option``: Set the compiler and options used to build basf2 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. describe:: b2help-releases
+.. argparse::
+    :filename: build/belle2_tools/b2help-releases
+    :func: get_argument_parser
+    :prog: b2help-releases
+
+.. describe:: b2analysis-create
+.. program-output:: b2analysis-create --documentation
+
+.. describe:: b2analysis-get
+.. program-output:: b2analysis-get --documentation
+
+.. describe:: b2install-release
+.. program-output:: b2install-release --documentation
+
+.. describe:: b2install-externals
+.. program-output:: b2install-externals --documentation
+
+.. describe:: b2install-data
+.. program-output:: b2install-data --documentation
+
+For developers
+++++++++++++++
+
+.. describe:: b2install-prepare
+.. program-output:: b2install-prepare --documentation
+
+.. describe:: b2code-create
+.. program-output:: b2code-create --documentation
+
+.. describe:: b2code-style-check
+.. program-output:: b2code-style-check --documentation
+
+.. describe:: b2code-style-fix
+.. program-output:: b2code-style-fix --documentation
+
+.. note:: No commits can be pushed to the server if b2code-style-check or b2code-style-fix
+ report any problems.
+
+.. describe:: b2code-clean
+.. program-output:: b2code-clean --documentation
+
+.. describe:: b2code-package-list
+.. program-output:: b2code-package-list --documentation
+
+.. describe:: b2code-package-add
+.. program-output:: b2code-package-add --documentation
+
+.. describe:: b2code-package-tag
+.. program-output:: b2code-package-tag --documentation
+
+.. describe:: b2code-option
 .. argparse::
     :filename: build/belle2_tools/b2code-option.py
-    :func: get_argument_parser 
+    :func: get_argument_parser
     :prog: b2code-option
 
-``b2code-option``: Set the compiler and options used to build the basf2 externals
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+.. describe:: b2code-option-externals
 .. argparse::
     :filename: build/belle2_tools/b2code-option-externals.py
-    :func: get_argument_parser 
+    :func: get_argument_parser
     :prog: b2code-option-externals
-
-
-.. include:: provided-scripts.rst
 
 .. _access to the code repository: https://confluence.desy.de/x/2o4iAg
 .. _Git/Stash Introduction: https://confluence.desy.de/x/2o4iAg

@@ -17,30 +17,18 @@ cat << EOF
      applied but the files are not modified. The return code indicates the
      number of files that would be changed.
   -p
-     This option is equivalent to ``-n`` except that it will print the
+     This option is equivalent to "-n" except that it will print the
      pep8 and flake8 output instead of the code changes.
   -d command
      This option can be used to specify the diff command that is called to
-     report changes. Has to be given after the ``-n`` or ``-p``
+     report changes. Has to be given after the "-n" or "-p"
      option.
 
 EOF
 }
 
-# check for documentation option (help + sphinx)
-if [ "$1" = "--documentation" ]; then
-cat << EOF
-
-.. describe:: `basename $0`
-
-  ::
-EOF
-  help
-  exit 0
-fi
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
   help
   exit 0
 fi

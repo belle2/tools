@@ -8,7 +8,7 @@ cat << EOF
       Usage: `basename $0` [--binary] [version [system]]
 
   This command installs the given version of the externals in the
-  directory given by the environment variable $1.
+  directory given by the environment variable "BELLE2_EXTERNALS_TOPDIR".
   The given version can also be "development", this checks out the main branch.
   If no version is given it lists the available externals versions.
 
@@ -22,22 +22,9 @@ cat << EOF
 EOF
 }
 
-# check for documentation option (help + sphinx)
-if [ "$1" = "--documentation" ]; then
-
-cat << EOF
-
-.. describe:: `basename $0`
-
-  ::
-EOF
-  help ":envvar:\`BELLE2_EXTERNALS_TOPDIR\`"
-  exit 0
-fi
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  help "BELLE2_EXTERNALS_TOPDIR"
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
+  help
   exit 0
 fi
 

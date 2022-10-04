@@ -19,14 +19,8 @@ cat << EOF
 EOF
 }
 
-# check for documentation option (help + sphinx)
+# check for documentation option and avoid exit code 1
 if [ "$1" = "--documentation" ]; then
-cat << EOF
-
-.. describe:: `basename $0`
-
-  ::
-EOF
   help
   exit 0
 fi

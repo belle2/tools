@@ -14,21 +14,8 @@ cat << EOF
 EOF
 }
 
-# check for documentation option (help + sphinx)
-if [ "$1" = "--documentation" ]; then
-cat << EOF
-
-.. describe:: `basename $0`
-
-  ::
-EOF
-  help
-  exit 0
-fi
-
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
   help
   exit 0
 fi

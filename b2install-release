@@ -1,14 +1,13 @@
 #!/bin/bash
 set -o pipefail
 
-# This help function requires a parameter to allow adding sphinx syntax.
 help() {
 cat << EOF
 
       Usage: `basename $0` [--debug] [--binary] [version [system]]
 
   This command installs the given release or build version of basf2
-  in the directory $1.
+  in the directory \$VO_BELLE2_SW_DIR/releases.
   If no version is given it lists the available versions.
 
   By default it tries to install the precompiled binary version for
@@ -24,22 +23,10 @@ cat << EOF
 EOF
 }
 
-# check for documentation option (help + sphinx)
-if [ "$1" = "--documentation" ]; then
-cat << EOF
-
-.. describe:: `basename $0`
-
-  ::
-EOF
-  help ":file:\`\$VO_BELLE2_SW_DIR/releases\`"
-  exit 0
-fi
-
 
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  help "\$VO_BELLE2_SW_DIR/releases"
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
+  help
   exit 0
 fi
 
