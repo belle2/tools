@@ -113,16 +113,23 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
 
 elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [[ ! $OS_RELEASE_VERSION < "8" ]]; then
   # CentOS, RHEL starting with version 8
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python2 subversion
+  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel subversion
     tar gzip bzip2 bzip2-devel xz unzip wget libpng-devel libX11-devel
     libXext-devel libXpm-devel libXft-devel ncurses-devel openssl-devel
     readline-devel which lsof man-db texinfo procps-ng rsync diffutils"
   OPTIONALS="tk-devel tcl-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
-  INSTALL_CMD="dnf install --enablerepo=powertools"
+  INSTALL_CMD="dnf install"
+  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
+    INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
+    PACKAGES="$PACKAGES python2"
+  else # el9 or higher
+    INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
+    PACKAGES="$PACKAGES perl-FindBin"
+  fi
   if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="dnf install --enablerepo=powertools -y"
+    INSTALL_CMD="$INSTALL_CMD -y"
   fi
 
 else
