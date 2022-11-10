@@ -1,13 +1,19 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+
+      Usage: `basename $0`
+
+  This command determines the operating system name and version and prints them
+  in a form that is used to identify binary version of the Belle II Software.
+
+EOF
+}
+
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0`"
-  echo
-  echo "This command determines the operating system name and version and prints them"
-  echo "in a form that is used to identify binary version of the Belle II Software."
-  echo
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
+  help
   exit 0
 fi
 

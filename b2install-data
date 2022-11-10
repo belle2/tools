@@ -1,18 +1,22 @@
 #!/bin/bash
-
 set -o pipefail
 
+help() {
+cat << EOF
+
+      Usage: `basename $0` datatype [token]
+
+  This command installs or updates the given type of basf2 data.
+  Supported data types are "validation" and "examples".
+  The command requires that you have access to the DESY gitlab (https://gitlab.desy.de) with your ssh key.
+  Alternatively a token can be used to access the repository.
+
+EOF
+}
+
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` datatype [token]"
-  echo
-  echo "- This command installs or updates the given type of basf2 data."
-  echo "  Supported data types are 'validation' and 'examples'."
-  echo "- The command requires that you have access to the DESY gitlab with ssh key:"
-  echo "    https://gitlab.desy.de"
-  echo "- Alternatively a token can be used to access the repository."
-  echo
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
+  help
   exit 0
 fi
 

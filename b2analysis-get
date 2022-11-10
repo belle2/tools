@@ -1,15 +1,21 @@
 #!/bin/bash
 
+help() {
+cat << EOF
+      Usage: `basename $0` directory [username]
+
+  This command checks out the analysis code from the given repository name in
+  git.  It also prepares the build system.
+
+  The optional second argument can be used to specify a user name e.g. to check
+  out the analysis code created by somebody else.
+
+EOF
+}
+
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
-  echo
-  echo "Usage: `basename $0` directory [username]"
-  echo
-  echo "- This command checks out the analysis code at the given directory name."
-  echo "  It also prepares the build system."
-  echo "- The optional second argument can be used to specify the user name"
-  echo "  if the analysis code of another user should be obtained."
-  echo
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
+  help
   exit 0
 fi
 
