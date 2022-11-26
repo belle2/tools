@@ -4,7 +4,7 @@ import os
 import sys
 import subprocess
 
-# loop over to the committed files
+# loop over to be committed files
 os.chdir(sys.argv[1])
 failed_files = []
 for root, dirs, files in os.walk('.'):
