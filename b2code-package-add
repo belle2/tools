@@ -1,20 +1,14 @@
 #!/bin/bash
 
-help() {
-cat << EOF
-
-      Usage: `basename $0` package
-
-  This command adds the source code of the given package from the code
-  repository to the local release directory.
-  It has to be called in the local release directory.
-
-EOF
-}
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
-  help
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` package"
+  echo
+  echo "- This command adds the source code of the given package from the code"
+  echo "  repository to the local release directory."
+  echo "  It has to be called in the local release directory."
+  echo
   exit 0
 fi
 

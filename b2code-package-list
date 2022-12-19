@@ -1,24 +1,17 @@
 #!/bin/bash
 
-help() {
-cat << EOF
-
-      Usage: `basename $0` [-l] [-s]
-
-  This command lists the available packages.
-  It has to be called in the local release directory.
-
-  -l
-    The responsible librarians are printed too. 
-  -s
-    Locally installed packages are suppressed.
-    
-EOF
-}
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
-  help
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [-l] [-s]"
+  echo
+  echo "- This command lists the available packages."
+  echo "  If the -l option is used, the responsible librarians"
+  echo "  are printed as well."
+  echo "  If the -s option is used, locally installed packages"
+  echo "  are suppressed."
+  echo "  It has to be called in the local release directory."
+  echo
   exit 0
 fi
 

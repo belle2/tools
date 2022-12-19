@@ -1,23 +1,14 @@
 #!/bin/bash
 
-help() {
-cat << EOF
-
-      Usage: `basename $0` [-f]
-
-  This command deletes all built includes, object files, libraries, modules,
-  and executables of your current local release.  The prompt for confirmation
-  can be disabled with the -f option.
-
-  -f
-     Don't ask for confirmation
-
-EOF
-}
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
-  help
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [-f]"
+  echo
+  echo "This command deletes all built includes, object files, libraries, modules,"
+  echo "and executables of your current local release."
+  echo "The prompt for confirmation can be disabled with the -f option."
+  echo
   exit 0
 fi
 
