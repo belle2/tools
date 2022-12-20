@@ -1,31 +1,5 @@
 #!/bin/bash
 
-help() {
-cat << EOF
-
-      Usage: b2install-prepare [--non-interactive] [--optionals]
-
-  If executed without arguments it will check if all necessary packages are
-  installed and if not it will ask the user if it should do it.
-
-  --non-interactive
-     If given it will not ask but just install the necessary
-     packages but not the optional ones.
-
-  --optionals
-     If given together with --non-interactive, optional packages will be installed
-     without asking.
-
-EOF
-}
-
-# check for documentation option and avoid exit code 1
-if [ "$1" = "--documentation" ]; then
-  help
-  exit 0
-fi
-
-
 NO_PROMPT=no
 INSTALL_OPTIONAL=no
 for i in "$@"; do
@@ -37,7 +11,16 @@ for i in "$@"; do
       INSTALL_OPTIONAL=y
       ;;
     *)
-      help
+      cat <<EOT
+Usage: b2install-prepare [--non-interactive] [--optionals]
+
+If executed without arguments it will check if all necessary packages are
+installed and if not it will ask the user if it should do it.
+
+If --non-interactive is given it will not ask but just install the necessary
+packages but not the optional ones. If --optionals is given as well it will
+install everything without asking.
+EOT
       exit 1
       ;;
     esac

@@ -1,30 +1,19 @@
 #!/bin/bash
 set -o pipefail
 
-# This help function requires a parameter to allow linking the envvar in sphinx.
-help() {
-cat << EOF
-
-      Usage: `basename $0` [--binary] [version [system]]
-
-  This command installs the given version of the externals in the
-  directory given by the environment variable "BELLE2_EXTERNALS_TOPDIR".
-  The given version can also be "development", this checks out the main branch.
-  If no version is given it lists the available externals versions.
-
-  By default it tries to install the precompiled binary version for
-  the current system. A binary version can be selected explicitly
-  with the second argument.
-
-  --binary
-     With this option, no compilation of the source will be attempted
-
-EOF
-}
-
 # check for help option
-if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" -o "$1" = "--documentation" ]; then
-  help
+if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
+  echo
+  echo "Usage: `basename $0` [--binary] [version [system]]"
+  echo
+  echo "- This command installs the given version of the externals in the"
+  echo "  directory given by the environment variable BELLE2_EXTERNALS_TOPDIR."
+  echo "- By default it tries to install the precompiled binary version for"
+  echo "  the current system. A binary version can be selected explicitly"
+  echo "  with the second argument."
+  echo "- With the --binary option no compilation of the source will be attempted."
+  echo "- If no version is given it lists the available externals versions."
+  echo
   exit 0
 fi
 
