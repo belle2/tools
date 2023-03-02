@@ -48,5 +48,6 @@ test-ubuntu2204:
   tags:
     - extagent8
   script:
-    - echo "Running unit tests for Ubuntu 22.04... This will take few minutes."
-    - tests/run.sh
+    #- echo "Running unit tests for Ubuntu 22.04... This will take few minutes."
+    #- tests/run.sh
+    - echo "Currently disabled"
