@@ -41,3 +41,12 @@ test-ubuntu2004:
   script:
     - echo "Running unit tests for Ubuntu 20.04... This will take few minutes."
     - tests/run.sh
+
+test-ubuntu2204:
+  stage: test
+  image: ubuntu:22.04
+  tags:
+    - extagent8
+  script:
+    - echo "Running unit tests for Ubuntu 22.04... This will take few minutes."
+    - tests/run.sh
