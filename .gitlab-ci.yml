@@ -4,11 +4,6 @@ stages:
 default:
   tags:
     - extagent8
-  before_script:
-    # Preliminary operations with Git
-    - git config user.email "something@something.com"
-    - git config user.name "someone"
-    - git fetch && git merge origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} --allow-unrelated-histories --strategy-option ours
 
 workflow:
   rules:
