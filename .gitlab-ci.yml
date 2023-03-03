@@ -1,6 +1,15 @@
 stages:
   - test
 
+default:
+  tags:
+    - extagent8
+  before_script:
+    # Preliminary operations with Git
+    - git config user.email "something@something.com"
+    - git config user.name "someone"
+    - git fetch && git merge origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} --allow-unrelated-histories --strategy-option ours
+
 workflow:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -9,8 +18,6 @@ workflow:
 test-centos7:
   stage: test
   image: centos:7
-  tags:
-    - extagent8
   script:
     - echo "Running unit tests for CentOS 7... This will take few minutes."
     - tests/run.sh
@@ -18,8 +25,6 @@ test-centos7:
 test-rockylinux8:
   stage: test
   image: rockylinux:8
-  tags:
-    - extagent8
   script:
     - echo "Running unit tests for Rocky Linux 8... This will take few minutes."
     - tests/run.sh
@@ -27,8 +32,6 @@ test-rockylinux8:
 test-ubuntu1804:
   stage: test
   image: ubuntu:18.04
-  tags:
-    - extagent8
   script:
     - echo "Running unit tests for Ubuntu 18.04... This will take few minutes."
     - tests/run.sh
@@ -36,8 +39,6 @@ test-ubuntu1804:
 test-ubuntu2004:
   stage: test
   image: ubuntu:20.04
-  tags:
-    - extagent8
   script:
     - echo "Running unit tests for Ubuntu 20.04... This will take few minutes."
     - tests/run.sh
@@ -45,8 +46,6 @@ test-ubuntu2004:
 test-ubuntu2204:
   stage: test
   image: ubuntu:22.04
-  tags:
-    - extagent8
   script:
     #- echo "Running unit tests for Ubuntu 22.04... This will take few minutes."
     #- tests/run.sh
