@@ -51,7 +51,7 @@ else:
     sys.stderr.write(
         'Warning: could not get versioning information. Check that you have ssh access to versioning repository.\n'
         ' - about ssh access: https://software.belle2.org/development/sphinx/online_book/prerequisites/git.html#belle-ii-specifics\n'
-        ' - versioning repository: https://stash.desy.de/projects/B2/repos/versioning')
+        ' - versioning repository: https://gitlab.desy.de/belle2/software/versioning')
 
     def supported_release(release=None):
         return None
