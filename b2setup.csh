@@ -71,9 +71,13 @@ endif
 
 # set architecture, default option and sub directory name
 setenv BELLE2_ARCH `uname -s`_`uname -m`
-setenv BELLE2_OPTION opt
+if ( ! ${?BELLE2_OPTION} ) then
+  setenv BELLE2_OPTION opt
+endif
 setenv BELLE2_SUBDIR ${BELLE2_ARCH}/${BELLE2_OPTION}
-setenv BELLE2_EXTERNALS_OPTION opt
+if ( ! ${?BELLE2_EXTERNALS_OPTION} ) then
+  setenv BELLE2_EXTERNALS_OPTION opt
+endif
 setenv BELLE2_EXTERNALS_SUBDIR ${BELLE2_ARCH}/${BELLE2_EXTERNALS_OPTION}
 
 # set user name

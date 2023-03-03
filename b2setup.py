@@ -56,6 +56,10 @@ def get_argument_parser():
 
     b2setup ""
 
+    or
+
+    source /cvmvfs/belle.cern.ch/tools/b2setup ""
+
     ''')
 
     parser = SetupToolsArgumentParser(prog='b2setup',

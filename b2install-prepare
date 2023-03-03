@@ -81,7 +81,7 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libbz2-dev libpng-dev libx11-dev
     libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
-    libreadline-dev lsof man-db texinfo"
+    libreadline-dev libffi-dev lsof man-db texinfo rsync"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   if [[ $OS_RELEASE_VERSION > "18.04" ]]; then
     PACKAGES=${PACKAGES/python/python2}
@@ -94,7 +94,7 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
   fi
   INSTALL_CMD="apt-get install"
   if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="apt-get install -y"
+    INSTALL_CMD="DEBIAN_FRONTEND=noninteractive apt-get install -q -y"
   fi
 
 elif [ $OS_RELEASE_ID == "debian" ]; then
@@ -102,7 +102,7 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 libbz2-dev xz-utils unzip wget libpng-dev libx11-dev
     libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
-    libreadline-dev lsof man-db zip texinfo"
+    libreadline-dev libffi-dev lsof man-db zip texinfo rsync"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
@@ -113,16 +113,23 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
 
 elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [[ ! $OS_RELEASE_VERSION < "8" ]]; then
   # CentOS, RHEL starting with version 8
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python2 subversion
+  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel subversion
     tar gzip bzip2 bzip2-devel xz unzip wget libpng-devel libX11-devel
     libXext-devel libXpm-devel libXft-devel ncurses-devel openssl-devel
-    readline-devel which lsof man-db texinfo procps-ng"
+    readline-devel libffi-devel which lsof man-db texinfo procps-ng rsync diffutils"
   OPTIONALS="tk-devel tcl-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
-  INSTALL_CMD="dnf install --enablerepo=powertools"
+  INSTALL_CMD="dnf install"
+  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
+    INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
+    PACKAGES="$PACKAGES python2"
+  else # el9 or higher
+    INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
+    PACKAGES="$PACKAGES perl-FindBin"
+  fi
   if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="dnf install --enablerepo=powertools -y"
+    INSTALL_CMD="$INSTALL_CMD -y"
   fi
 
 else
@@ -133,7 +140,7 @@ else
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
     libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel
-    which lsof man-db texinfo"
+    libffi-devel which lsof man-db texinfo rsync"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"

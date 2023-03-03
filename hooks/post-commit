@@ -27,6 +27,16 @@ for FILE in ${FILES_MODIFIED}; do
   git checkout-index --prefix=${TMPDIR}/ -- "${FILE}" &> /dev/null
 done
 
+# Find out the paths in the main branch containing imported code:
+# here we "copy" the .imported files into the temporary directory,
+# since b2code-style-check needs them for skipping the imported code
+FILES_IMPORTED=`git ls-tree --name-only -r main | grep '\.imported'`
+for FILE in ${FILES_IMPORTED}; do
+  if [[ ! -f "${TMPDIR}/${FILE}" ]]; then
+      git checkout-index --prefix=${TMPDIR}/ -- "${FILE}" &> /dev/null
+  fi
+done
+
 RESULT=0
 
 # Check the code style
