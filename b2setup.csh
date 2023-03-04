@@ -103,7 +103,7 @@ if ( ! ${?BELLE2_GIT_SERVER} ) then
       setenv BELLE2_GIT_SERVER git@gitlab.desy.de:
     endif
     set BELLE2_GIT_PROJECT=belle2/software
-  elif ( "${ORIGIN_URL}" =~ "*stash.desy*" ) then
+  else if ( "${ORIGIN_URL}" =~ "*stash.desy*" ) then
     if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
       setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm/
     else
