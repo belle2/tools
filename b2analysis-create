@@ -62,14 +62,14 @@ if [ "${RELEASE}" != "${SUPPORTED_RELEASE}" ]; then
 fi
 
 # create analysis git repository
-echo "Enter your DESY password to create your analysis directory on the stash server."
-wget --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --header="Content-Type: application/json" --post-data='{"name":"'${ANALYSIS_NAME}'"}' "https://stash.desy.de/rest/api/1.0/projects/${BELLE2_ANALYSES_PROJECT}/repos/"
+echo "Enter your DESY password to create your analysis directory on the gitlab server."
+wget --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --post-data="name=${ANALYSIS_NAME}" "https://b2-master.belle2.org/cgi-auth/gitlab_create_analysis.py"
 if [ "$?" = "0" ]; then
   REMOTE_EXISTS=1
   git clone ${ANALYSIS_REPOSITORY} ${DIR}
   cd ${DIR}
 else
-  echo "WARNING: The creation of the analysis directory on the stash server failed. Go to https://stash.desy.de/projects/B2A, click \"Create repository\", then enter the Name \"${ANALYSIS_NAME}\" and click the \"Create repository\" button."
+  echo "WARNING: The creation of the analysis directory on the gitlab server failed. Go to https://gitlab.desy.de/belle2/analyses, click \"New project\" and \"Create blank project\", then enter the Name \"${ANALYSIS_NAME}\" as project name, deactivate the initialization with a README, and click the \"Create project\" button."
   REMOTE_EXISTS=0
   mkdir ${DIR}
   cd ${DIR}

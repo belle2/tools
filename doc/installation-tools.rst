@@ -16,12 +16,12 @@ install the tools locally.  Once you have configured your `access to the code re
 software tools from the central Belle II code repository with the following
 command::
 
-    $ git clone ssh://git@stash.desy.de:7999/b2/tools.git
+    $ git clone git@gitlab.desy.de:belle2/software/tools.git
 
 .. note:: We strongly recommend to setup connection over ssh but if you cannot
     do so you can also obtain the tools using ::
 
-        $ git clone https://username@stash.desy.de/scm/b2/tools.git
+        $ git clone https://gitlab.desy.de/belle2/software/tools.git
 
     where you need to replace ``username`` with your DESY username.
 
@@ -67,8 +67,7 @@ environment variables before sourcing ``tools/setup_belle2``:
    ``ssh``
       This will use ssh connection to the DESY git server. This is the default and the
       preferred method but requires that you upload your ssh key to
-      https://stash.desy.de and that TCP port 7999 is not blocked for outgoing
-      connections by your local firewall.
+      https://gitlab.desy.de .
 
    ``http``
       Use https to access the DESY git servers. This works in all cases but

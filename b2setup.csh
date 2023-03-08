@@ -96,7 +96,14 @@ if ( ! ${?BELLE2_GIT_SERVER} ) then
   if ( ! ${?BELLE2_GIT_ACCESS} ) then
     set BELLE2_GIT_ACCESS=""
   endif
-  if ( "${ORIGIN_URL}" =~ "*desy*" ) then
+  if ( "${ORIGIN_URL}" =~ "*gitlab.desy*" ) then
+    if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
+      setenv BELLE2_GIT_SERVER https://gitlab.desy.de/
+    else
+      setenv BELLE2_GIT_SERVER git@gitlab.desy.de:
+    endif
+    set BELLE2_GIT_PROJECT=belle2/software
+  else if ( "${ORIGIN_URL}" =~ "*stash.desy*" ) then
     if ( "${BELLE2_GIT_ACCESS}" == "http" ) then
       setenv BELLE2_GIT_SERVER https://${BELLE2_USER}@stash.desy.de/scm/
     else
@@ -122,7 +129,11 @@ if ( ! ${?BELLE2_VERSIONING_REPOSITORY} ) then
   setenv BELLE2_VERSIONING_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/versioning.git
 endif
 if ( ! ${?BELLE2_ANALYSES_PROJECT} ) then
-  setenv BELLE2_ANALYSES_PROJECT b2a
+  if ( "${ORIGIN_URL}" =~ "*gitlab.desy*" ) then
+    setenv BELLE2_ANALYSES_PROJECT belle2/analyses
+  else
+    setenv BELLE2_ANALYSES_PROJECT b2a
+  endif
 endif
 if ( ! ${?BELLE2_DOWNLOAD} ) then
   setenv BELLE2_DOWNLOAD "--ca-certificate=${BELLE2_TOOLS}/certchain.pem --user=belle2 --password=Aith4tee https://b2-master.belle2.org/download"

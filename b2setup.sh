@@ -56,7 +56,14 @@ pushd ${BELLE2_TOOLS} &> /dev/null
 ORIGIN_URL=`git remote -v`
 popd &> /dev/null
 if [ -z "${BELLE2_GIT_SERVER}" ]; then
-  if [[ "${ORIGIN_URL}" =~ "desy" ]]; then
+  if [[ "${ORIGIN_URL}" =~ "gitlab.desy" ]]; then
+    if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
+      export BELLE2_GIT_SERVER=https://gitlab.desy.de/
+    else
+      export BELLE2_GIT_SERVER=git@gitlab.desy.de:
+    fi
+    BELLE2_GIT_PROJECT=belle2/software
+  elif [[ "${ORIGIN_URL}" =~ "stash.desy" ]]; then
     if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
       export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm/
     else
@@ -82,7 +89,11 @@ if [ -z "${BELLE2_VERSIONING_REPOSITORY}" ]; then
   export BELLE2_VERSIONING_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/versioning.git
 fi
 if [ -z "${BELLE2_ANALYSES_PROJECT}" ]; then
-  export BELLE2_ANALYSES_PROJECT=b2a
+  if [[ "${ORIGIN_URL}" =~ "gitlab.desy" ]]; then
+    export BELLE2_ANALYSES_PROJECT=belle2/analyses
+  else
+    export BELLE2_ANALYSES_PROJECT=b2a
+  fi
 fi
 if [ -z "${BELLE2_DOWNLOAD}" ]; then
   export BELLE2_DOWNLOAD="--ca-certificate=${BELLE2_TOOLS}/certchain.pem --user=belle2 --password=Aith4tee https://b2-master.belle2.org/download"

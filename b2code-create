@@ -31,7 +31,7 @@ fi
 if [ $# -ne 1 ]; then
   echo "Usage: `basename $0` [--light] directory" 1>&2
   if [ $# -eq 2 ]; then
-    echo "The creation of central + local releases is not supprted any more."
+    echo "The creation of central + local releases is not supported any more."
   fi
   exit 1
 fi
