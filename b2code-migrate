@@ -6,8 +6,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "Usage: `basename $0`"
   echo
   echo "- This command updates the remote repository from stash to gitlab."
-  echo "- An analysis repository that does not yet exist on gitlab can be"
-  echo "  migrated from stash."
+  # echo "- An analysis repository that does not yet exist on gitlab can be"
+  # echo "  migrated from stash."
   echo
   exit 0
 fi
@@ -26,31 +26,31 @@ if [ -f .release ]; then  # local release
 
 elif [ -f .analysis ]; then  # analysis repository
   ORIGIN_URL=`git remote -v | grep ^origin | head -1 | awk '{print $2}'`
-  if [[ "${ORIGIN_URL}" =~ "stash.desy" ]]; then
-    ANALYSIS_NAME=`basename ${ORIGIN_URL} .git`
-    ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
-    REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
-    REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
-    if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
-      echo "Warning: The analysis git repository ${ANALYSIS_NAME} exists on stash, but has not been migrated to gitlab." 1>&2
-      read -p "Would you like to migrate it now (y/n)? " -n 1 REPLY
-      echo
-      if [ "$REPLY" == "y" ]; then
-        read -s -p "Enter your DESY password to migrate your analysis directory to the gitlab server: " PASSWORD
-        echo
-        echo "Migrating... (please be patient)"
-        wget --user=${BELLE2_USER} --password=${PASSWORD} --auth-no-challenge -o- -O- --post-data="name=${ANALYSIS_NAME}&password=${PASSWORD}" "https://b2-master.belle2.org/cgi-auth/gitlab_import_analysis.py" &> /dev/null
-        if [ "$?" != "0" ]; then
-          echo "Error: The migration of the analysis repository ${ANALYSIS_NAME} failed." 1>&2
-          exit 1
-        fi
-      else
-        exit 0
-      fi
-    fi
-    git remote set-url origin ${ANALYSIS_REPOSITORY}
-    echo "The remote repository is updated to gitlab."
-  fi
+  # if [[ "${ORIGIN_URL}" =~ "stash.desy" ]]; then
+  #   ANALYSIS_NAME=`basename ${ORIGIN_URL} .git`
+  #   ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+  #   REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
+  #   REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
+  #   if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
+  #     echo "Warning: The analysis git repository ${ANALYSIS_NAME} exists on stash, but has not been migrated to gitlab." 1>&2
+  #     read -p "Would you like to migrate it now (y/n)? " -n 1 REPLY
+  #     echo
+  #     if [ "$REPLY" == "y" ]; then
+  #       read -s -p "Enter your DESY password to migrate your analysis directory to the gitlab server: " PASSWORD
+  #       echo
+  #       echo "Migrating... (please be patient)"
+  #       wget --user=${BELLE2_USER} --password=${PASSWORD} --auth-no-challenge -o- -O- --post-data="name=${ANALYSIS_NAME}&password=${PASSWORD}" "https://b2-master.belle2.org/cgi-auth/gitlab_import_analysis.py" &> /dev/null
+  #       if [ "$?" != "0" ]; then
+  #         echo "Error: The migration of the analysis repository ${ANALYSIS_NAME} failed." 1>&2
+  #         exit 1
+  #       fi
+  #     else
+  #       exit 0
+  #     fi
+  #   fi
+  #   git remote set-url origin ${ANALYSIS_REPOSITORY}
+  #   echo "The remote repository is updated to gitlab."
+  # fi
 
 else
   echo "Error: not in a local release or analysis directory" 1>&2
