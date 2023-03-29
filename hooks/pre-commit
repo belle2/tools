@@ -29,7 +29,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Check that the commit does not introduce duplicates
-DUPLICATES=$(git ls-tree -r --name-only $new_rev | sort -f | uniq -Di)
+DUPLICATES=$(git ls-tree -r --name-only HEAD | sort -f | uniq -Di)
 if [[ "$DUPLICATES" != "" ]]; then
   echo "Duplicate files that differ only by case are not allowed:" >&2
   echo "${DUPLICATES}" >&2
