@@ -42,6 +42,5 @@ test-ubuntu2204:
   stage: test
   image: ubuntu:22.04
   script:
-    #- echo "Running unit tests for Ubuntu 22.04... This will take few minutes."
-    #- tests/run.sh
-    - echo "Currently disabled"
+    - echo "Running unit tests for Ubuntu 22.04... This will take few minutes."
+    - tests/run.sh
