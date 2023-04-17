@@ -13,7 +13,7 @@ RECOMMENDED=$(b2help-releases)
 if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     echo "Trying to setup default externals version ..."
     b2setup-externals
-    if ! [ "$BELLE2_EXTERNALS_VERSION" == ${EXTERNALS_VERSION} ]; then
+    if ! [[ "$BELLE2_EXTERNALS_VERSION" == ${EXTERNALS_VERSION} ]]; then
         echo "Failed to set externals version to${EXTERNALS_VERSION}."
         exit 1
     fi
@@ -24,7 +24,7 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
 
     # set the code option to something
     b2code-option clang
-    if ! [ "$BELLE2_OPTION" == "clang" ]; then
+    if ! [[ "$BELLE2_OPTION" == "clang" ]]; then
         echo "Failed to set compiler option to clang"
         exit 1
     fi
