@@ -37,12 +37,11 @@ def get_local_versioning(directory):
 
 
 # try different sources of versioning.py
-versioning = get_remote_versioning(os.environ['BELLE2_VERSIONING_REPOSITORY'])
+versioning = get_local_versioning('/cvmfs/belle.cern.ch')
 if versioning is None:
-    for directory in ['/cvmfs/belle.cern.ch', os.environ['VO_BELLE2_SW_DIR']]:
-        versioning = get_local_versioning(directory)
-        if versioning is not None:
-            break
+    versioning = get_remote_versioning(os.environ['BELLE2_VERSIONING_REPOSITORY'])
+    if versioning is None:
+        versioning = get_local_versioning(os.environ['VO_BELLE2_SW_DIR'])
 
 # if found, execute versioning.py, else define functions returning None
 if versioning is not None:
