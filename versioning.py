@@ -55,11 +55,17 @@ else:
     def supported_release(release=None):
         return None
 
-    def recommended_global_tags(release=None, mc=None, analysis=None, input_tags=None):
+    def recommended_global_tags_v2(release=None, base_tags=None, user_tags=None, metadata=None):
+        return None
+
+    def recommended_b2bii_analysis_global_tag():
         return None
 
     def upload_global_tag(task=None):
         return None
 
-    def jira_global_tag(task=None):
+    def jira_global_tag_v2(task=None):
+        return None
+
+    def create_jupyter_kernels(target_dir=None, top_dir=None):
         return None
