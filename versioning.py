@@ -37,12 +37,11 @@ def get_local_versioning(directory):
 
 
 # try different sources of versioning.py
-versioning = get_remote_versioning(os.environ['BELLE2_VERSIONING_REPOSITORY'])
+versioning = get_local_versioning('/cvmfs/belle.cern.ch')
 if versioning is None:
-    for directory in ['/cvmfs/belle.cern.ch', os.environ['VO_BELLE2_SW_DIR']]:
-        versioning = get_local_versioning(directory)
-        if versioning is not None:
-            break
+    versioning = get_remote_versioning(os.environ['BELLE2_VERSIONING_REPOSITORY'])
+    if versioning is None:
+        versioning = get_local_versioning(os.environ['VO_BELLE2_SW_DIR'])
 
 # if found, execute versioning.py, else define functions returning None
 if versioning is not None:
@@ -56,11 +55,17 @@ else:
     def supported_release(release=None):
         return None
 
-    def recommended_global_tags(release=None, mc=None, analysis=None, input_tags=None):
+    def recommended_global_tags_v2(release=None, base_tags=None, user_tags=None, metadata=None):
+        return None
+
+    def recommended_b2bii_analysis_global_tag():
         return None
 
     def upload_global_tag(task=None):
         return None
 
-    def jira_global_tag(task=None):
+    def jira_global_tag_v2(task=None):
+        return None
+
+    def create_jupyter_kernels(target_dir=None, top_dir=None):
         return None
