@@ -6,7 +6,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "Usage: `basename $0`"
   echo
   echo "This command determines the operating system name and version and prints them"
-  echo "in a form that is used to identify binary version of the Belle II Software."
+  echo "in a form that is used to identify the binary version of the Belle II Software."
   echo
   exit 0
 fi
@@ -35,11 +35,13 @@ if [ -f /etc/os-release ]; then
     OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID | cut -c 1)`
   elif [ "${UBUNTU_CODENAME}" = "bionic" ]; then
     OS_RELEASE_VERSION=1804
-  elif [ "${UBUNTU_CODENAME}" = "xenial" ]; then
-    OS_RELEASE_VERSION=1604
+  elif [ "${UBUNTU_CODENAME}" = "focal" ]; then
+    OS_RELEASE_VERSION=2004
+  elif [ "${UBUNTU_CODENAME}" = "jammy" ]; then
+    OS_RELEASE_VERSION=2204
   fi
 
-# Else if /etc/redhat-release is present, assume SL and read version number fron it
+# Else if /etc/redhat-release is present, assume SL and read version number from it
 elif [ -f /etc/redhat-release ]; then
   OS_RELEASE_ID="sl"
   OS_RELEASE_VERSION=`(cat /etc/redhat-release | awk -F . '{print $1}' | awk '{print $NF}')`
