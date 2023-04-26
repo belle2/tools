@@ -292,7 +292,7 @@ receive from the reviewers.
 
 Speaking about reviewers, the librarians of all packages that you touched have
 to be included as reviewers. You can find a list of the current librarians
-`here <https://b2-master.belle2.org/development_build/>`_. Alternatively, you
+`here <https://software.belle2.org/monitoring/development/latest>`_. Alternatively, you
 can look directly into the ``.librarians`` files of the corresponding packages
 or, after opening the pull request, click on the grayed out ``Merge`` button
 in the top right corner, which should provide you with the necessary
