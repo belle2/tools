@@ -1,4 +1,5 @@
 * Enterprise Linux 7 or CentOS 7 (``el7``)
 * Enterprise Linux 8 or CentOS 8 (``el8``)
-* Ubuntu 18.04 (``ubuntu1804``)
+* Enterprise Linux 9 or AlmaLinux 9 (``el9``)
 * Ubuntu 20.04 (``ubuntu2004``)
+* Ubuntu 22.04 (``ubuntu2204``)

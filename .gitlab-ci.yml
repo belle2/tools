@@ -24,13 +24,6 @@ test-rockylinux8:
     - echo "Running unit tests for Rocky Linux 8... This will take few minutes."
     - tests/run.sh
 
-test-ubuntu1804:
-  stage: test
-  image: ubuntu:18.04
-  script:
-    - echo "Running unit tests for Ubuntu 18.04... This will take few minutes."
-    - tests/run.sh
-
 test-ubuntu2004:
   stage: test
   image: ubuntu:20.04

@@ -14,7 +14,7 @@ a lot of time.
 .. hint:: To find which distribution you are running on you can use
   ``lsb_release -a``.
 
-After you installing the :ref:`belle2-tools` you need only to download the
+After you install the :ref:`belle2-tools` you only need to download the
 software and corresponding externals version.
 
 Downloading the Software Release
@@ -34,9 +34,9 @@ where ``<version>`` should be the version you want. The operating system is
 automatically determined, but you can override this by giving the ``system``
 argument which should be the short distribution name for the desired system 
 from the list of supported distributions in the table above.  For example, to download
-``release-01-00-00`` on an Ubuntu 16.04 machine you need to run ::
+``release-06-01-12`` on an Ubuntu 20.04 machine you need to run ::
 
-  $ b2install-release release-01-00-00 ubuntu1604
+  $ b2install-release release-06-01-12 ubuntu2004
 
 .. warning:: If you work on a system for which we do not provide precompiled binaries
   the b2install-release command will compile the release from source.
@@ -47,28 +47,28 @@ Downloading the Externals Software
 
 After downloading the software itself you will also need to download the
 corresponding externals package which contains all external software required
-by the Software. The easiest way to find out which externals version you need
+by the software. The easiest way to find out which externals version you need
 is by trying to setup the software version you just downloaded. For example ::
 
-  $ b2setup release-01-00-00
+  $ b2setup release-06-01-12
 
 should print an error like
 
-  The externals version v01-05-02 does not exist. You can use 'b2install-externals' to install them.
+  The externals version v01-12-01 does not exist. You can use 'b2install-externals' to install them.
 
-which tells us that we need externals version ``v01-05-02`` by calling ::
+which tells us that we need externals version ``v01-12-01`` by calling ::
 
-  $ b2install-externals v01-05-02 [<system>]
+  $ b2install-externals v01-12-01 [<system>]
 
 ``system`` is again optional and can be the short distribution name for the desired system from the
 `list of supported distributions`_. For example, to download
-externals ``v01-05-02`` on an Ubuntu 16.04 machine you need to run ::
+externals ``v01-12-01`` on an Ubuntu 20.04 machine you need to run ::
 
-  $ b2install-externals v01-05-02 ubuntu1604
+  $ b2install-externals v01-12-01 ubuntu2004
 
 Now everything should be installed and you can setup the software using ::
 
-  $ b2setup release-01-00-00
+  $ b2setup release-06-01-12
 
 (or any other version you installed).
 
@@ -81,7 +81,7 @@ Now everything should be installed and you can setup the software using ::
 Validation of the Installation
 ------------------------------
 
-A quick test to check whether everythings was installed correctly is to execute ::
+A quick test to check whether everything was installed correctly is to execute ::
 
   $ basf2 --info
 
