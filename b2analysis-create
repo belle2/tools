@@ -63,8 +63,9 @@ fi
 
 # create analysis git repository
 echo "Enter your DESY password to create your analysis directory on the gitlab server."
-wget --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --post-data="name=${ANALYSIS_NAME}" "https://b2-master.belle2.org/cgi-auth/gitlab_create_analysis.py"
+wget --ca-certificate=${BELLE2_TOOLS}/certchain.pem --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --post-data="name=${ANALYSIS_NAME}" "https://software.belle2.org/create_analysis"
 if [ "$?" = "0" ]; then
+  sleep 2
   REMOTE_EXISTS=1
   git clone ${ANALYSIS_REPOSITORY} ${DIR}
   cd ${DIR}
@@ -103,7 +104,6 @@ echo SConstruct >> .gitignore
 git add .analysis .gitignore SConscript
 git commit -a -m "Analysis ${DIR} by ${BELLE2_USER}"
 if [ "${REMOTE_EXISTS}" = "1" ]; then
-  git branch -m master main
   git push -u origin main
 fi
 
