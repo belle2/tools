@@ -131,7 +131,7 @@ if __name__ == '__main__':
             print('echo "Analysis directory           : ${BELLE2_ANALYSIS_DIR}"')
 
     # check for migration
-    if 'gitlab.desy' in os.environ.get('BELLE2_GIT_SERVER') and local_dir:
+    if 'gitlab.desy' in os.environ.get('BELLE2_GIT_SERVER') and local_dir and os.path.exists(os.path.join(local_dir, '.git', 'config')):
         if re.search('\[remote "origin"\]\n\turl = ssh://git@stash.desy.de', open(os.path.join(local_dir, '.git', 'config')).read()):
             print('''pushd %s > /dev/null
             b2code-migrate
