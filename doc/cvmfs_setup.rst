@@ -265,55 +265,57 @@ dependencies.
 
 .. _pr_best_practices:
 
-Opening a pull request
-......................
+Opening a merge request
+.......................
 
 To make your development part of the official software, you have to open a
-pull request. Before you can do this, you have to create a branch prefixed
-``bugfix/`` or ``feature/``. Ideally, you should have created a JIRA issue for
+merge request. Before you can do this, you have to create a branch prefixed
+``bugfix/`` or ``feature/``. Ideally, you should have created a GitLab issue for
 your development. Then, you can directly create a branch from there. If you
 already have local changes, execute the following sequence of git commands:
 
- 1. git stash
- 2. git pull
- 3. git checkout <branchname>
- 4. git stash pop
- 5. git add
- 6. git commit
- 7. git push
+1. git stash
+2. git pull
+3. git checkout <branchname>
+4. git stash pop
+5. git add
+6. git commit
+7. git push
 
-Usually, it's best to open the pull request only after you think
+Usually, it's best to open the merge request only after you think
 that all the work has been completed and it is ready for review. However,
 there might be situations where you would like to get input from others. In
-that case, you might already open a pull request in an earlier stage. But
-please state in the description or in the title of the pull request that this
-is still work in progress (WIP) and which type of feedback you would like to
-receive from the reviewers.
+that case, you can already open a merge request in an earlier stage and mark
+it as draft. Before you'll be able to merge it, you must unset the tick mark
+to indicate that it's ready.
 
-Speaking about reviewers, the librarians of all packages that you touched have
-to be included as reviewers. You can find a list of the current librarians
-`here <https://software.belle2.org/monitoring/development/latest>`_. Alternatively, you
-can look directly into the ``.librarians`` files of the corresponding packages
-or, after opening the pull request, click on the grayed out ``Merge`` button
-in the top right corner, which should provide you with the necessary
-information as well.
+Before the merge request can be merged, the librarians of all packages that
+you touched must have approved. The Belle II Software bot automatically
+determines the librarians and lists them in a comment of your merge request.
+You can also trigger this determination by commenting ``Check``. However, the
+librarians are not notified automatically. You must either mention them
+explicitly in a comment or you can try to merge (by commenting ``Merge``),
+which will either succeed or will send an email to the missing librarians and
+will add them to the list of people who receive notifications for every
+future action in the merge request.
 
-Before the pull request can be merged, all reviewers must have approved and
-the build has to be successful. After you opened a pull request, each time you
-push new commits to your branch, a new build is initiated. Here is a list of
-best practices to make the review as smooth as possible:
+The second requirement that must be fulfilled before the merge request can be
+merged, is that the pipeline has to be successful. After you opened a merge
+request, each time you push new commits to your branch, a new pipeline is
+initiated. Here is a list of best practices to make the review as smooth as
+possible:
 
- * Split changes of different issues into different commits.
- * Provide meaningful commit messages so that the reviewers know what was
-   intended with those changes.
- * It should go without saying that the commit message must not contain
-   inappropriate or even offensive language.
- * Make sure that your code compiles before pushing it.
- * Run at least the unit-tests of the packages that you touched (see
-   :ref:`framework/doc/tools/03-b2test:Testing Tools`)
- * Once you have opened a pull request, try not to push commits individually.
-   Instead, make commits locally and push them at the end of the day or when you
-   have finished all of your work.
+* Split changes of different issues into different commits.
+* Provide meaningful commit messages so that the reviewers know what was
+  intended with those changes.
+* It should go without saying that the commit message must not contain
+  inappropriate or even offensive language.
+* Make sure that your code compiles before pushing it.
+* Run at least the unit-tests of the packages that you touched (see
+  :ref:`framework/doc/tools/03-b2test:Testing Tools`)
+* Once you have opened a merge request, try not to push commits individually.
+  Instead, make commits locally and push them at the end of the day or when you
+  have finished all of your work.
 
 .. _semantic versioning: https://semver.org
 .. _CI: https://en.wikipedia.org/wiki/Continuous_integration

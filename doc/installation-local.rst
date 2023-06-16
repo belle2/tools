@@ -54,7 +54,7 @@ is by trying to setup the software version you just downloaded. For example ::
 
 should print an error like
 
-  The externals version v01-12-01 does not exist. You can use 'b2install-externals' to install them.
+The externals version v01-12-01 does not exist. You can use 'b2install-externals' to install them.
 
 which tells us that we need externals version ``v01-12-01`` by calling ::
 
