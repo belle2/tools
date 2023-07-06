@@ -24,6 +24,20 @@ test-rockylinux8:
     - echo "Running unit tests for Rocky Linux 8... This will take few minutes."
     - tests/run.sh
 
+test-rockylinux9:
+  stage: test
+  image: rockylinux:9
+  script:
+    - echo "Running unit tests for Rocky Linux 9... This will take few minutes."
+    - tests/run.sh
+
+test-almalinux9:
+  stage: test
+  image: almalinux:9
+  script:
+    - echo "Running unit tests for AlmaLinux 9... This will take few minutes."
+    - tests/run.sh
+
 test-ubuntu2004:
   stage: test
   image: ubuntu:20.04
