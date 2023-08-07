@@ -99,11 +99,21 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
 
 elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
-  PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
-    gzip bzip2 libbz2-dev xz-utils unzip wget libpng-dev libx11-dev
-    libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
+  # Add architecture specification to work on multiarch systems.
+  ARCHITECTURE=`dpkg --print-architecture`
+  PACKAGES_NO_ARCHITECTURE="binutils gcc g++ git make patch libperl-dev python
+    subversion tar gzip bzip2 libbz2-dev xz-utils unzip wget libpng-dev
+    libx11-dev libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
     libreadline-dev libffi-dev lsof man-db zip texinfo rsync"
-  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
+  OPTIONALS_NO_ARCHITECTURE="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
+  PACKAGES=""
+  for package in ${PACKAGES_NO_ARCHITECTURE}; do
+    PACKAGES="${PACKAGES} ${package}:${ARCHITECTURE}"
+  done
+  OPTIONALS=""
+  for package in ${OPTIONALS_NO_ARCHITECTURE}; do
+    OPTIONALS="${OPTIONALS} ${package}:${ARCHITECTURE}"
+  done
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   INSTALL_CMD="apt-get install"
