@@ -3,7 +3,7 @@
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
-  echo "Usage: `basename $0` directory release"
+  echo "Usage: `basename $0` directory release [group]"
   echo
   echo "- This command creates a local directory with the given name"
   echo "  for the development of analysis code."
@@ -11,13 +11,15 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  directory to git."
   echo "- The second argument specifies the central release on which"
   echo "  the analysis should be based."
+  echo "- If the third argument is given the repository is created"
+  echo "  in the given physics working group directory."
   echo
   exit 0
 fi
 
 # check number of arguments
-if [ $# -ne 2 ]; then
-  echo "Usage: `basename $0` directory release" 1>&2
+if [ $# -gt 3 ] || [ $# -lt 2 ]; then
+  echo "Usage: `basename $0` directory release [group]" 1>&2
   exit 1
 fi
 
@@ -32,6 +34,11 @@ if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
   echo "Error: The central release ${RELEASE} does not exist." 1>&2
   exit 1
 fi
+if [ $# -gt 2 ]; then
+  ANALYSIS_PROJECT="belle2/physics/$3/${DIR}"
+else
+  ANALYSIS_PROJECT=${BELLE2_ANALYSES_PROJECT}/${BELLE2_USER}_${DIR}
+fi
 
 # check git access
 git ls-remote ${BELLE2_SOFTWARE_REPOSITORY} main > /dev/null
@@ -41,12 +48,11 @@ if [ "$?" != "0" ]; then
 fi
 
 # check whether this analysis git repository already exists
-ANALYSIS_NAME=${BELLE2_USER}_${DIR}
-ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${ANALYSIS_PROJECT}.git
 REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
 REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
 if [ "${REPOSITORY_EXISTS_MASTER}" = "1" ] || [ "${REPOSITORY_EXISTS_MAIN}" = "1" ]; then
-  echo "Error: The analysis git repository for analysis ${DIR} already exists." 1>&2
+  echo "Error: The analysis git repository https://gitlab.desy.de/${ANALYSIS_NAME} already exists." 1>&2
   exit 1
 fi
 
@@ -62,15 +68,18 @@ if [ "${RELEASE}" != "${SUPPORTED_RELEASE}" ]; then
 fi
 
 # create analysis git repository
+NAME=$(basename ${ANALYSIS_PROJECT})
+GROUP=$(dirname ${ANALYSIS_PROJECT})
 echo "Enter your DESY password to create your analysis directory on the gitlab server."
-wget --ca-certificate=${BELLE2_TOOLS}/certchain.pem --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --post-data="name=${ANALYSIS_NAME}" "https://software.belle2.org/create_analysis"
+wget --ca-certificate=${BELLE2_TOOLS}/certchain.pem --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --post-data="name=${NAME}&group=${GROUP}" "https://software.belle2.org/create_analysis"
 if [ "$?" = "0" ]; then
   sleep 2
   REMOTE_EXISTS=1
   git clone ${ANALYSIS_REPOSITORY} ${DIR}
   cd ${DIR}
+  git switch --create main
 else
-  echo "WARNING: The creation of the analysis directory on the gitlab server failed. Go to https://gitlab.desy.de/belle2/analyses, click \"New project\" and \"Create blank project\", then enter the Name \"${ANALYSIS_NAME}\" as project name, deactivate the initialization with a README, and click the \"Create project\" button."
+  echo "WARNING: The creation of the analysis directory on the gitlab server failed. Go to https://gitlab.desy.de/"${GROUP}", click \"New project\" and \"Create blank project\", then enter the Name \""${NAME}"\" as project name, deactivate the initialization with a README, and click the \"Create project\" button."
   REMOTE_EXISTS=0
   mkdir ${DIR}
   cd ${DIR}
@@ -85,7 +94,7 @@ ln -s site_scons/SConstruct .
 cat > SConscript <<EOT
 Import('env')
 # This file specifies the dependencies of your analysis code to parts of the
-# Belle 2 Software. It should be fine for most analyses but if you need to link
+# Belle II Software. It should be fine for most analyses but if you need to link
 # against additional libraries please put them here.
 env['LIBS'] = [
     'mdst_dataobjects',
