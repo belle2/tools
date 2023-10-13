@@ -3,7 +3,7 @@ stages:
 
 default:
   tags:
-    - extagent8
+    - extagent48
 
 workflow:
   rules:
