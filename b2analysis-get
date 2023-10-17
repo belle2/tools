@@ -46,7 +46,7 @@ ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${ANALYSIS_PROJECT}.git
 REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
 REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
 if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
-  echo "Error: The analysis git repository ${ANALYSIS_NAME} does not exist." 1>&2
+  echo "Error: The analysis git repository https://gitlab.desy.de/${ANALYSIS_PROJECT} does not exist." 1>&2
   exit 1
 fi
 
@@ -71,5 +71,5 @@ ln -s site_scons/SConstruct .
 popd > /dev/null
 
 # inform user about successful completion
-echo "Analysis ${ANALYSIS_NAME} for release ${RELEASE} checked out at: ${DIR}"
+echo "Analysis ${ANALYSIS_PROJECT} for release ${RELEASE} checked out at: ${DIR}"
 echo "-> change to the new directory and set up the environment: cd ${DIR}; b2setup"

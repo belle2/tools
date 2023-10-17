@@ -52,7 +52,7 @@ ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${ANALYSIS_PROJECT}.git
 REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
 REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
 if [ "${REPOSITORY_EXISTS_MASTER}" = "1" ] || [ "${REPOSITORY_EXISTS_MAIN}" = "1" ]; then
-  echo "Error: The analysis git repository https://gitlab.desy.de/${ANALYSIS_NAME} already exists." 1>&2
+  echo "Error: The analysis git repository https://gitlab.desy.de/${ANALYSIS_PROJECT} already exists." 1>&2
   exit 1
 fi
 
