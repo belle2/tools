@@ -7,8 +7,12 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
   echo "- This command checks out the analysis code at the given directory name."
   echo "  It also prepares the build system."
+  echo "- If the analysis repository is in a physics group the directory"
+  echo "  must contain the path, e.g. charm/software/charm_lifetimes for"
+  echo "  https://gitlab.desy.de/belle2/physics/charm/software/charm_lifetimes"
   echo "- The optional second argument can be used to specify the user name"
-  echo "  if the analysis code of another user should be obtained."
+  echo "  if the analysis code of another user should be obtained that is"
+  echo "  not in a physics group."
   echo
   exit 0
 fi
@@ -21,8 +25,8 @@ fi
 
 # read arguments
 DIR=$1
-if [ -d ${DIR} ]; then
-  echo "Error: The directory ${LOCAL_DIR} already exists." 1>&2
+if [ -d $(basename ${DIR}) ]; then
+  echo "Error: The directory "$(basename ${DIR})" already exists." 1>&2
   exit 1
 fi
 USERNAME=$BELLE2_USER
@@ -32,28 +36,25 @@ fi
 
 
 # verify that the git repository exists and is an analysis repository
-ANALYSIS_NAME=${USERNAME}_${DIR}
-ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_ANALYSES_PROJECT}/${ANALYSIS_NAME}.git
+echo ${DIR} | grep / > /dev/null
+if [ "$?" == "0" ]; then
+  ANALYSIS_PROJECT="belle2/physics/${DIR}"
+else
+  ANALYSIS_PROJECT=${BELLE2_ANALYSES_PROJECT}/${USERNAME}_${DIR}
+fi
+ANALYSIS_REPOSITORY=${BELLE2_GIT_SERVER}${ANALYSIS_PROJECT}.git
 REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
 REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
 if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
-  if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
-    ANALYSIS_REPOSITORY=https://${BELLE2_USER}@stash.desy.de/scm/b2a/${ANALYSIS_NAME}.git
-  else
-    ANALYSIS_REPOSITORY=ssh://git@stash.desy.de:7999/b2a/${ANALYSIS_NAME}.git
-  fi
-  REPOSITORY_EXISTS_MASTER=`git ls-remote ${ANALYSIS_REPOSITORY} master 2> /dev/null | wc -l`
-  REPOSITORY_EXISTS_MAIN=`git ls-remote ${ANALYSIS_REPOSITORY} main 2> /dev/null | wc -l`
-  if [ "${REPOSITORY_EXISTS_MASTER}" = "0" ] && [ "${REPOSITORY_EXISTS_MAIN}" = "0" ]; then
-    echo "Error: The analysis git repository ${ANALYSIS_NAME} does not exist." 1>&2
-    exit 1
-  fi
+  echo "Error: The analysis git repository https://gitlab.desy.de/${ANALYSIS_PROJECT} does not exist." 1>&2
+  exit 1
 fi
 
 # check out the analysis directory
+DIR=$(basename ${DIR})
 git clone ${ANALYSIS_REPOSITORY} ${DIR}
 if [ "$?" != "0" ]; then
-  echo "Error: The checkout of the analysis repository ${ANALYSIS_NAME} failed." 1>&2
+  echo "Error: The checkout of the analysis repository ${ANALYSIS_REPOSITORY} failed." 1>&2
   exit 1
 fi
 
@@ -70,5 +71,5 @@ ln -s site_scons/SConstruct .
 popd > /dev/null
 
 # inform user about successful completion
-echo "Analysis ${ANALYSIS_NAME} for release ${RELEASE} checked out at: ${DIR}"
+echo "Analysis ${ANALYSIS_PROJECT} for release ${RELEASE} checked out at: ${DIR}"
 echo "-> change to the new directory and set up the environment: cd ${DIR}; b2setup"
