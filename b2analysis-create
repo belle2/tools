@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VALID_GROUP_NAMES="bhad charm dark-lm ewp quark slme tau tdcpv"
+
 # check for help option
 if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo
@@ -13,6 +15,8 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "  the analysis should be based."
   echo "- If the third argument is given the repository is created"
   echo "  in the given physics working group directory."
+  echo "  Valid physics working group names are"
+  echo "  ${VALID_GROUP_NAMES}"
   echo
   exit 0
 fi
@@ -35,7 +39,12 @@ if [ ! -d ${VO_BELLE2_SW_DIR}/releases/${RELEASE} ]; then
   exit 1
 fi
 if [ $# -gt 2 ]; then
-  ANALYSIS_PROJECT="belle2/physics/$3/${DIR}"
+  if [[ "$VALID_GROUP_NAMES" =~ (" "|^)$3(" "|$) ]]; then
+    ANALYSIS_PROJECT="belle2/physics/$3/${DIR}"
+  else
+    echo "Error: The group name $3 does not exist." 1>&2
+    exit 1
+  fi
 else
   ANALYSIS_PROJECT=${BELLE2_ANALYSES_PROJECT}/${BELLE2_USER}_${DIR}
 fi
