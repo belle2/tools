@@ -20,7 +20,7 @@ fi
 git remote -v | grep github.com &> /dev/null
 BELLE2_INTERNAL=$?
 if [ "${BELLE2_INTERNAL}" != "0" ]; then
-  HISTORY_URL=ssh://git@stash.desy.de:7999/b2/software.git
+  HISTORY_URL=git@gitlab.desy.de:belle2/software/software.git
   HISTORY_MAIN=0dd0dff307ed4e25f092e35e6dcab44f37e63b9a
   HISTORY_UPGRADE=a637af175915542e398c314491ffda556af3866f
 
