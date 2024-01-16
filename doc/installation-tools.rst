@@ -12,7 +12,9 @@ Installation
 ------------
 
 In case you don't have a centrally provided Belle II Software you need to
-install the tools locally.  Once you have configured your `access to the code repository`_ you can obtain the
+install the tools locally. Once you have configured your access to the code repository
+following the instructions to `create your ssh key <https://gitlab.desy.de/help/user/ssh>`_ 
+and `upload your public key to GitLab <https://gitlab.desy.de/-/profile/keys>`_ you can obtain the
 software tools from the central Belle II code repository with the following
 command::
 
@@ -61,8 +63,7 @@ environment variables before sourcing ``tools/setup_belle2``:
 .. envvar:: BELLE2_GIT_ACCESS
 
    This variable can be set to either ``http`` or ``ssh`` to specify the
-   protocol to be used for git commands. Please have a look at `Git/Stash
-   Introduction`_ for details on the meanings.
+   protocol to be used for git commands.
 
    ``ssh``
       This will use ssh connection to the DESY git server. This is the default and the
@@ -387,6 +388,3 @@ For developers
    If --non-interactive is given it will not ask but just install the necessary
    packages but not the optional ones. If --optionals is given as well it will
    install everything without asking.
-
-.. _access to the code repository: https://confluence.desy.de/x/2o4iAg
-.. _Git/Stash Introduction: https://confluence.desy.de/x/2o4iAg
