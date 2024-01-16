@@ -288,19 +288,26 @@ it as draft. Before you'll be able to merge it, you must unset the tick mark
 to indicate that it's ready.
 
 Before the merge request can be merged, the librarians of all packages that
-you touched must have approved. The Belle II Software bot automatically
+you touched must approve it. The Belle II Software bot automatically
 determines the librarians and lists them in a comment of your merge request.
 You can also trigger this determination by commenting ``Check``. However, the
-librarians are not notified automatically. You must either mention them
-explicitly in a comment or you can try to merge (by commenting ``Merge``),
-which will either succeed or will send an email to the missing librarians and
+librarians are not notified automatically. You can comment ``Tag`` in the merge
+request which will send an email to the missing librarians and
 will add them to the list of people who receive notifications for every
 future action in the merge request.
 
 The second requirement that must be fulfilled before the merge request can be
 merged, is that the pipeline has to be successful. After you opened a merge
 request, each time you push new commits to your branch, a new pipeline is
-initiated. Here is a list of best practices to make the review as smooth as
+initiated.
+
+If the pipeline is successful, all approvals are given, and all review threads
+are resolved you can merge by commenting ``Merge``. If the last pipeline is
+more than one week old, a new one will be triggered internally. This is
+supposed to limit the risk that two merge requests are merged that interfere
+with each other and in combination break the main branch.
+
+Finally, here is a list of best practices to make the review as smooth as
 possible:
 
 * Split changes of different issues into different commits.
