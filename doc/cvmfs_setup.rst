@@ -44,18 +44,16 @@ You can check if a given release is supported with::
 
   $ b2help-releases your_release_version
 
-Releases come in four kinds:
+Releases come in three kinds:
 
 1) A full release, name of the form ``release-AA-BB-CC``.
 2) A light release, name of the form ``light-YYMM-CODENAME``.
-3) A monthly build, name of the form ``build-YYYY-MM-DD``.
-4) A prerelease, name of the form ``prerelease-AA-00-00abc``.
+3) A prerelease, name of the form ``prerelease-AA-00-00abc``.
 
-Monthly builds are made from the development version of the code, they are a `CI`_ tool.
 Pre-releases are for testing and validation before a full release.
 
 .. warning::
-       Neither monthly builds nor prereleases are supported for use in analysis.
+       Prereleases are not supported for use in analysis.
        They are not recommended for anything other than software validation.
        They can disappear without warning.
 
