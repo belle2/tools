@@ -10,43 +10,13 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_PIPELINE_SOURCE == 'push' && $CI_COMMIT_BRANCH == 'main'
 
-.common_script: &common_script
-    - echo "Running unit tests with the image ${CI_JOB_IMAGE}..."
+test:
+  stage: test
+  image: $IMAGE
+  parallel:
+    matrix:
+      - IMAGE: ['centos:7', 'rockylinux:8', 'rockylinux:9', 'almalinux:9', 'ubuntu:20.04', 'ubuntu:22.04'] 
+  script:
+    - echo "Running job \"${CI_JOB_NAME}\" with the image \"${CI_JOB_IMAGE}\"..."
     - tests/run.sh
-    - echo "${CI_JOB_NAME} job successfully completed"
-
-test-centos7:
-  stage: test
-  image: centos:7
-  script:
-    - *common_script
-
-test-rockylinux8:
-  stage: test
-  image: rockylinux:8
-  script:
-    - *common_script
-
-test-rockylinux9:
-  stage: test
-  image: rockylinux:9
-  script:
-    - *common_script
-
-test-almalinux9:
-  stage: test
-  image: almalinux:9
-  script:
-    - *common_script
-
-test-ubuntu2004:
-  stage: test
-  image: ubuntu:20.04
-  script:
-    - *common_script
-
-test-ubuntu2204:
-  stage: test
-  image: ubuntu:22.04
-  script:
-    - *common_script
+    - echo "Successfully completed job \"${CI_JOB_NAME}\" with the image \"${CI_JOB_IMAGE}\""
