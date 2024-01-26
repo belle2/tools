@@ -1,10 +1,3 @@
-# use python2 if we don't have "python" executable, python2 is guaranteed to be
-# installed by b2install-prepare
-#which python >& /dev/null
-#if ( "$?" != "0" ) then
-#  alias python python2
-#endif
-
 # determine tools directory
 set COMMAND=`echo $_`
 if ( "${COMMAND}" != "" ) then
