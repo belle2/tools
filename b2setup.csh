@@ -1,9 +1,9 @@
 # use python2 if we don't have "python" executable, python2 is guaranteed to be
 # installed by b2install-prepare
-which python >& /dev/null
-if ( "$?" != "0" ) then
-  alias python python2
-endif
+#which python >& /dev/null
+#if ( "$?" != "0" ) then
+#  alias python python2
+#endif
 
 # determine tools directory
 set COMMAND=`echo $_`
@@ -24,7 +24,7 @@ else
   exit 1
 endif
 set DIRNAME=`dirname ${FILENAME}`
-setenv BELLE2_TOOLS `python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${DIRNAME}`
+setenv BELLE2_TOOLS `${DIRNAME}/b2anypython -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${DIRNAME}`
 unset DIRNAME
 unset FILENAME
 
@@ -61,7 +61,7 @@ setenv PYTHONPATH ${BELLE2_TOOLS}
 
 # set top directory of Belle II software installation
 if ( ! ${?VO_BELLE2_SW_DIR} ) then
-  setenv VO_BELLE2_SW_DIR `python -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
+  setenv VO_BELLE2_SW_DIR `${BELLE2_TOOLS}/b2anypython -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' ${BELLE2_TOOLS}/..`
 endif
 
 # set top directory of external software
