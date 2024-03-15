@@ -8,5 +8,6 @@ import basf2
 main = basf2.Path()
 main.add_module('EventInfoSetter')
 main.add_module('Progress')
+main.add_module('RootOutput')
 basf2.process(main)
 print(basf2.statistics)
