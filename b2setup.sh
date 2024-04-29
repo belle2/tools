@@ -63,13 +63,6 @@ if [ -z "${BELLE2_GIT_SERVER}" ]; then
       export BELLE2_GIT_SERVER=git@gitlab.desy.de:
     fi
     BELLE2_GIT_PROJECT=belle2/software
-  elif [[ "${ORIGIN_URL}" =~ "stash.desy" ]]; then
-    if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
-      export BELLE2_GIT_SERVER=https://${BELLE2_USER}@stash.desy.de/scm/
-    else
-      export BELLE2_GIT_SERVER=ssh://git@stash.desy.de:7999/
-    fi
-    BELLE2_GIT_PROJECT=b2
   else
     if [ "${BELLE2_GIT_ACCESS}" = "http" ]; then
       export BELLE2_GIT_SERVER=https://github.com/
