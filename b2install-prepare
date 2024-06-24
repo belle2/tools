@@ -147,7 +147,7 @@ else
     echo "Unknown linux distribution. Trying installation with yum..."
   fi
   # RH, SL, CentOS
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel python subversion
+  PACKAGES="binutils gcc gcc-c++ git make patch perl-core perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
     libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel
     libffi-devel libtirpc-devel which lsof man-db texinfo rsync"
