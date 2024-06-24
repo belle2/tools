@@ -16,15 +16,12 @@ for i in "$@"; do
 done
 
 set -e
-
-if [ "$ONLY_B2INSTALL_PREPARE" = "no" ]; then
-  export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
-  # we're testing development version of the tools, so we shouldn't check if they're up to date.
-  export BELLE2_NO_TOOLS_CHECK=yes
-  # make sure we find releases on cvmfs
-  export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
-  echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
-fi
+export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
+# we're testing development version of the tools, so we shouldn't check if they're up to date.
+export BELLE2_NO_TOOLS_CHECK=yes
+# make sure we find releases on cvmfs
+export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
+echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
 
 # now we actually need zsh and tcsh for the tests
 for INSTALLER in dnf yum apt-get; do
