@@ -5,6 +5,7 @@
 # We install all the requirements and try to setup all the supported releases
 # in all supported shells.
 
+# check if we need to run only b2install-prepare
 ONLY_B2INSTALL_PREPARE=no
 for i in "$@"; do
   case $i in
@@ -15,12 +16,15 @@ for i in "$@"; do
 done
 
 set -e
-export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
-# we're testing development version of the tools, so we shouldn't check if they're up to date.
-export BELLE2_NO_TOOLS_CHECK=yes
-# make sure we find releases on cvmfs
-export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
-echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
+
+if [ "$ONLY_B2INSTALL_PREPARE" = "no" ]; then
+  export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
+  # we're testing development version of the tools, so we shouldn't check if they're up to date.
+  export BELLE2_NO_TOOLS_CHECK=yes
+  # make sure we find releases on cvmfs
+  export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
+  echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
+fi
 
 # now we actually need zsh and tcsh for the tests
 for INSTALLER in dnf yum apt-get; do
@@ -31,7 +35,9 @@ for INSTALLER in dnf yum apt-get; do
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
     fi
-    ${INSTALLER} install -y tcsh zsh
+    if [ "$ONLY_B2INSTALL_PREPARE" = "no" ]; then
+      ${INSTALLER} install -y tcsh zsh
+    fi
     break
   fi
 done
@@ -39,7 +45,6 @@ done
 # install all the dependencies
 ${BELLE2_TOOLS}/b2install-prepare --non-interactive
 
-# Check if ONLY_B2INSTALL_PREPARE is yes, and if so, exit
 if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
   exit 0
 fi
