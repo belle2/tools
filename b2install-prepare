@@ -101,7 +101,7 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
   # Add architecture specification to work on multiarch systems.
   ARCHITECTURE=`dpkg --print-architecture`
-  PACKAGES_NO_ARCHITECTURE="binutils gcc g++ git make patch libperl-dev python
+  PACKAGES_NO_ARCHITECTURE="binutils gcc g++ git make patch libperl-dev python3
     subversion tar gzip bzip2 libbz2-dev xz-utils unzip wget libpng-dev
     libx11-dev libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
     libreadline-dev libffi-dev lsof man-db zip texinfo rsync"
