@@ -17,7 +17,7 @@ b2install:
   parallel:
     matrix:
       # All the images we want to use
-      - IMAGE: ['centos:7', 'rockylinux:8', 'rockylinux:9', 'almalinux:9', 'ubuntu:20.04', 'ubuntu:22.04', 'ubuntu:24.04', 'debian:12'] 
+      - IMAGE: ['centos:7', 'rockylinux:8', 'rockylinux:9', 'almalinux:9', 'ubuntu:20.04', 'ubuntu:22.04', 'ubuntu:24.04', 'debian:11', 'debian:12'] 
   script:
     - echo "Running job \"${CI_JOB_NAME}\" with the image \"${CI_JOB_IMAGE}\"..."
     - tests/run.sh --only-b2install-prepare
