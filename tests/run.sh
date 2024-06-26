@@ -5,6 +5,16 @@
 # We install all the requirements and try to setup all the supported releases
 # in all supported shells.
 
+# check if we need to run only b2install-prepare
+ONLY_B2INSTALL_PREPARE=no
+for i in "$@"; do
+  case $i in
+    --only-b2install-prepare)
+      ONLY_B2INSTALL_PREPARE=yes
+      ;;
+    esac
+done
+
 set -e
 export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
 # we're testing development version of the tools, so we shouldn't check if they're up to date.
@@ -22,13 +32,19 @@ for INSTALLER in dnf yum apt-get; do
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
     fi
-    ${INSTALLER} install -y tcsh zsh
+    if [ "$ONLY_B2INSTALL_PREPARE" = "no" ]; then
+      ${INSTALLER} install -y tcsh zsh
+    fi
     break
   fi
 done
 
 # install all the dependencies
 ${BELLE2_TOOLS}/b2install-prepare --non-interactive
+
+if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
+  exit 0
+fi
 
 # and execute all test scripts we might have
 shopt -s nullglob extglob

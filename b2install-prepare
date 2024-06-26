@@ -83,7 +83,9 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
     libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
     libreadline-dev libffi-dev lsof man-db texinfo rsync"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev libopengl-dev flex bison"
-  if [[ $OS_RELEASE_VERSION > "18.04" ]]; then
+  if [[ $OS_RELEASE_VERSION > "22.04" ]]; then
+    PACKAGES=${PACKAGES/python/python3}
+  elif [[ $OS_RELEASE_VERSION > "18.04" ]]; then
     PACKAGES=${PACKAGES/python/python2}
   fi;
   CHECK_CMD="dpkg -s"
