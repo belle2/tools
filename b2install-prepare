@@ -79,7 +79,7 @@ elif [[ $OS_RELEASE_ID =~ ^(opensuse(-leap|-tumbleweed)?|sles)$ ]]; then
 elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
   # Ubuntu
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
-    gzip bzip2 xz-utils unzip wget libbz2-dev libpng-dev libx11-dev
+    gzip bzip2 xz-utils unzip wget libbz2-dev libpng-dev libx11-dev libtirpc-dev
     libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
     libreadline-dev libffi-dev lsof man-db texinfo rsync"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev libopengl-dev flex bison"
