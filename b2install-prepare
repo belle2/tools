@@ -95,29 +95,29 @@ if [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
 
 elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
-  PACKAGES="git procps python3"
+  PACKAGES=""
+  PACKAGES_WITH_ARCHITECTURE="git procps python3"
   if [[ "$INSTALL_OPTION" > "1" ]]; then
-    PACKAGES+=" libfreetype6 diffutils"
+    PACKAGES_WITH_ARCHITECTURE+=" libfreetype6 diffutils"
   fi
   if [[ "$INSTALL_OPTION" > "2" ]]; then
-    PACKAGES+=" libglu1-mesa libglx0 libopengl0 libxpm4 libxft2 libfl2 libc6-dev"
+    PACKAGES_WITH_ARCHITECTURE+=" libglu1-mesa libglx0 libopengl0 libxpm4 libxft2 libfl2 libc6-dev"
   fi
   if [[ "$INSTALL_OPTION" > "3" ]]; then
-    PACKAGES+=" pkg-config libsm6 libice6"
+    PACKAGES_WITH_ARCHITECTURE+=" pkg-config libsm6 libice6"
   fi
   if [[ "$INSTALL_OPTION" > "4" ]]; then
-    PACKAGES+=" make wget unzip xz-utils gcc m4 m4 g++ bzip2 bison texinfo libssl-dev python3-pip libreadline-dev libfreetype-dev libx11-dev libxpm-dev libxft-dev libxext-dev libprotobuf-dev protobuf-compiler rsync"
+    PACKAGES_WITH_ARCHITECTURE+=" make wget unzip xz-utils gcc m4 m4 g++ bzip2 bison texinfo libssl-dev libreadline-dev libfreetype-dev libx11-dev libxpm-dev libxft-dev libxext-dev libprotobuf-dev protobuf-compiler rsync"
+    PACKAGES+=" python3-pip"
   fi
   if [[ "$INSTALL_OPTION" > "5" ]]; then
-    PACKAGES+=" flex"
+    PACKAGES_WITH_ARCHITECTURE+=" flex"
   fi
   # Add architecture specification to work on multiarch systems.
   ARCHITECTURE=`dpkg --print-architecture`
-  PACKAGES_WITH_ARCHITECTURE=""
-  for package in ${PACKAGES}; do
-    PACKAGES_WITH_ARCHITECTURE="${PACKAGES_WITH_ARCHITECTURE} ${package}:${ARCHITECTURE}"
+  for package in ${PACKAGES_WITH_ARCHITECTURE}; do
+    PACKAGES="${PACKAGES} ${package}:${ARCHITECTURE}"
   done
-  PACKAGES=${PACKAGES_WITH_ARCHITECTURE}
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
   UPDATE_CMD="apt-get update"
