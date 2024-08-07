@@ -81,7 +81,7 @@ elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; the
   PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
     gzip bzip2 xz-utils unzip wget libbz2-dev libpng-dev libx11-dev libtirpc-dev
     libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
-    libreadline-dev libffi-dev lsof man-db texinfo rsync"
+    libreadline-dev libffi-dev lsof man-db texinfo rsync protobuf-compiler"
   OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev libopengl-dev flex bison"
   if [[ $OS_RELEASE_VERSION > "22.04" ]]; then
     PACKAGES=${PACKAGES/python/python3}
@@ -106,7 +106,8 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
   PACKAGES_NO_ARCHITECTURE="binutils gcc g++ git make patch libperl-dev python3
     subversion tar gzip bzip2 libbz2-dev xz-utils unzip wget libpng-dev
     libx11-dev libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
-    libreadline-dev libffi-dev lsof man-db zip texinfo rsync"
+    libreadline-dev libffi-dev lsof man-db zip texinfo rsync protobuf-compiler
+    libprotobuf-dev"
   OPTIONALS_NO_ARCHITECTURE="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
   PACKAGES=""
   for package in ${PACKAGES_NO_ARCHITECTURE}; do
@@ -127,7 +128,7 @@ elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [[ ! $OS_RELEASE_VERSION < "8" ]]; th
   # CentOS, RHEL starting with version 8
   PACKAGES="binutils gcc gcc-c++ git make patch perl-devel subversion
     tar gzip bzip2 bzip2-devel xz unzip wget libpng-devel libX11-devel
-    libXext-devel libXpm-devel libXft-devel ncurses-devel openssl-devel
+    libXext-devel libXpm-devel libXft-devel ncurses-devel openssl-devel protobuf-compiler
     readline-devel libffi-devel libtirpc-devel which lsof man-db texinfo procps-ng rsync diffutils"
   OPTIONALS="tk-devel tcl-devel mesa-libGL-devel mesa-libGLU-devel flex bison"
   CHECK_CMD="rpm -q"
@@ -152,7 +153,7 @@ else
   PACKAGES="binutils gcc gcc-c++ git make patch perl-core perl-devel python subversion
     tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
     libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel
-    libffi-devel libtirpc-devel which lsof man-db texinfo rsync"
+    libffi-devel libtirpc-devel which lsof man-db texinfo rsync protobuf-compiler"
   OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
