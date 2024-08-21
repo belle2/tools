@@ -29,9 +29,9 @@ for i in "$@"; do
       cat <<EOT
 Usage: b2install-prepare [--non-interactive] [tools|light|basf2|build|externals|all]
 
-It will check if all necessary packages are installed and if not it will
-ask the user if it should do it. If --non-interactive is given it will not
-ask but just install the necessary packages.
+This tool will check if all necessary packages are installed and if not it will
+ask the user if they should be installed. If --non-interactive is given the tool will not
+ask for confirmation but will just install the necessary packages.
 
 The purpose for which the necessary packages are installed is given by one
 of the following arguments:
