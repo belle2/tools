@@ -1,25 +1,49 @@
 #!/bin/bash
 
 NO_PROMPT=no
-INSTALL_OPTIONAL=no
+INSTALL_OPTION=4
 for i in "$@"; do
   case $i in
     --non-interactive)
       NO_PROMPT=yes
       ;;
-    --optionals)
-      INSTALL_OPTIONAL=y
+    tools)
+      INSTALL_OPTION=1
+      ;;
+    light)
+      INSTALL_OPTION=2
+      ;;
+    basf2)
+      INSTALL_OPTION=3
+      ;;
+    build)
+      INSTALL_OPTION=4
+      ;;
+    externals)
+      INSTALL_OPTION=5
+      ;;
+    all)
+      INSTALL_OPTION=6
       ;;
     *)
       cat <<EOT
-Usage: b2install-prepare [--non-interactive] [--optionals]
+Usage: b2install-prepare [--non-interactive] [tools|light|basf2|build|externals|all]
 
-If executed without arguments it will check if all necessary packages are
-installed and if not it will ask the user if it should do it.
+This tool will check if all necessary packages are installed and if not it will
+ask the user if they should be installed. If --non-interactive is given the tool will not
+ask for confirmation but will just install the necessary packages.
 
-If --non-interactive is given it will not ask but just install the necessary
-packages but not the optional ones. If --optionals is given as well it will
-install everything without asking.
+The purpose for which the necessary packages are installed is given by one
+of the following arguments:
+
+  tools: for using the tools
+  light: for using a (light) basf2 release, without graphics
+  basf2: for using a full basf2 release, including graphics
+  build: for building basf2 [default]
+  externals: for building the externals
+  all: for building the externals including optional packages
+
+A given purpose includes all purposes earlier in the list.
 EOT
       exit 1
       ;;
@@ -38,128 +62,105 @@ if [ -f /etc/os-release ]; then
 fi
 
 
-if [ `uname` = Darwin ]; then
-  # Mac OS
-  MISSING=""
-  which make > /dev/null
-  if [ $? != 0 ]; then
-    MISSING="${MISSING}, XCode command line tools"
-  fi
-  for TOOL in cmake fink gfortran; do
-    which ${TOOL} > /dev/null
-    if [ $? != 0 ]; then
-      MISSING="${MISSING}, ${TOOL}"
-    fi
-  done
-  if [ "${MISSING}" != "" ]; then
-    echo "Please install the following:" `echo ${MISSING} | cut -c 2-`
-    exit 1
-  fi
-  PACKAGES="wget"
-  OPTIONALS=""
-  CHECK_CMD="dpkg -s"
-  SU_CMD="sudo"
-  INSTALL_CMD="fink install"
-
-elif [[ $OS_RELEASE_ID =~ ^(opensuse(-leap|-tumbleweed)?|sles)$ ]]; then
-  # OpenSUSE or SUSE Linux Enterprise Server
-  PACKAGES="binutils gcc gcc-c++ git make patch pattern:devel_perl
-    python subversion tar gzip bzip2 xz unzip wget libbz2-devel libpng-devel
-    libX11-devel libXext-devel libXpm-devel libXft-devel ncurses-devel
-    libopenssl-devel readline-devel zip pattern:devel_java man-db libtool
-    makeinfo"
-  OPTIONALS="tk-devel tcl-devel glew-devel Mesa-libGL-devel flex bison"
-  CHECK_CMD="rpm -q"
-  SU_CMD="su -c"
-  INSTALL_CMD="zypper in"
-  if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="zypper in -y"
-  fi
-
-elif [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
+if [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
   # Ubuntu
-  PACKAGES="binutils gcc g++ git make patch libperl-dev python subversion tar
-    gzip bzip2 xz-utils unzip wget libbz2-dev libpng-dev libx11-dev libtirpc-dev
-    libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
-    libreadline-dev libffi-dev lsof man-db texinfo rsync protobuf-compiler"
-  OPTIONALS="tk-dev tcl-dev libglew-dev libglu-dev libopengl-dev flex bison"
-  if [[ $OS_RELEASE_VERSION > "22.04" ]]; then
-    PACKAGES=${PACKAGES/python/python3}
-  elif [[ $OS_RELEASE_VERSION > "18.04" ]]; then
-    PACKAGES=${PACKAGES/python/python2}
-  fi;
+  PACKAGES="git python3-setuptools"
+  if [[ "$INSTALL_OPTION" > "1" ]]; then
+    PACKAGES+=" libfreetype6 diffutils libc6-dev"
+  fi
+  if [[ "$INSTALL_OPTION" > "2" ]]; then
+    PACKAGES+=" libglu1-mesa libglx0 libopengl0 libxpm4 libxft2 libfl2 libsm6 libice6 libtirpc3"
+  fi
+  if [[ "$INSTALL_OPTION" > "3" ]]; then
+    PACKAGES+=" pkg-config"
+  fi
+  if [[ "$INSTALL_OPTION" > "4" ]]; then
+    PACKAGES+=" make wget unzip xz-utils gcc m4 g++ bzip2 bison texinfo libssl-dev python3-pip libreadline-dev libfreetype-dev libx11-dev libxpm-dev libxft-dev libxext-dev libglew-dev libprotobuf-dev protobuf-compiler rsync libtirpc-dev ocaml"
+  fi
+  if [[ "$INSTALL_OPTION" > "5" ]]; then
+    PACKAGES+=" flex"
+  fi
   CHECK_CMD="dpkg -s"
   SU_CMD="sudo"
   # but sometimes there's no sudo (yes official docker images, looking at you ...)
   if ! [ -x "$(command -v sudo)" ]; then
     SU_CMD="su -c"
   fi
+  UPDATE_CMD="apt-get update"
   INSTALL_CMD="apt-get install"
   if [ "$NO_PROMPT" = "yes" ]; then
+    UPDATE_CMD="DEBIAN_FRONTEND=noninteractive apt-get update -q -y"
     INSTALL_CMD="DEBIAN_FRONTEND=noninteractive apt-get install -q -y"
   fi
 
 elif [ $OS_RELEASE_ID == "debian" ]; then
   # Debian
+  PACKAGES=""
+  PACKAGES_WITH_ARCHITECTURE="git procps python3"
+  if [[ "$INSTALL_OPTION" > "1" ]]; then
+    PACKAGES_WITH_ARCHITECTURE+=" libfreetype6 diffutils libc6-dev"
+  fi
+  if [[ "$INSTALL_OPTION" > "2" ]]; then
+    PACKAGES_WITH_ARCHITECTURE+=" libglu1-mesa libglx0 libopengl0 libxpm4 libxft2 libfl2 libtirpc3"
+  fi
+  if [[ "$INSTALL_OPTION" > "3" ]]; then
+    PACKAGES_WITH_ARCHITECTURE+=" pkg-config libsm6 libice6"
+  fi
+  if [[ "$INSTALL_OPTION" > "4" ]]; then
+    PACKAGES_WITH_ARCHITECTURE+=" make wget unzip xz-utils gcc m4 g++ bzip2 bison texinfo libssl-dev libreadline-dev libfreetype-dev libx11-dev libxpm-dev libxft-dev libxext-dev libglew-dev libprotobuf-dev protobuf-compiler rsync libtirpc-dev ocaml"
+    PACKAGES+=" python3-pip"
+  fi
+  if [[ "$INSTALL_OPTION" > "5" ]]; then
+    PACKAGES_WITH_ARCHITECTURE+=" flex"
+  fi
   # Add architecture specification to work on multiarch systems.
   ARCHITECTURE=`dpkg --print-architecture`
-  PACKAGES_NO_ARCHITECTURE="binutils gcc g++ git make patch libperl-dev python3
-    subversion tar gzip bzip2 libbz2-dev xz-utils unzip wget libpng-dev
-    libx11-dev libxext-dev libxpm-dev libxft-dev libncurses-dev libssl-dev
-    libreadline-dev libffi-dev lsof man-db zip texinfo rsync protobuf-compiler
-    libprotobuf-dev"
-  OPTIONALS_NO_ARCHITECTURE="tk-dev tcl-dev libglew-dev libglu-dev flex bison"
-  PACKAGES=""
-  for package in ${PACKAGES_NO_ARCHITECTURE}; do
+  for package in ${PACKAGES_WITH_ARCHITECTURE}; do
     PACKAGES="${PACKAGES} ${package}:${ARCHITECTURE}"
-  done
-  OPTIONALS=""
-  for package in ${OPTIONALS_NO_ARCHITECTURE}; do
-    OPTIONALS="${OPTIONALS} ${package}:${ARCHITECTURE}"
   done
   CHECK_CMD="dpkg -s"
   SU_CMD="su -c"
+  UPDATE_CMD="apt-get update"
   INSTALL_CMD="apt-get install"
   if [ "$NO_PROMPT" = "yes" ]; then
+    UPDATE_CMD="apt-get update -y"
     INSTALL_CMD="apt-get install -y"
   fi
 
-elif [[ $OS_RELEASE_ID_LIKE = *rhel* ]] && [[ ! $OS_RELEASE_VERSION < "8" ]]; then
-  # CentOS, RHEL starting with version 8
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-devel subversion
-    tar gzip bzip2 bzip2-devel xz unzip wget libpng-devel libX11-devel
-    libXext-devel libXpm-devel libXft-devel ncurses-devel openssl-devel protobuf-compiler
-    readline-devel libffi-devel libtirpc-devel which lsof man-db texinfo procps-ng rsync diffutils"
-  OPTIONALS="tk-devel tcl-devel mesa-libGL-devel mesa-libGLU-devel flex bison"
+else
+  # RHEL, CentOS, anything else
+  PACKAGES="git procps python3"
+  if [[ "$INSTALL_OPTION" > "1" ]]; then
+    PACKAGES+=" brotli freetype glibc-devel diffutils which"
+  fi
+  if [[ "$INSTALL_OPTION" > "2" ]]; then
+    PACKAGES+=" mesa-libGLU libglvnd-opengl libtirpc libicu libXpm libXft"
+  fi
+    if [[ ! $OS_RELEASE_VERSION < "9" ]]; then
+  if [[ "$INSTALL_OPTION" > "3" ]]; then
+      PACKAGES+=" perl-FindBin perl-File-Copy perl-Sys-Hostname perl-Hash-Util"
+    fi
+  fi
+  if [[ "$INSTALL_OPTION" > "4" ]]; then
+    PACKAGES+=" make wget unzip gcc m4 gcc-c++ bzip2 bison texinfo openssl-devel patch readline-devel freetype-devel libX11-devel libXpm-devel libXft-devel libXext-devel mesa-libGL-devel mesa-libGLU-devel protobuf-devel rsync libtirpc-devel ocaml"
+  fi
+  if [[ "$INSTALL_OPTION" > "5" ]]; then
+    PACKAGES+=" flex"
+  fi
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="dnf install"
+  if [ ! -f /etc/redhat-release ]; then
+    echo "Unknown linux distribution. Trying installation with yum..."
+    INSTALL_CMD="yum install"
+  fi
   if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
     INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
-    PACKAGES="$PACKAGES python2"
   else # el9 or higher
     INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
-    PACKAGES="$PACKAGES perl-FindBin"
   fi
   if [ "$NO_PROMPT" = "yes" ]; then
     INSTALL_CMD="$INSTALL_CMD -y"
-  fi
-
-else
-  if [ ! -f /etc/redhat-release ]; then
-    echo "Unknown linux distribution. Trying installation with yum..."
-  fi
-  # RH, SL, CentOS
-  PACKAGES="binutils gcc gcc-c++ git make patch perl-core perl-devel python subversion
-    tar gzip bzip2 xz unzip wget libpng-devel libX11-devel libXext-devel
-    libXpm-devel libXft-devel ncurses-devel openssl-devel readline-devel
-    libffi-devel libtirpc-devel which lsof man-db texinfo rsync protobuf-compiler"
-  OPTIONALS="tk-devel tcl-devel glew-devel mesa-libGL-devel flex bison"
-  CHECK_CMD="rpm -q"
-  SU_CMD="su -c"
-  INSTALL_CMD="yum install"
-  if [ "$NO_PROMPT" = "yes" ]; then
-    INSTALL_CMD="yum install -y"
   fi
 fi
 TEXT="already"
@@ -207,8 +208,10 @@ You will need root access to run this command.
   fi
   if [ "$REPLY" = "y" ]; then
     if [ "${SU_CMD}" != "sudo" ]; then
+      ${SU_CMD} "${UPDATE_CMD}"
       ${SU_CMD} "${INSTALL_CMD}${MISSING_PACKAGES}"
     else
+      ${SU_CMD} ${UPDATE_CMD}
       ${SU_CMD} ${INSTALL_MISSING}
     fi
     if [ "$?" != 0 ]; then
@@ -219,43 +222,8 @@ You will need root access to run this command.
   fi
 fi
 
-# ask the user about the optional packages
-if [ -n "${MISSING_OPTIONALS}" ]; then
-  TEXT="now"
-  INSTALL_MISSING=${INSTALL_CMD}${MISSING_OPTIONALS}
-  if [ "${SU_CMD}" != "sudo" ]; then
-    INSTALL_MISSING=\"${INSTALL_MISSING}\"
-  fi
-  if [ "$NO_PROMPT" = "yes" ]; then
-    REPLY=$INSTALL_OPTIONAL
-  else
-    echo "The following optional packages (required to build the event display or compile doxygen) are not installed:${MISSING_OPTIONALS}
-
-You can install them with the following command:
-
-  ${SU_CMD} ${INSTALL_MISSING}
-
-You will need root access to run this command.
-"
-    read -p "Would you like to execute it now (y/n)? " -n 1 REPLY
-    echo
-  fi
-  if [ "$REPLY" = "y" ]; then
-    if [ "${SU_CMD}" != "sudo" ]; then
-      ${SU_CMD} "${INSTALL_CMD}${MISSING_OPTIONALS}"
-    else
-      ${SU_CMD} ${INSTALL_MISSING}
-    fi
-    if [ "$?" != 0 ]; then
-      exit 1
-    fi
-  else
-    exit 0
-  fi
-fi
-
 
 echo "
-All software that is required to build the Belle II software is ${TEXT}
-installed on your system.
+All software that is required to use the Belle II software for the
+given purpose is ${TEXT} installed on your system.
 "
