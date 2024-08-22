@@ -142,7 +142,7 @@ else
     fi
   fi
   if [[ "$INSTALL_OPTION" > "4" ]]; then
-    PACKAGES+=" make wget unzip gcc m4 gcc-c++ bzip2 bison texinfo openssl-devel patch readline-devel zlib-devel freetype-devel libX11-devel libXpm-devel libXft-devel libXext-devel mesa-libGL-devel mesa-libGLU-devel protobuf-devel rsync libtirpc-devel ocaml"
+    PACKAGES+=" make wget unzip gcc m4 gcc-c++ bzip2 bison texinfo openssl-devel patch readline-devel freetype-devel libX11-devel libXpm-devel libXft-devel libXext-devel mesa-libGL-devel mesa-libGLU-devel protobuf-devel rsync libtirpc-devel ocaml"
   fi
   if [[ "$INSTALL_OPTION" > "5" ]]; then
     PACKAGES+=" flex"
