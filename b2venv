@@ -1,0 +1,188 @@
+#!/bin/bash
+
+# This script is inspired by the work of Matthew Feickert (https://github.com/matthewfeickert)
+# and his 'cvmfs-venv' project. It automates the use of Python virtual environments 
+# with libraries and packages sourced from CVMFS, ensuring that software dependencies 
+# are maintained and shared across distributed environments.
+
+# Ensure that pip can't install outside a virtual environment
+export PIP_REQUIRE_VIRTUALENV=true
+
+# Check if a conda environment is active
+if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+    echo "A conda environment ($CONDA_DEFAULT_ENV) is active. Please deactivate your conda environment."
+    exit 1
+fi
+
+_help_options () {
+    cat <<EOF
+Usage: b2venv [-n|--name <virtual environment name>] [-s|--setup] [--uv] [<basf2 release>]
+
+Options:
+ -h --help      Print this help message
+ -n --name      Specify the name of the virtual environment (default: "venv")
+ -s --setup     String of setup options to be parsed defaults to 'source /cvmfs/belle.cern.ch/tools/b2setup'
+ --uv           After venv creation install uv.
+EOF
+
+  return 0
+}
+
+# Default values
+_venv_name="venv"
+_setup_command="source /cvmfs/belle.cern.ch/tools/b2setup"
+
+# CLI API
+unset _return_break
+while [ $# -gt 0 ]; do
+    case "${1}" in
+        -h|--help)
+            _help_options
+            _return_break=0
+            break
+            ;;
+        -n|--name)
+            _venv_name="${2}"
+            shift 2
+            ;;
+        -s|--setup)
+            _setup_command="${2}"
+            shift 2
+            ;;
+        --no-system-site-packages)
+            _no_system_site_packages=true
+            shift
+            ;;
+        --uv)
+            _uv=true
+            shift
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            if [[ "${1}" != -* ]]; then
+                if [ -z "$_basf2_release" ]; then
+                    _basf2_release="${1}"
+                    shift
+                else
+                    echo "ERROR: Unrecognized argument '${1}'"
+                    _return_break=1
+                    break
+                fi
+            else
+                echo "ERROR: Invalid option '${1}'"
+                _return_break=1
+                break
+            fi
+            ;;
+    esac
+done
+
+# Check if basf2 release is provided
+if [ -z "${_basf2_release}" ]; then
+    echo "ERROR: basf2 release must be provided as a non-option argument"
+    _return_break=1
+fi
+_setup_command+=" ${_basf2_release}"
+
+# FIXME: Find smarter way to filter guard virtual environment creation
+if [ -z "${_return_break}" ]; then
+
+# determine text editor to use for complicated edits to the activate script
+if [ -x "$(command -v ed)" ]; then
+    # default to using 'ed'
+    _text_editor="ed"
+elif [ -x "$(command -v vi)" ]; then
+    # fall back to 'vi'
+    _text_editor="vi"
+else
+    echo "ERROR: Neither 'ed' nor 'vi' is installed. Please install one of them."
+    exit 1
+fi
+
+echo "Setting up with command: ${_setup_command}"
+
+# Make sure that only the externals python is used
+eval "${_setup_command}" &> /dev/null
+
+if [ ! -d "${_venv_name}" ]; then
+    echo "Creating new Python virtual environment '${_venv_name}' with $(python3 --version)"
+    python3 -m venv --system-site-packages "${_venv_name}"
+    _venv_full_path="$(readlink -f ${_venv_name})"
+
+    # When setting up the Python virtual environment shell variables in the
+    # main section of the <venv>/bin/activate script, copy the pattern used
+    # for PYTHONHOME to also place the <venv>'s site-packages at the front
+    # of PYTHONPATH so that they are ahead of the LCG view's packages in
+    # priority.
+_SET_PYTHONPATH="# Added by b2venv"
+_SET_PYTHONPATH+=$'\n'
+_SET_PYTHONPATH+="${_setup_command}"
+_SET_PYTHONPATH+=$'\n'
+
+    if [ -z "${_uv}" ]; then
+_SET_PYTHONPATH+="export PIP_PREFIX=${_venv_full_path}"
+_SET_PYTHONPATH+=$'\n'
+    fi
+
+_SET_PYTHONPATH+=$(cat <<-EOT
+if [ -n "\${PYTHONPATH:-}" ] ; then
+    _OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
+    unset PYTHONPATH
+    unset _VIRTUAL_SITE_PACKAGES
+    _VIRTUAL_SITE_PACKAGES="\$(find \${VIRTUAL_ENV}/lib/ -type d -name site-packages)"
+    export PYTHONPATH="\${_VIRTUAL_SITE_PACKAGES}:\${_OLD_VIRTUAL_PYTHONPATH}"
+fi
+EOT
+)
+
+    unset _setup_command
+
+    # Find the line number of the last line in deactivate's PYTHONHOME reset
+    # if statement block and inject the PYTHONPATH reset if statement block directly
+    # after it (2 lines later).
+    _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
+
+    # FIXME: Make a cleaner implimentation
+    if [ "${_text_editor}" == "ed" ]; then
+        ed --silent "${_venv_full_path}/bin/activate" <<EOF
+${_SET_PYTHONPATH_INSERT_LINE}i
+${_SET_PYTHONPATH}
+.
+wq
+EOF
+    else
+        # only supporting vi so don't need to check
+        _vi_script=$(mktemp)
+        cat <<EOF > "${_vi_script}"
+${_SET_PYTHONPATH_INSERT_LINE}i
+${_SET_PYTHONPATH}
+.
+wq
+EOF
+        vi -es "${_venv_full_path}/bin/activate" < "${_vi_script}"
+    fi
+
+unset _venv_full_path
+
+unset _SET_PYTHONPATH
+unset _SET_PYTHONPATH_LINE
+
+fi
+
+# Activate the virtual environment
+. "${_venv_name}/bin/activate" &> /dev/null
+
+# Install uv if not present
+if [ -n "${_uv}" ]; then
+    python -m pip --quiet --no-cache-dir install --upgrade uv &> /dev/null
+fi
+
+fi  # _return_break if statement end
+
+unset _return_break
+unset _no_system_site_packages
+unset _uv
+unset _text_editor
