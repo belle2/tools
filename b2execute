@@ -39,7 +39,7 @@ if [ $? != 0 ]; then
 fi
 
 # execute command
-${COMMAND} "$@"
+eval ${COMMAND} "$@"
 if [ $? != 0 ]; then
   echo "ERROR: The execution of ${COMMAND} failed."
   exit 3
