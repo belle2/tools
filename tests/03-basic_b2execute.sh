@@ -17,5 +17,8 @@ echo "Executing b2file-metadata-show with ${RECOMMENDED} and a simple option via
 b2execute -x b2file-metadata-show ${RECOMMENDED} ${OUTPUT_FILE} -a
 echo "Executing b2file-check with ${RECOMMENDED} and a simple option via b2execute..."
 b2execute -x b2file-check ${RECOMMENDED} ${OUTPUT_FILE} EventMetaData -n ${N_EVENTS}
+# And now check if b2execute -x works with more than one command
+echo "Executing test_steering_file.py with ${RECOMMENDED} and additional commands before and after via b2execute..."
+b2execute -x 'set -o noglob && export TMPDIR=${PWD} && basf2 ${BELLE2_TOOLS}/tests/test_steering_file.py -n ${N_EVENTS} && set +o noglob && unset TMPDIR' ${RECOMMENDED}
 # Clean the output file(s)
 rm -rf ${OUTPUT_FILE}
