@@ -141,7 +141,7 @@ EOT
     _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
 
     # FIXME: Make a cleaner implimentation
-    if [ "${_text_editor}" == "ed" ]; then
+    if [[ "${_text_editor}" == "ed" ]]; then
         ed --silent "${_venv_full_path}/bin/activate" <<EOF
 ${_SET_PYTHONPATH_INSERT_LINE}i
 ${_SET_PYTHONPATH}
