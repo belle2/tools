@@ -49,10 +49,6 @@ while [ $# -gt 0 ]; do
             _setup_command="${2}"
             shift 2
             ;;
-        --no-system-site-packages)
-            _no_system_site_packages=true
-            shift
-            ;;
         --uv)
             _uv=true
             shift
