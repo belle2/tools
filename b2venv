@@ -113,14 +113,11 @@ if [ ! -d "${_venv_name}" ]; then
     # for PYTHONHOME to also place the <venv>'s site-packages at the front
     # of PYTHONPATH so that they are ahead of the LCG view's packages in
     # priority.
-_SET_PYTHONPATH="# Added by b2venv"
-_SET_PYTHONPATH+=$'\n'
-_SET_PYTHONPATH+="${_setup_command}"
-_SET_PYTHONPATH+=$'\n'
+_SET_PYTHONPATH="# Added by b2venv"$'\n'
+_SET_PYTHONPATH+="${_setup_command}"$'\n'
 
     if [ -z "${_uv}" ]; then
-_SET_PYTHONPATH+="export PIP_PREFIX=${_venv_full_path}"
-_SET_PYTHONPATH+=$'\n'
+_SET_PYTHONPATH+="export PIP_PREFIX=${_venv_full_path}"$'\n'
     fi
 
 _SET_PYTHONPATH+=$(cat <<-EOT
