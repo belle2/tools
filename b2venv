@@ -135,7 +135,6 @@ EOT
 )
 
     unset _setup_command
-
     # Find the line number of the last line in deactivate's PYTHONHOME reset
     # if statement block and inject the PYTHONPATH reset if statement block directly
     # after it (2 lines later).
@@ -168,17 +167,15 @@ unset _SET_PYTHONPATH_LINE
 
 fi
 
-# Activate the virtual environment
-. "${_venv_name}/bin/activate" &> /dev/null
-
 # Install uv if not present
 if [ -n "${_uv}" ]; then
+    . "${_venv_name}/bin/activate" &> /dev/null
     python -m pip --quiet --no-cache-dir install --upgrade uv &> /dev/null
 fi
 
 fi  # _return_break if statement end
 
+unset _basf2_release
 unset _return_break
-unset _no_system_site_packages
 unset _uv
 unset _text_editor
