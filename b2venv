@@ -102,6 +102,7 @@ echo "Setting up with command: ${_setup_command}"
 
 # Make sure that only the externals python is used
 eval "${_setup_command}" &> /dev/null
+_setup_ld_lib_path="$LD_LIBRARY_PATH"
 
 if [ ! -d "${_venv_name}" ]; then
     echo "Creating new Python virtual environment '${_venv_name}' with $(python3 --version)"
@@ -114,10 +115,11 @@ if [ ! -d "${_venv_name}" ]; then
     # of PYTHONPATH so that they are ahead of the LCG view's packages in
     # priority.
 _SET_PYTHONPATH="# Added by b2venv"$'\n'
+_SET_PYTHONPATH+="export LD_LIBRARY_PATH=\"${_setup_ld_lib_path}\""$'\n'
 _SET_PYTHONPATH+="${_setup_command}"$'\n'
 
     if [ -z "${_uv}" ]; then
-_SET_PYTHONPATH+="export PIP_PREFIX=${_venv_full_path}"$'\n'
+_SET_PYTHONPATH+="export PIP_PREFIX=\"${_venv_full_path}\""$'\n'
     fi
 
 _SET_PYTHONPATH+=$(cat <<-EOT
@@ -158,7 +160,7 @@ EOF
     fi
 
 unset _venv_full_path
-
+unset _setup_ld_lib_path
 unset _SET_PYTHONPATH
 unset _SET_PYTHONPATH_LINE
 
