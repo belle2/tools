@@ -154,7 +154,7 @@ EOF
 ${_SET_PYTHONPATH_INSERT_LINE}i
 ${_SET_PYTHONPATH}
 .
-wq
+x
 EOF
         vi -es "${_venv_full_path}/bin/activate" < "${_vi_script}"
     fi
