@@ -35,5 +35,11 @@ test:
       - IMAGE: ['rockylinux:9', 'almalinux:9', 'ubuntu:20.04', 'ubuntu:22.04'] 
   script:
     - echo "Running job \"${CI_JOB_NAME}\" with the image \"${CI_JOB_IMAGE}\"..."
+    - |
+      if [ -f /etc/redhat-release ]; then
+        dnf install -y vim
+      elif [ -f /etc/lsb-release ]; then
+        apt-get update && apt-get install -y vim
+      fi
     - tests/run.sh
     - echo "Successfully completed job \"${CI_JOB_NAME}\" with the image \"${CI_JOB_IMAGE}\""
