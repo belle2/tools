@@ -16,7 +16,7 @@ creates a virtual environment directory with the externals Python and the basf2 
 The created directory is created at the location `b2venv` is executed and is called `venv` by default.
 The name of the directory can by adjusted by passing the name as an optional argument to `b2venv` ::
 
-  $ ./cvmfs/belle.cern.ch/tools/b2venv -n MyVenv release-XX-YY-ZZ
+  $ b2venv -n MyVenv release-XX-YY-ZZ
 
 The created virtual environment can be activated by sourcing the `activate` script in the `bin` directory of the created virtual environment ::
     
