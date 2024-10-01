@@ -109,12 +109,15 @@ if [ ! -d "${_venv_name}" ]; then
     # for PYTHONHOME to also place the <venv>'s site-packages at the front
     # of PYTHONPATH so that they are ahead of the LCG view's packages in
     # priority.
-_SET_PYTHONPATH="# Added by b2venv"$'\n'
-_SET_PYTHONPATH+="export LD_LIBRARY_PATH=\"${_setup_ld_lib_path}\""$'\n'
-_SET_PYTHONPATH+="${_setup_command}"$'\n'
-_SET_PYTHONPATH+="export PIP_PREFIX=\"${_venv_full_path}\""$'\n'
 
-_SET_PYTHONPATH+=$(cat <<-EOT
+    _tempfile=$(mktemp)
+
+cat <<EOT > "${_tempfile}"
+# Added by b2venv
+export LD_LIBRARY_PATH="${_setup_ld_lib_path}"
+${_setup_command}
+export PIP_PREFIX="${_venv_full_path}"
+
 if [ -n "\${PYTHONPATH:-}" ] ; then
     _OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
     unset PYTHONPATH
@@ -122,34 +125,19 @@ if [ -n "\${PYTHONPATH:-}" ] ; then
     _VIRTUAL_SITE_PACKAGES="\$(find \${VIRTUAL_ENV}/lib/ -type d -name site-packages)"
     export PYTHONPATH="\${_VIRTUAL_SITE_PACKAGES}:\${_OLD_VIRTUAL_PYTHONPATH}"
 fi
-EOT
-)
 
-    unset _setup_command
+# End of b2venv
+EOT
+
     # Find the line number of the last line in deactivate's PYTHONHOME reset
     # if statement block and inject the PYTHONPATH reset if statement block directly
     # after it (2 lines later).
     _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
 
-    # FIXME: Make a cleaner implimentation
-    if [[ "${_text_editor}" == "ed" ]]; then
-        ed --silent "${_venv_full_path}/bin/activate" <<EOF
-${_SET_PYTHONPATH_INSERT_LINE}i
-${_SET_PYTHONPATH}
-.
-wq
-EOF
-    else
-        # only supporting vi so don't need to check
-        _vi_script=$(mktemp)
-        cat <<EOF > "${_vi_script}"
-${_SET_PYTHONPATH_INSERT_LINE}i
-${_SET_PYTHONPATH}
-.
-x
-EOF
-        vi -es "${_venv_full_path}/bin/activate" < "${_vi_script}"
-    fi
+    # Insert the new content into the activate script
+    sed -i.bak "52r ${_tempfile}" "${_venv_full_path}/bin/activate"
+
+    rm -f "${_tempfile}"
 
 unset _venv_full_path
 unset _setup_ld_lib_path
