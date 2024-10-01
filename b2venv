@@ -29,7 +29,8 @@ EOF
 
 # Default values
 _venv_name="venv"
-_setup_command="source /cvmfs/belle.cern.ch/tools/b2setup"
+_tools_dir="$(dirname "$(realpath "$0")")"
+_setup_command="source ${_tools_dir}/b2setup"
 
 # CLI API
 unset _return_break
@@ -47,10 +48,6 @@ while [ $# -gt 0 ]; do
         -s|--setup)
             _setup_command="${2}"
             shift 2
-            ;;
-        --uv)
-            _uv=true
-            shift
             ;;
         --)
             shift
@@ -116,10 +113,7 @@ if [ ! -d "${_venv_name}" ]; then
 _SET_PYTHONPATH="# Added by b2venv"$'\n'
 _SET_PYTHONPATH+="export LD_LIBRARY_PATH=\"${_setup_ld_lib_path}\""$'\n'
 _SET_PYTHONPATH+="${_setup_command}"$'\n'
-
-    if [ -z "${_uv}" ]; then
 _SET_PYTHONPATH+="export PIP_PREFIX=\"${_venv_full_path}\""$'\n'
-    fi
 
 _SET_PYTHONPATH+=$(cat <<-EOT
 if [ -n "\${PYTHONPATH:-}" ] ; then
@@ -169,5 +163,4 @@ fi  # _return_break if statement end
 
 unset _basf2_release
 unset _return_break
-unset _uv
 unset _text_editor
