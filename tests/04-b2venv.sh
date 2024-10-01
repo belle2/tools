@@ -30,4 +30,16 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     pip3 --quiet --no-cache-dir install --upgrade b2luigi &> /dev/null
     ls venv/lib/python*/site-packages/b2luigi &> /dev/null
 
+    # Checking that packages from the externals are correctly linked
+    echo "Checking that packages from the externals are correctly linked ..."
+    pandas_path=$(python -c "import pandas; print(pandas.__file__)" 2>/dev/null)
+    python_path=$(readlink -f $(which python3))
+
+    if [[ $? -ne 0 || $pandas_path != *externals* ]]; then
+        exit 1
+    fi
+    if [[ $? -ne 0 || $python_path != *externals* ]]; then
+        exit 1
+    fi
+
 fi
