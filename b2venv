@@ -137,16 +137,6 @@ EOT
 
     rm -f "${_tempfile}"
 
-unset _venv_full_path
-unset _setup_ld_lib_path
-unset _SET_PYTHONPATH
-unset _SET_PYTHONPATH_LINE
-
 fi
 
 fi  # _return_break if statement end
-
-unset _basf2_release
-unset _return_break
-unset _text_editor
-unset _tools_dir
