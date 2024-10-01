@@ -10,20 +10,26 @@ RECOMMENDED=$(b2help-releases)
 
 # Create venv with recommended release if it exists for this platform
 if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
-    echo "Trying to create venv with recommended release ..."
-    b2venv -n local_venv -s "source  ${BELLE2_TOOLS}/b2setup" ${RECOMMENDED}
+    if [ -d "/cvmfs/belle.cern.ch/tools" ]; then
+        git config --global --add safe.directory /cvmfs/belle.cern.ch/tools
+        echo "Trying to create venv with recommended release ..."
+        b2venv -n local_venv -t /cvmfs/belle.cern.ch/tools ${RECOMMENDED}
 
-    # Check if venv was created
-    echo "Checking if venv directory exist ..."
-    ls local_venv/bin/activate
+        # Check if venv was created
+        echo "Checking if venv directory exist ..."
+        ls local_venv/bin/activate
 
-    # Check if venv activation works
-    echo "Activating venv ..."
-    source local_venv/bin/activate
+        # Check if venv activation works
+        echo "Activating venv ..."
+        source local_venv/bin/activate
 
-    # Check that basf2 works
-    echo "Trying to run basf2 --info"
-    basf2 --info
+        # Check that basf2 works
+        echo "Trying to run basf2 --info"
+        basf2 --info
+
+    else
+        echo "No /cvmfs/belle.cern.ch/tools directory found, skipping test ..."
+    fi
 
     # Clean up venv direcotries
     rm -rf venv
