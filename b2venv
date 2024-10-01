@@ -81,18 +81,6 @@ _setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
 # FIXME: Find smarter way to filter guard virtual environment creation
 if [ -z "${_return_break}" ]; then
 
-# determine text editor to use for complicated edits to the activate script
-if [ -x "$(command -v ed)" ]; then
-    # default to using 'ed'
-    _text_editor="ed"
-elif [ -x "$(command -v vi)" ]; then
-    # fall back to 'vi'
-    _text_editor="vi"
-else
-    echo "ERROR: Neither 'ed' nor 'vi' is installed. Please install one of them."
-    exit 1
-fi
-
 echo "Setting up with command: ${_setup_command}"
 
 # Make sure that only the externals python is used
