@@ -16,13 +16,12 @@ fi
 
 _help_options () {
     cat <<EOF
-Usage: b2venv [-n|--name <virtual environment name>] [-s|--setup] [--uv] [<basf2 release>]
+Usage: b2venv [-n|--name <virtual environment name>] [-s|--setup] [<basf2 release>]
 
 Options:
  -h --help      Print this help message
  -n --name      Specify the name of the virtual environment (default: "venv")
  -s --setup     String of setup options to be parsed defaults to 'source /cvmfs/belle.cern.ch/tools/b2setup'
- --uv           After venv creation install uv.
 EOF
 
   return 0
@@ -164,12 +163,6 @@ unset _setup_ld_lib_path
 unset _SET_PYTHONPATH
 unset _SET_PYTHONPATH_LINE
 
-fi
-
-# Install uv if not present
-if [ -n "${_uv}" ]; then
-    . "${_venv_name}/bin/activate" &> /dev/null
-    python -m pip --quiet --no-cache-dir install --upgrade uv &> /dev/null
 fi
 
 fi  # _return_break if statement end
