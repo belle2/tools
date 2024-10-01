@@ -74,7 +74,7 @@ done
 # Check if basf2 release is provided
 if [ -z "${_basf2_release}" ]; then
     echo "ERROR: basf2 release must be provided as a non-option argument"
-    _return_break=1
+    exit 1
 fi
 _setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
 
