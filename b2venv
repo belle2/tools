@@ -118,13 +118,11 @@ export LD_LIBRARY_PATH="${_setup_ld_lib_path}"
 ${_setup_command}
 export PIP_PREFIX="${_venv_full_path}"
 
-if [ -n "\${PYTHONPATH:-}" ] ; then
-    _OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
-    unset PYTHONPATH
-    unset _VIRTUAL_SITE_PACKAGES
-    _VIRTUAL_SITE_PACKAGES="\$(find \${VIRTUAL_ENV}/lib/ -type d -name site-packages)"
-    export PYTHONPATH="\${_VIRTUAL_SITE_PACKAGES}:\${_OLD_VIRTUAL_PYTHONPATH}"
-fi
+_OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
+unset PYTHONPATH
+unset _VIRTUAL_SITE_PACKAGES
+_VIRTUAL_SITE_PACKAGES="\$(find \${VIRTUAL_ENV}/lib/ -type d -name site-packages)"
+export PYTHONPATH="\${_VIRTUAL_SITE_PACKAGES}:\${_OLD_VIRTUAL_PYTHONPATH}"
 
 # End of b2venv
 EOT
