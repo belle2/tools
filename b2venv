@@ -5,9 +5,6 @@
 # with libraries and packages sourced from CVMFS, ensuring that software dependencies 
 # are maintained and shared across distributed environments.
 
-# Ensure that pip can't install outside a virtual environment
-export PIP_REQUIRE_VIRTUALENV=true
-
 # Check if a conda environment is active
 if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
     echo "A conda environment ($CONDA_DEFAULT_ENV) is active. Please deactivate your conda environment."
@@ -21,7 +18,6 @@ Usage: b2venv [-n|--name <virtual environment name>] [-t|--tools-dir] [<basf2 re
 Options:
  -h --help          Print this help message
  -n --name          Specify the name of the virtual environment (default: "venv")
- -t --tools-dir     Path to the directory containing the 'b2setup' script (default: b2venv executable directory)
 EOF
 
   return 0
@@ -29,7 +25,6 @@ EOF
 
 # Default values
 _venv_name="venv"
-_tools_dir="$(dirname "$(realpath "$0")")"
 
 # CLI API
 unset _return_break
@@ -37,15 +32,10 @@ while [ $# -gt 0 ]; do
     case "${1}" in
         -h|--help)
             _help_options
-            _return_break=0
-            break
+            exit 0
             ;;
         -n|--name)
             _venv_name="${2}"
-            shift 2
-            ;;
-        -t|--tools-dir)
-            _tools_dir="${2}"
             shift 2
             ;;
         --)
@@ -59,13 +49,11 @@ while [ $# -gt 0 ]; do
                     shift
                 else
                     echo "ERROR: Unrecognized argument '${1}'"
-                    _return_break=1
-                    break
+                    exit 1
                 fi
             else
                 echo "ERROR: Invalid option '${1}'"
-                _return_break=1
-                break
+                exit 1
             fi
             ;;
     esac
@@ -76,55 +64,19 @@ if [ -z "${_basf2_release}" ]; then
     echo "ERROR: basf2 release must be provided as a non-option argument"
     exit 1
 fi
-_setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
 
-# FIXME: Find smarter way to filter guard virtual environment creation
-if [ -z "${_return_break}" ]; then
-
-echo "Setting up with command: ${_setup_command}"
-
-# Make sure that only the externals python is used
-eval "${_setup_command}" &> /dev/null
-_setup_ld_lib_path="$LD_LIBRARY_PATH"
-
-if [ ! -d "${_venv_name}" ]; then
-    echo "Creating new Python virtual environment '${_venv_name}' with $(python3 --version)"
-    python3 -m venv --system-site-packages "${_venv_name}"
-    _venv_full_path="$(readlink -f ${_venv_name})"
-
-    # When setting up the Python virtual environment shell variables in the
-    # main section of the <venv>/bin/activate script, copy the pattern used
-    # for PYTHONHOME to also place the <venv>'s site-packages at the front
-    # of PYTHONPATH so that they are ahead of the LCG view's packages in
-    # priority.
-
-    _tempfile=$(mktemp)
-
-cat <<EOT > "${_tempfile}"
-# Added by b2venv
-export LD_LIBRARY_PATH="${_setup_ld_lib_path}"
-${_setup_command}
-export PIP_PREFIX="${_venv_full_path}"
-
-_OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
-unset PYTHONPATH
-unset _VIRTUAL_SITE_PACKAGES
-_VIRTUAL_SITE_PACKAGES="\$(find \${VIRTUAL_ENV}/lib/ -type d -name site-packages)"
-export PYTHONPATH="\${_VIRTUAL_SITE_PACKAGES}:\${_OLD_VIRTUAL_PYTHONPATH}"
-
-# End of b2venv
-EOT
-
-    # Find the line number of the last line in deactivate's PYTHONHOME reset
-    # if statement block and inject the PYTHONPATH reset if statement block directly
-    # after it (2 lines later).
-    _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
-
-    # Insert the new content into the activate script
-    sed -i.bak "52r ${_tempfile}" "${_venv_full_path}/bin/activate"
-
-    rm -f "${_tempfile}"
-
+# Check if the venv directory already exists
+if [ -d "${_venv_name}" ]; then
+    echo "ERROR: the directory ${_venv_name=} already exists"
+    exit 1
 fi
 
-fi  # _return_break if statement end
+echo "Setting up virtual environment in directory ${_venv_name=} for release ${_basf2_release}"
+
+# Make sure that only the externals python is used
+_setup_command="source $(dirname "$(realpath "$0")")/b2setup ${_basf2_release}"
+eval "${_setup_command}" &> /dev/null
+python3 -m venv --system-site-packages "${_venv_name}"
+_venv_full_path="$(readlink -f ${_venv_name})"
+
+sed -iz "s;deactivate nondestructive;deactivate nondestructive\n\n# setup basf2\n${_setup_command}\nexport PIP_PREFIX=\"${_venv_full_path}\";" "${_venv_name}/bin/activate"
