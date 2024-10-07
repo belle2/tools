@@ -81,33 +81,39 @@ _setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
 # FIXME: Find smarter way to filter guard virtual environment creation
 if [ -z "${_return_break}" ]; then
 
-echo "Setting up with command: ${_setup_command}"
+    echo "Setting up with command: ${_setup_command}"
 
-# Make sure that only the externals python is used
-source ${BELLE2_TOOLS}/b2setup
-b2setup ${_basf2_release}
-_setup_ld_lib_path="$LD_LIBRARY_PATH"
+    # Make sure that only the externals python is used
+    source ${_tools_dir}/b2setup ${_basf2_release}
+    _setup_ld_lib_path="$LD_LIBRARY_PATH"
 
-if [ ! -d "${_venv_name}" ]; then
-    echo "Creating new Python virtual environment '${_venv_name}' with $(python3 --version)"
-    python3 -m venv --system-site-packages "${_venv_name}"
-    _venv_full_path="$(readlink -f ${_venv_name})"
+    if [ ! -d "${_venv_name}" ]; then
+        echo "Creating new Python virtual environment '${_venv_name}' with $(python3 --version)"
+        python3 -m venv --system-site-packages "${_venv_name}"
+        _venv_full_path="$(readlink -f ${_venv_name})"
 
-    # When setting up the Python virtual environment shell variables in the
-    # main section of the <venv>/bin/activate script, copy the pattern used
-    # for PYTHONHOME to also place the <venv>'s site-packages at the front
-    # of PYTHONPATH so that they are ahead of the LCG view's packages in
-    # priority.
+        # When setting up the Python virtual environment shell variables in the
+        # main section of the <venv>/bin/activate script, copy the pattern used
+        # for PYTHONHOME to also place the <venv>'s site-packages at the front
+        # of PYTHONPATH so that they are ahead of the LCG view's packages in
+        # priority.
 
-    _tempfile=$(mktemp)
+        _tempfile=$(mktemp)
 
 cat <<EOT > "${_tempfile}"
 # Added by b2venv
+# ----------------------------------------------------------------------------------
+
+# Make sure to have acces to the correct python lib file
 export LD_LIBRARY_PATH="${_setup_ld_lib_path}"
-source ${_tools_dir}/b2setup
-b2setup ${_basf2_release}
+
+# Set up the basf2 environment
+source ${_tools_dir}/b2setup ${_basf2_release}
+
+# Add pip prefix path to install always in venv
 export PIP_PREFIX="${_venv_full_path}"
 
+# Set up the PYTHONPATH correctly
 _OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
 unset PYTHONPATH
 unset _VIRTUAL_SITE_PACKAGES
@@ -115,18 +121,20 @@ _VIRTUAL_SITE_PACKAGES="\$(find \${VIRTUAL_ENV}/lib/ -type d -name site-packages
 export PYTHONPATH="\${_VIRTUAL_SITE_PACKAGES}:\${_OLD_VIRTUAL_PYTHONPATH}"
 
 # End of b2venv
+# ----------------------------------------------------------------------------------
+
 EOT
 
-    # Find the line number of the last line in deactivate's PYTHONHOME reset
-    # if statement block and inject the PYTHONPATH reset if statement block directly
-    # after it (2 lines later).
-    _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
+        # Find the line number of the last line in deactivate's PYTHONHOME reset
+        # if statement block and inject the PYTHONPATH reset if statement block directly
+        # after it (2 lines later).
+        _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
 
-    # Insert the new content into the activate script
-    sed -i "52r ${_tempfile}" "${_venv_full_path}/bin/activate"
+        # Insert the new content into the activate script
+        sed -i "${_SET_PYTHONPATH_INSERT_LINE}r ${_tempfile}" "${_venv_full_path}/bin/activate"
 
-    rm -f "${_tempfile}"
+        rm -f "${_tempfile}"
 
-fi
+    fi 
 
 fi  # _return_break if statement end
