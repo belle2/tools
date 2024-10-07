@@ -93,12 +93,11 @@ if [ -z "${_basf2_release}" ]; then
     echo "ERROR: basf2 release must be provided as a non-option argument"
     exit 1
 fi
-_setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
 
 # FIXME: Find smarter way to filter guard virtual environment creation
 if [ -z "${_return_break}" ]; then
 
-    echo "Setting up with command: ${_setup_command}"
+    echo "Setting up with command: 'source ${_tools_dir}/b2setup ${_basf2_release}'"
 
     # Make sure that only the externals python is used
     source ${_tools_dir}/b2setup ${_basf2_release}
