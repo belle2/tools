@@ -84,7 +84,8 @@ if [ -z "${_return_break}" ]; then
 echo "Setting up with command: ${_setup_command}"
 
 # Make sure that only the externals python is used
-eval "${_setup_command}" &> /dev/null
+source ${BELLE2_TOOLS}/b2setup
+b2setup ${_basf2_release}
 _setup_ld_lib_path="$LD_LIBRARY_PATH"
 
 if [ ! -d "${_venv_name}" ]; then
@@ -103,7 +104,8 @@ if [ ! -d "${_venv_name}" ]; then
 cat <<EOT > "${_tempfile}"
 # Added by b2venv
 export LD_LIBRARY_PATH="${_setup_ld_lib_path}"
-${_setup_command}
+source ${_tools_dir}/b2setup
+b2setup ${_basf2_release}
 export PIP_PREFIX="${_venv_full_path}"
 
 _OLD_VIRTUAL_PYTHONPATH="\${PYTHONPATH:-}"
@@ -121,7 +123,7 @@ EOT
     _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
 
     # Insert the new content into the activate script
-    sed -i.bak "52r ${_tempfile}" "${_venv_full_path}/bin/activate"
+    sed -i "52r ${_tempfile}" "${_venv_full_path}/bin/activate"
 
     rm -f "${_tempfile}"
 
