@@ -5,9 +5,6 @@
 # with libraries and packages sourced from CVMFS, ensuring that software dependencies 
 # are maintained and shared across distributed environments.
 
-# Ensure that pip can't install outside a virtual environment
-export PIP_REQUIRE_VIRTUALENV=true
-
 # Check if a conda environment is active
 if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
     echo "A conda environment ($CONDA_DEFAULT_ENV) is active. Please deactivate your conda environment."
@@ -21,7 +18,6 @@ Usage: b2venv [-n|--name <virtual environment name>] [-t|--tools-dir] [<basf2 re
 Options:
  -h --help          Print this help message
  -n --name          Specify the name of the virtual environment (default: "venv")
- -t --tools-dir     Path to the directory containing the 'b2setup' script (default: b2venv executable directory)
 EOF
 
   return 0
@@ -29,7 +25,6 @@ EOF
 
 # Default values
 _venv_name="venv"
-_tools_dir="$(dirname "$(realpath "$0")")"
 
 # CLI API
 unset _return_break
@@ -37,15 +32,10 @@ while [ $# -gt 0 ]; do
     case "${1}" in
         -h|--help)
             _help_options
-            _return_break=0
-            break
+            exit 0
             ;;
         -n|--name)
             _venv_name="${2}"
-            shift 2
-            ;;
-        -t|--tools-dir)
-            _tools_dir="${2}"
             shift 2
             ;;
         --)
@@ -59,13 +49,11 @@ while [ $# -gt 0 ]; do
                     shift
                 else
                     echo "ERROR: Unrecognized argument '${1}'"
-                    _return_break=1
-                    break
+                    exit 1
                 fi
             else
                 echo "ERROR: Invalid option '${1}'"
-                _return_break=1
-                break
+                exit 1
             fi
             ;;
     esac
@@ -76,12 +64,14 @@ if [ -z "${_basf2_release}" ]; then
     echo "ERROR: basf2 release must be provided as a non-option argument"
     exit 1
 fi
-_setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
 
-# FIXME: Find smarter way to filter guard virtual environment creation
-if [ -z "${_return_break}" ]; then
+# Check if the venv directory already exists
+if [ -d "${_venv_name}" ]; then
+    echo "ERROR: the directory ${_venv_name=} already exists"
+    exit 1
+fi
 
-echo "Setting up with command: ${_setup_command}"
+echo "Setting up virtual environment in directory ${_venv_name=} for release ${_basf2_release}"
 
 # Make sure that only the externals python is used
 source ${BELLE2_TOOLS}/b2setup
