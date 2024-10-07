@@ -101,6 +101,7 @@ if [ -z "${_return_break}" ]; then
 
     # Make sure that only the externals python is used
     source ${_tools_dir}/b2setup ${_basf2_release}
+    _setup_ld_lib_path="$LD_LIBRARY_PATH"
 
     if [ ! -d "${_venv_name}" ]; then
         echo "Creating new Python virtual environment '${_venv_name}' with $(python3 --version)"
@@ -118,6 +119,9 @@ if [ -z "${_return_break}" ]; then
 cat <<EOT > "${_tempfile}"
 # Added by b2venv
 # ----------------------------------------------------------------------------------
+
+# Make sure to have acces to the correct python lib file
+export LD_LIBRARY_PATH="${_setup_ld_lib_path}"
 
 # Set up the basf2 environment
 source ${_tools_dir}/b2setup ${_basf2_release}
