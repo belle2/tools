@@ -5,6 +5,9 @@
 # with libraries and packages sourced from CVMFS, ensuring that software dependencies 
 # are maintained and shared across distributed environments.
 
+# Make sure we exit on each error
+set -e
+
 # Ensure that pip can't install outside a virtual environment
 export PIP_REQUIRE_VIRTUALENV=true
 
