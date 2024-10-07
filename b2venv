@@ -140,10 +140,8 @@ EOT
         # Find the line number of the last line in deactivate's PYTHONHOME reset
         # if statement block and inject the PYTHONPATH reset if statement block directly
         # after it (2 lines later).
-        _SET_PYTHONPATH_INSERT_LINE="$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}"/bin/activate) + 2))"
-
-        # Insert the new content into the activate script
-        sed -i "${_SET_PYTHONPATH_INSERT_LINE}r ${_tempfile}" "${_venv_full_path}/bin/activate"
+        # Insert then the new content into the activate script
+        sed -i "$(($(sed -n '\|    unset PYTHONHOME|=' "${_venv_full_path}/bin/activate") + 2))r ${_tempfile}" "${_venv_full_path}/bin/activate"
 
         rm -f "${_tempfile}"
 
