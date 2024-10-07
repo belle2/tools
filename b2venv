@@ -13,8 +13,22 @@ export PIP_REQUIRE_VIRTUALENV=true
 
 # Check if a conda environment is active
 if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
-    echo "A conda environment ($CONDA_DEFAULT_ENV) is active. Please deactivate your conda environment."
+    echo "ERROR: A conda environment ($CONDA_DEFAULT_ENV) is active. Please deactivate your conda environment."
     exit 1
+fi
+
+# Check if the script is sourced instead of executed
+if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
+    echo "ERROR: b2venv is being sourced. Please execute the script instead."
+    echo "       For this either setup the tools and then run 'b2venv'      "
+    echo "                                                                  "
+    echo "       $ source <path to tools>/b2setup                           "
+    echo "       $ b2venv <basf2 release>                                   "
+    echo "                                                                  "
+    echo "       Or run 'b2venv' directly from the tools                    "
+    echo "                                                                  "
+    echo "       $ <path to tools>/b2venv <basf2 release>                   "
+    exit 1 
 fi
 
 _help_options () {
