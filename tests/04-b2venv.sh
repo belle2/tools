@@ -11,6 +11,7 @@ RECOMMENDED=$(b2help-releases)
 # Create venv with recommended release if it exists for this platform
 if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     echo "Trying to create venv with recommended release ..."
+    rm -rf venv
     b2venv ${RECOMMENDED}
 
     # Check if venv was created
