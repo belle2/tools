@@ -93,15 +93,19 @@ _path_setting=$(grep "^PATH=\|^export PATH" "${_activate}")
 sed -zi "s/\nPATH=.*\nexport PATH\n//" "${_activate}"
 
 # Include the basf2 setup in the activate script and move VIRTUAL_ENV and PATH settings after it
+_site_packages=$(realpath $(find ${_venv_name}/lib/ -type d -name site-packages))
 _insert_before='if \[ -z "${VIRTUAL_ENV_DISABLE_PROMPT:-}" \] ; then'
 _basf2_setup=$(cat <<EOF
 _OLD_VIRTUAL_LD_LIBRARY_PATH="\$LD_LIBRARY_PATH"
+_OLD_VIRTUAL_PYTHONPATH="\$PYTHONPATH"
 
 # Set up the basf2 environment
 source ${_tools_dir}/b2setup ${_basf2_release}
 
 # Add pip prefix path to install always in venv
 export PIP_PREFIX="${_venv_full_path}"
+
+export PYTHONPATH="${_site_packages}:\${PYTHONPATH:-}"
 
 ${_virtual_env_setting}
 
@@ -112,18 +116,22 @@ EOF
 _basf2_setup=$(echo -e "${_basf2_setup}" | sed 's/\//\\\//g' | sed 's/\$/\\\$/g' | sed -z 's/\n/\\n/g')
 sed -zi "s/${_insert_before}/${_basf2_setup}\\n${_insert_before}/" "${_activate}"
 
-# Restore also LD_LIBRARY_PATH on deactivate
+# Restore also LD_LIBRARY_PATH and PYTHONPATH on deactivate
 _insert_after='# reset old environment variables'
-_restore_ld_library_path=$(cat <<EOF
+_restore_env=$(cat <<EOF
     if [ -n "\${_OLD_VIRTUAL_LD_LIBRARY_PATH:-}" ] ; then
-        LD_LIBRARY_PATH="\${_OLD_VIRTUAL_LD_LIBRARY_PATH:-}"
-        export LD_LIBRARY_PATH
-        unset _OLD_VIRTUAL_LD_LIBRARY_PATH
+        export LD_LIBRARY_PATH="\${_OLD_VIRTUAL_LD_LIBRARY_PATH:-}"
     elif [ -n "\${_OLD_VIRTUAL_LD_LIBRARY_PATH+set}" ] ; then
         unset LD_LIBRARY_PATH
-        unset _OLD_VIRTUAL_LD_LIBRARY_PATH
     fi
+    unset _OLD_VIRTUAL_LD_LIBRARY_PATH
+    if [ -n "\${_OLD_VIRTUAL_PYTHONPATH:-}" ] ; then
+        export PYTHONPATH="\${_OLD_VIRTUAL_PYTHONPATH:-}"
+    elif [ -n "\${_OLD_VIRTUAL_PYTHONPATH+set}" ] ; then
+        unset PYTHONPATH
+    fi
+    unset _OLD_VIRTUAL_PYTHONPATH
 EOF
 )
-_restore_ld_library_path=$(echo -e "${_restore_ld_library_path}" | sed 's/\//\\\//g' | sed 's/\$/\\\$/g' | sed -z 's/\n/\\n/g')
-sed -zi "s/${_insert_after}/${_insert_after}\\n${_restore_ld_library_path}/" "${_activate}"
+_restore_env=$(echo -e "${_restore_env}" | sed 's/\//\\\//g' | sed 's/\$/\\\$/g' | sed -z 's/\n/\\n/g')
+sed -zi "s/${_insert_after}/${_insert_after}\\n${_restore_env}/" "${_activate}"
