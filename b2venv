@@ -1,0 +1,139 @@
+#!/bin/bash
+
+# This script is inspired by the 'cvmfs-venv' project of Matthew Feickert
+# (https://github.com/matthewfeickert/cvmfs-venv).
+# It automates the use of Python virtual environments with basf2.
+
+# Check if a conda environment is active
+if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+    echo "A conda environment ($CONDA_DEFAULT_ENV) is active. Please deactivate your conda environment."
+    exit 1
+fi
+
+_help_options () {
+    cat <<EOF
+Usage: b2venv [-n|--name <virtual environment name>] [-t|--tools-dir] [<basf2 release>]
+
+Options:
+ -h --help          Print this help message
+ -n --name          Specify the name of the virtual environment (default: "venv")
+EOF
+
+  return 0
+}
+
+# Default values
+_venv_name="venv"
+
+# CLI API
+unset _return_break
+while [ $# -gt 0 ]; do
+    case "${1}" in
+        -h|--help)
+            _help_options
+            exit 0
+            ;;
+        -n|--name)
+            _venv_name="${2}"
+            shift 2
+            ;;
+        --)
+            shift
+            break
+            ;;
+        *)
+            if [[ "${1}" != -* ]]; then
+                if [ -z "$_basf2_release" ]; then
+                    _basf2_release="${1}"
+                    shift
+                else
+                    echo "ERROR: Unrecognized argument '${1}'"
+                    exit 1
+                fi
+            else
+                echo "ERROR: Invalid option '${1}'"
+                exit 1
+            fi
+            ;;
+    esac
+done
+
+# Check if basf2 release is provided
+if [ -z "${_basf2_release}" ]; then
+    echo "ERROR: basf2 release must be provided as a non-option argument"
+    exit 1
+fi
+
+# Check if the venv directory already exists
+if [ -d "${_venv_name}" ]; then
+    echo "ERROR: the directory ${_venv_name=} already exists"
+    exit 1
+fi
+
+echo "Setting up virtual environment in directory ${_venv_name=} for release ${_basf2_release}"
+
+# Set up basf2
+_tools_dir="$(dirname "$(realpath "$0")")"
+_setup_command="source ${_tools_dir}/b2setup ${_basf2_release}"
+eval "${_setup_command}" > /dev/null
+if [ "$?" != "0" ]; then
+    echo "ERROR: failed to set up release ${_basf2_release}"
+    exit 1
+fi
+
+# Create venv with python from basf2 externals
+python3 -m venv --system-site-packages "${_venv_name}"
+_venv_full_path="$(readlink -f ${_venv_name})"
+_activate="${_venv_name}/bin/activate"
+
+# Extract and remove the lines that should be moved after the basf2 setup
+_virtual_env_setting=$(grep "^VIRTUAL_ENV=\|^export VIRTUAL_ENV" "${_activate}")
+sed -zi "s/\nVIRTUAL_ENV=.*\nexport VIRTUAL_ENV\n//" "${_activate}"
+sed -zi "s/\nPATH=.*\nexport PATH\n//" "${_activate}"
+
+# Include the basf2 setup in the activate script and move VIRTUAL_ENV and PATH settings after it
+_site_packages=$(realpath $(find ${_venv_name}/lib/ -type d -name site-packages))
+_insert_before='if \[ -z "${VIRTUAL_ENV_DISABLE_PROMPT:-}" \] ; then'
+_basf2_setup=$(cat <<EOF
+_OLD_VIRTUAL_LD_LIBRARY_PATH="\$LD_LIBRARY_PATH"
+_OLD_VIRTUAL_PYTHONPATH="\$PYTHONPATH"
+
+# Set up the basf2 environment
+source ${_tools_dir}/b2setup ${_basf2_release}
+
+BASF2_PATH=\$(echo "\$PATH" | sed "s|\$_OLD_VIRTUAL_PATH||g")
+
+# Add pip prefix path to install always in venv
+export PIP_PREFIX="${_venv_full_path}"
+
+export PYTHONPATH="${_site_packages}:\${PYTHONPATH:-}"
+
+${_virtual_env_setting}
+
+PATH="\$BASF2_PATH:\$VIRTUAL_ENV/bin:\$_OLD_VIRTUAL_PATH"
+export PATH
+
+EOF
+)
+_basf2_setup=$(echo -e "${_basf2_setup}" | sed 's/\//\\\//g' | sed 's/\$/\\\$/g' | sed -z 's/\n/\\n/g')
+sed -zi "s/${_insert_before}/${_basf2_setup}\\n${_insert_before}/" "${_activate}"
+
+# Restore also LD_LIBRARY_PATH and PYTHONPATH on deactivate
+_insert_after='# reset old environment variables'
+_restore_env=$(cat <<EOF
+    if [ -n "\${_OLD_VIRTUAL_LD_LIBRARY_PATH:-}" ] ; then
+        export LD_LIBRARY_PATH="\${_OLD_VIRTUAL_LD_LIBRARY_PATH:-}"
+    elif [ -n "\${_OLD_VIRTUAL_LD_LIBRARY_PATH+set}" ] ; then
+        unset LD_LIBRARY_PATH
+    fi
+    unset _OLD_VIRTUAL_LD_LIBRARY_PATH
+    if [ -n "\${_OLD_VIRTUAL_PYTHONPATH:-}" ] ; then
+        export PYTHONPATH="\${_OLD_VIRTUAL_PYTHONPATH:-}"
+    elif [ -n "\${_OLD_VIRTUAL_PYTHONPATH+set}" ] ; then
+        unset PYTHONPATH
+    fi
+    unset _OLD_VIRTUAL_PYTHONPATH
+EOF
+)
+_restore_env=$(echo -e "${_restore_env}" | sed 's/\//\\\//g' | sed 's/\$/\\\$/g' | sed -z 's/\n/\\n/g')
+sed -zi "s/${_insert_after}/${_insert_after}\\n${_restore_env}/" "${_activate}"
