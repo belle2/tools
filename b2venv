@@ -89,7 +89,6 @@ _activate="${_venv_name}/bin/activate"
 # Extract and remove the lines that should be moved after the basf2 setup
 _virtual_env_setting=$(grep "^VIRTUAL_ENV=\|^export VIRTUAL_ENV" "${_activate}")
 sed -zi "s/\nVIRTUAL_ENV=.*\nexport VIRTUAL_ENV\n//" "${_activate}"
-_path_setting=$(grep "^PATH=\|^export PATH" "${_activate}")
 sed -zi "s/\nPATH=.*\nexport PATH\n//" "${_activate}"
 
 # Include the basf2 setup in the activate script and move VIRTUAL_ENV and PATH settings after it
@@ -102,6 +101,8 @@ _OLD_VIRTUAL_PYTHONPATH="\$PYTHONPATH"
 # Set up the basf2 environment
 source ${_tools_dir}/b2setup ${_basf2_release}
 
+BASF2_PATH=\$(echo "\$PATH" | sed "s|\$_OLD_VIRTUAL_PATH||g")
+
 # Add pip prefix path to install always in venv
 export PIP_PREFIX="${_venv_full_path}"
 
@@ -109,7 +110,8 @@ export PYTHONPATH="${_site_packages}:\${PYTHONPATH:-}"
 
 ${_virtual_env_setting}
 
-${_path_setting}
+PATH="\$BASF2_PATH:\$VIRTUAL_ENV/bin:\$_OLD_VIRTUAL_PATH"
+export PATH
 
 EOF
 )
