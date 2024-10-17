@@ -162,7 +162,9 @@ else
     echo "Unknown linux distribution. Trying installation with yum..."
     INSTALL_CMD="yum install"
   fi
-  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8 or older
+  if [[ $OS_RELEASE_VERSION == "7" ]]; then # el7
+    PACKAGES+=" epel-release"
+  elif [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
     INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
   else # el9 or higher
     INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
