@@ -36,7 +36,7 @@ Alternatively you can use a docker container to get the Belle II software
 for example on Mac or Windows machines.
 
 If you want to use the Belle II software in a virtual environment, please have a look at the
-`b2venv`_ documentation.
+``b2venv`` documentation.
 
 .. toctree::
    :maxdepth: 1
