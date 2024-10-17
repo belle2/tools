@@ -107,7 +107,12 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
     PACKAGES_WITH_ARCHITECTURE+=" pkg-config libsm6 libice6"
   fi
   if [[ "$INSTALL_OPTION" > "4" ]]; then
-    PACKAGES_WITH_ARCHITECTURE+=" make wget unzip xz-utils gcc m4 g++ bzip2 bison texinfo libssl-dev libreadline-dev libfreetype-dev libx11-dev libxpm-dev libxft-dev libxext-dev libglew-dev libprotobuf-dev protobuf-compiler rsync libtirpc-dev ocaml"
+    PACKAGES_WITH_ARCHITECTURE+=" make wget unzip xz-utils gcc m4 g++ bzip2 bison texinfo libssl-dev libreadline-dev libx11-dev libxpm-dev libxft-dev libxext-dev libglew-dev libprotobuf-dev protobuf-compiler rsync libtirpc-dev ocaml"
+    if [[ $OS_RELEASE_VERSION < "11" ]]; then # debian10 or older
+      PACKAGES_WITH_ARCHITECTURE+=" libfreetype6-dev"
+    else
+      PACKAGES_WITH_ARCHITECTURE+=" libfreetype-dev"
+    fi
     PACKAGES+=" python3-pip"
   fi
   if [[ "$INSTALL_OPTION" > "5" ]]; then
@@ -150,11 +155,14 @@ else
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="dnf install"
+  if [[ $OS_RELEASE_VERSION < "8" ]]; then # el7 or older
+    INSTALL_CMD="yum install"
+  fi
   if [ ! -f /etc/redhat-release ]; then
     echo "Unknown linux distribution. Trying installation with yum..."
     INSTALL_CMD="yum install"
   fi
-  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
+  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8 or older
     INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
   else # el9 or higher
     INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
