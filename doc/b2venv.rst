@@ -1,5 +1,3 @@
-.. _b2venv:
-
 ``b2venv``: Using basf2 in a virtual environment
 ------------------------------------------------
 
