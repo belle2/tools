@@ -150,11 +150,14 @@ else
   CHECK_CMD="rpm -q"
   SU_CMD="su -c"
   INSTALL_CMD="dnf install"
+  if [[ $OS_RELEASE_VERSION < "8" ]]; then # el7 or older
+    INSTALL_CMD="yum install"
+  fi
   if [ ! -f /etc/redhat-release ]; then
     echo "Unknown linux distribution. Trying installation with yum..."
     INSTALL_CMD="yum install"
   fi
-  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8
+  if [[ $OS_RELEASE_VERSION < "9" ]]; then # el8 or older
     INSTALL_CMD="$INSTALL_CMD --enablerepo=powertools"
   else # el9 or higher
     INSTALL_CMD="$INSTALL_CMD --enablerepo=crb"
