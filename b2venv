@@ -103,6 +103,8 @@ source ${_tools_dir}/b2setup ${_basf2_release}
 
 # Add pip prefix path to install always in venv
 export PIP_PREFIX="${_venv_full_path}"
+# Ignore user site packages
+export PYTHONNOUSERSITE=1
 
 export PYTHONPATH="${_site_packages}:\${PYTHONPATH:-}"
 
