@@ -101,8 +101,6 @@ _OLD_VIRTUAL_PYTHONPATH="\$PYTHONPATH"
 # Set up the basf2 environment
 source ${_tools_dir}/b2setup ${_basf2_release}
 
-BASF2_PATH=\$(echo "\$PATH" | sed "s|\$_OLD_VIRTUAL_PATH||g")
-
 # Add pip prefix path to install always in venv
 export PIP_PREFIX="${_venv_full_path}"
 
@@ -110,7 +108,7 @@ export PYTHONPATH="${_site_packages}:\${PYTHONPATH:-}"
 
 ${_virtual_env_setting}
 
-PATH="\$BASF2_PATH:\$VIRTUAL_ENV/bin:\$_OLD_VIRTUAL_PATH"
+PATH="\$VIRTUAL_ENV/bin:\$PATH"
 export PATH
 
 EOF
