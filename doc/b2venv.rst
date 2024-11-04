@@ -13,7 +13,11 @@ After having sourced `b2setup`, the command ::
   $ b2venv release-XX-YY-ZZ
 
 creates a virtual environment directory with the externals Python and the basf2 release-XX-YY-ZZ.
-The created directory is created at the location `b2venv` is executed and is called `venv` by default.
+For a local basf2 release provide the absolut path to the direcotry of the release ::
+
+  $ b2venv /path/to/local/basf2/
+
+The venv directory is created at the location `b2venv` is executed and is called `venv` by default.
 The name of the directory can by adjusted by passing the name as an optional argument to `b2venv` ::
 
   $ b2venv -n MyVenv release-XX-YY-ZZ
