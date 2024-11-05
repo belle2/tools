@@ -15,8 +15,8 @@ For a local basf2 release provide the absolut path to the direcotry of the relea
 
   $ b2venv /path/to/local/basf2/
 
-The venv directory is created at the location `b2venv` is executed and is called `venv` by default.
-The name of the directory can by adjusted by passing the name as an optional argument to `b2venv` ::
+The venv directory is created at the location ``b2venv`` is executed and is called ``venv`` by default.
+The name of the directory can by adjusted by passing the name as an optional argument to ``b2venv`` ::
 
   $ b2venv -n MyVenv release-XX-YY-ZZ
 
