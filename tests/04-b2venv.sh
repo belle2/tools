@@ -35,7 +35,7 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     if python3 -c "import b2luigi" 2>/dev/null; then
         exit 1
     fi
-    
+
     # Default package manager is pip so try to install a package
     echo "Install a package and check for it's location ..."
     pip3 --quiet --no-cache-dir install --upgrade b2luigi &> /dev/null
@@ -58,4 +58,11 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
         exit 1
     fi
 
+    # Check that local python project can be installed
+    python3 mock_up_project.py
+    pip3 --quiet --no-cache-dir install -e mock_up_project &> /dev/null
+    if ! python3 -c "import my_mock_package" 2>/dev/null; then
+        exit 1
+    fi
+    rm -rf mock_up_project
 fi
