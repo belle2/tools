@@ -11,7 +11,7 @@ After having sourced ``b2setup``, the command ::
   $ b2venv release-XX-YY-ZZ
 
 creates a virtual environment directory with the externals Python and the basf2 release-XX-YY-ZZ.
-For a local basf2 release provide the absolut path to the direcotry of the release ::
+For a local basf2 release provide the path to the direcotry of the release ::
 
   $ b2venv /path/to/local/basf2/
 
