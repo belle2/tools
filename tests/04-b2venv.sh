@@ -13,6 +13,7 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
 
     # Install a Python package under user site-packages directory
     #  -> check later that it is later not available in the venv
+    b2setup ${RECOMMENDED}
     pip3 --quiet --no-cache-dir install --user b2luigi &> /dev/null
 
     echo "Trying to create venv with recommended release ..."
@@ -59,7 +60,7 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     fi
 
     # Check that local python project can be installed
-    python3 mock_up_project.py
+    python3 mock_up_package.py
     pip3 --quiet --no-cache-dir install -e mock_up_project &> /dev/null
     if ! python3 -c "import my_mock_package" 2>/dev/null; then
         exit 1
