@@ -10,6 +10,11 @@ RECOMMENDED=$(b2help-releases)
 
 # Create venv with recommended release if it exists for this platform
 if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
+
+    # Install a Python package under user site-packages directory
+    #  -> check later that it is later not available in the venv
+    pip3 --quiet --no-cache-dir install --user b2luigi &> /dev/null
+
     echo "Trying to create venv with recommended release ..."
     rm -rf venv
     b2venv ${RECOMMENDED}
@@ -26,10 +31,20 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     echo "Trying to run basf2 --info"
     basf2 --info
 
+    # Check that the previously installed package is not available in the venv
+    if python3 -c "import b2luigi" 2>/dev/null; then
+        exit 1
+    fi
+    
     # Default package manager is pip so try to install a package
     echo "Install a package and check for it's location ..."
     pip3 --quiet --no-cache-dir install --upgrade b2luigi &> /dev/null
-    ls venv/lib/python*/site-packages/b2luigi &> /dev/null
+
+    # Check that b2luigi is available in the venv
+    b2luigi_path=$(python3 -c "import b2luigi; print(b2luigi.__file__)" 2>/dev/null)
+    if [[ ! $b2luigi_path == *"venv/lib"* ]]; then
+        exit 1
+    fi
 
     # Checking that packages from the externals are correctly linked
     echo "Checking that packages from the externals are correctly linked ..."
