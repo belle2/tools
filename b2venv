@@ -64,6 +64,11 @@ if [ -z "${_basf2_release}" ]; then
     exit 1
 fi
 
+# Check if the provided basf2 release is a directory to a local basf2
+if [ -d "$_basf2_release" ]; then
+    _basf2_release=$(realpath "$_basf2_release")
+fi
+
 # Check if the venv directory already exists
 if [ -d "${_venv_name}" ]; then
     echo "ERROR: the directory ${_venv_name=} already exists"
