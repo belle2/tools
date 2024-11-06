@@ -49,7 +49,7 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
 
     # Checking that packages from the externals are correctly linked
     echo "Checking that packages from the externals are correctly linked ..."
-    pandas_path=$(python -c "import pandas; print(pandas.__file__)" 2>/dev/null)
+    pandas_path=$(python3 -c "import pandas; print(pandas.__file__)" 2>/dev/null)
     python_path=$(readlink -f $(which python3))
 
     if [[ $? -ne 0 || $pandas_path != *externals* ]]; then
@@ -60,10 +60,12 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     fi
 
     # Check that local python project can be installed
-    python3 mock_up_package.py
-    pip3 --quiet --no-cache-dir install -e mock_up_project &> /dev/null
-    if ! python3 -c "import my_mock_package" 2>/dev/null; then
+    export BELLE2_MOCK_UP_PROJECT="${BELLE2_TOOLS}/my_mock_project"
+    export BELLE2_MOCK_UP_PACKAGE="my_mock_package"
+    python3 ${BELLE2_TOOLS}/tests/mock_up_package.py
+    pip3 --quiet --no-cache-dir install -e ${BELLE2_MOCK_UP_PROJECT} &> /dev/null
+    if ! python3 -c "import ${BELLE2_MOCK_UP_PACKAGE}" 2>/dev/null; then
         exit 1
     fi
-    rm -rf mock_up_project
+    rm -rf ${BELLE2_MOCK_UP_PROJECT}
 fi
