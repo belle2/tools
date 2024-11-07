@@ -91,6 +91,22 @@ python3 -m venv --system-site-packages "${_venv_name}"
 _venv_full_path="$(readlink -f ${_venv_name})"
 _activate="${_venv_name}/bin/activate"
 
+# Create basf2 only pip list
+_basf2_python_path=$PYTHONPATH
+_basf2_lib_path=$(realpath "$(dirname "$(echo $_basf2_python_path | cut -d':' -f1)")/../lib")
+
+# Get the site-packages path
+_basf2_site_packages_path=""
+for python_dir in "$_basf2_lib_path"/python*; do
+    if [ -d "$python_dir/site-packages" ]; then
+        _basf2_site_packages_path="$python_dir/site-packages"
+        break
+    fi
+done
+
+# Write packages into file
+pip list --format=freeze --path $_basf2_site_packages_path > $_venv_full_path/basf2_pip_list.txt
+
 # Extract and remove the lines that should be moved after the basf2 setup
 _virtual_env_setting=$(grep "^VIRTUAL_ENV=\|^export VIRTUAL_ENV" "${_activate}")
 sed -zi "s/\nVIRTUAL_ENV=.*\nexport VIRTUAL_ENV\n//" "${_activate}"
@@ -117,6 +133,10 @@ ${_virtual_env_setting}
 
 PATH="\$VIRTUAL_ENV/bin:\$PATH"
 export PATH
+
+b2piplist() {
+        cat "\$VIRTUAL_ENV/basf2_pip_list.txt"
+}
 
 EOF
 )
