@@ -60,7 +60,7 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     fi
 
     # Checking that the output of b2piplist is not empty
-    if [[ -n "$(b2piplist)"]]; then
+    if [[ -n "$(b2piplist)" ]]; then
         exit 1
     fi
 
