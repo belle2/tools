@@ -59,6 +59,11 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
         exit 1
     fi
 
+    # Checking that the output of b2piplist is not empty
+    if [[-n "$(testfunc)"]]; then
+        exit 1
+    fi
+
     # Check that local python project can be installed
     export BELLE2_MOCK_UP_PROJECT="${BELLE2_TOOLS}/my_mock_project"
     export BELLE2_MOCK_UP_PACKAGE="my_mock_package"
