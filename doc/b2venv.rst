@@ -45,14 +45,14 @@ For more information on how to use ``b2venv``, please refer to the help message 
 Upgrading Python packages in the virtual environment
 ----------------------------------------------------
 
-While the virtual environment is respecting the Python packages provided by the externals, it is possible to upgrade these packages in the virtual environment. 
+While the virtual environment respects the Python packages provided by the externals, upgrading these packages in the virtual environment is possible. 
 In some cases upgrading the packages is necessary for many various reasons. The upgrade can even happen unintentionally whenever a new package is installed or the upgrade option of ``pip`` is used, e.g.::
 
   $ pip install --upgrade numpy
 
 .. caution::
   ``basf2`` releases are tested with specific versions of the Python packages given by the externals. 
-  Upgrading the packages can lead to unwanted behavior or even break the functionality of ``basf2``.
+  Upgrading the packages can lead to unwanted behaviour or even break the functionality of ``basf2``.
 
 To check which exact package versions are used for a given ``basf2`` release in the virtual environment created by ``b2venv`` execute the following command::
 
@@ -61,7 +61,7 @@ To check which exact package versions are used for a given ``basf2`` release in 
 This command will list all the packages and their versions that are installed in the externals.
 
 .. tip::
-  To be a 100% sure that the virtual environment does not install any packages that are not provided by the externals, it is possible to constraint every installation.
+  To be 100% sure that the virtual environment does not install any packages that are not provided by the externals, it is possible to constrain every installation.
   For the constraint, either add the constraint file for each installation with::
 
     $ pip install -c <venv_name>/basf2_pip_list.txt <package>
