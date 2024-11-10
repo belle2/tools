@@ -11,7 +11,11 @@ After having sourced ``b2setup``, the command ::
   $ b2venv release-XX-YY-ZZ
 
 creates a virtual environment directory with the externals Python and the basf2 release-XX-YY-ZZ.
-The created directory is created at the location ``b2venv`` is executed and is called ``venv`` by default.
+For a local basf2 release provide the path to the direcotry of the release ::
+
+  $ b2venv /path/to/local/basf2/
+
+The venv directory is created at the location ``b2venv`` is executed and is called ``venv`` by default.
 The name of the directory can by adjusted by passing the name as an optional argument to ``b2venv`` ::
 
   $ b2venv -n MyVenv release-XX-YY-ZZ
@@ -37,3 +41,32 @@ Sharing the project with others is then as easy as sharing the project directory
 For more information on how to use ``b2venv``, please refer to the help message of the command::
 
   $ b2venv --help
+
+Upgrading Python packages in the virtual environment
+----------------------------------------------------
+
+While the virtual environment respects the Python packages provided by the externals, upgrading these packages in the virtual environment is possible. 
+In some cases upgrading the packages is necessary for many various reasons. The upgrade can even happen unintentionally whenever a new package is installed or the upgrade option of ``pip`` is used, e.g.::
+
+  $ pip install --upgrade numpy
+
+.. caution::
+  ``basf2`` releases are tested with specific versions of the Python packages given by the externals. 
+  Upgrading the packages can lead to unwanted behaviour or even break the functionality of ``basf2``.
+
+To check which exact package versions are used for a given ``basf2`` release in the virtual environment created by ``b2venv`` execute the following command::
+
+  $ b2piplist
+
+This command will list all the packages and their versions that are installed in the externals.
+
+.. tip::
+  To be 100% sure that the virtual environment does not install any packages that are not provided by the externals, it is possible to constrain every installation.
+  For the constraint, either add the constraint file for each installation with::
+
+    $ pip install -c <venv_name>/basf2_pip_list.txt <package>
+
+  or export the constraint file as an environment variable::
+
+    $ export PIP_CONSTRAINT=<venv_name>/basf2_pip_list.txt
+
