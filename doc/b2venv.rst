@@ -3,7 +3,7 @@
 
 Working on analysis or tools with basf2 in Python can create the situation in which additional Python libraries are required that are not provided by the externals.
 Just using ``pip`` to install these libraries can lead to conflicts of local setups and version conflicts.
-To work in a cleaned and controlled Python envrionment, virtual environments are the way to go.
+To work in a cleaned and controlled Python environment, virtual environments are the way to go.
 ``b2venv`` is a tool that helps you to create a virtual environment with the externals python and the basf2 release you want to use.
 
 After having sourced ``b2setup``, the command ::
@@ -11,7 +11,7 @@ After having sourced ``b2setup``, the command ::
   $ b2venv release-XX-YY-ZZ
 
 creates a virtual environment directory with the externals Python and the basf2 release-XX-YY-ZZ.
-For a local basf2 release provide the path to the direcotry of the release ::
+For a local basf2 release provide the path to the directory of the release ::
 
   $ b2venv /path/to/local/basf2/
 
