@@ -45,7 +45,7 @@ if [ "$BRANCH" != "main" ]; then
   fi
 fi
 
-# To check the files to be commited we need a temporary dir as there might
+# To check the files to be committed we need a temporary dir as there might
 # be differences between the file in the index and the file on disk
 TMPDIR=`mktemp -d`
 if [ $? -ne 0 ]; then
@@ -55,7 +55,7 @@ fi
 
 # Find out which files were modified
 FILES_MODIFIED=`git diff --cached --name-only`
-# Place a copy of the versions to be commited in the temp dir
+# Place a copy of the versions to be committed in the temp dir
 # Add empty file with suffix .deleted for deleted files
 for FILE in ${FILES_MODIFIED}; do
   git checkout-index --prefix=${TMPDIR}/ -- "${FILE}" &> /dev/null
