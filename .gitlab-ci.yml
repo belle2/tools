@@ -3,7 +3,7 @@ stages:
   - test
 
 default:
-  tags: [extagent48]
+  tags: [gitlab-runner12]
   interruptible: true  # All the jobs can be interrupted by newer pipelines
 
 workflow:
