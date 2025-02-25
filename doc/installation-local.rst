@@ -34,9 +34,9 @@ where ``<version>`` should be the version you want. The operating system is
 automatically determined, but you can override this by giving the ``system``
 argument which should be the short distribution name for the desired system 
 from the list of supported distributions in the table above.  For example, to download
-``release-06-01-12`` on an Ubuntu 20.04 machine you need to run ::
+``release-08-02-06`` on an Ubuntu 22.04 machine you need to run ::
 
-  $ b2install-release release-06-01-12 ubuntu2004
+  $ b2install-release release-08-02-06 ubuntu2204
 
 .. warning:: If you work on a system for which we do not provide precompiled binaries
   the b2install-release command will compile the release from source.
@@ -50,25 +50,25 @@ corresponding externals package which contains all external software required
 by the software. The easiest way to find out which externals version you need
 is by trying to setup the software version you just downloaded. For example ::
 
-  $ b2setup release-06-01-12
+  $ b2setup release-08-02-06
 
 should print an error like
 
-The externals version v01-12-01 does not exist. You can use 'b2install-externals' to install them.
+The externals version v02-00-02b does not exist. You can use 'b2install-externals' to install them.
 
-which tells us that we need externals version ``v01-12-01`` by calling ::
+which tells us that we need externals version ``v02-00-02b`` by calling ::
 
-  $ b2install-externals v01-12-01 [<system>]
+  $ b2install-externals v02-00-02b [<system>]
 
 ``system`` is again optional and can be the short distribution name for the desired system from the
 `list of supported distributions`_. For example, to download
-externals ``v01-12-01`` on an Ubuntu 20.04 machine you need to run ::
+externals ``v02-00-02b`` on an Ubuntu 22.04 machine you need to run ::
 
-  $ b2install-externals v01-12-01 ubuntu2004
+  $ b2install-externals v02-00-02b ubuntu2204
 
 Now everything should be installed and you can setup the software using ::
 
-  $ b2setup release-06-01-12
+  $ b2setup release-08-02-06
 
 (or any other version you installed).
 
