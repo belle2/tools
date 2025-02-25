@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+import sys
+import json
+import requests
+import subprocess
+
+
+def output(message):
+    print(json.dumps(message), flush=True)
+
+
+def download(repo, oid):
+    url = f'https://software.belle2.org/download/lfs/{repo}/{oid[0:2]}/{oid[2:4]}/{oid}'
+    try:
+        with requests.get(url, stream=True) as stream:
+            stream.raise_for_status()
+            bytesSoFar = 0
+            output({'event': 'progress', 'oid': oid, 'bytesSoFar': bytesSoFar, 'bytesSinceLast': 0})
+            with open(oid, 'wb') as file:
+                for chunk in stream.iter_content(chunk_size=8192): 
+                    file.write(chunk)
+                    bytesSoFar += len(chunk)
+                    output({'event': 'progress', 'oid': oid, 'bytesSoFar': bytesSoFar, 'bytesSinceLast': len(chunk)})
+    except Exception as exception:
+        output({'event': 'complete', 'oid': oid, 'error': {'code': 1, 'message': str(exception)}})
+
+    output({'event': 'complete', 'oid': oid, 'path': oid})
+
+
+if __name__ == "__main__":
+    for line in sys.stdin:
+        if line:
+            try:
+                data = json.loads(line)
+            except Exception as exception:
+                continue
+
+            if data['event'] == 'init':
+                process = subprocess.run(['git', 'remote', 'get-url', 'origin'], capture_output=True)
+                repo = process.stdout.decode().split('\n')[0].split('/')[-1].removesuffix('.git')
+                output({})
+
+            elif data['event'] == 'download':
+                download(repo, data['oid'])
+
+            elif data['event'] == 'upload':
+                sys.stderr.write('ERROR: Large files can only be downloaded, but not uploaded to the server.')
+                sys.exit(1)
+
+            elif data['event'] == 'terminate':
+                sys.exit()
