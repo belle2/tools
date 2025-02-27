@@ -32,9 +32,9 @@ fi
 
 
 # check for optional token
-GIT_URL="git@gitlab.desy.de:"
+GIT_URL=$(dirname ${BELLE2_SOFTWARE_REPOSITORY})
 if [ $# -gt 1 ]; then
-  GIT_URL="https://oauth2:${2}@gitlab.desy.de/"
+  GIT_URL="https://oauth2:${2}@gitlab.desy.de/belle2/software"
 fi
 
 # get data type and corresponding directory and environment variable names
@@ -85,7 +85,7 @@ fi
 # connect to git repository
 cd ${DIR}
 if [ ! -d .git ]; then
-  git clone --no-checkout ${GIT_URL}belle2/software/${DIRNAME}.git tmp
+  git clone --no-checkout ${GIT_URL}/${DIRNAME}.git tmp
   if [ "$?" != 0 ]; then
     echo "Error: The synchronization of the ${DATATYPE} data failed." 1>&2
     echo "       Make sure you have access to the DESY gitlab." 1>&2
@@ -94,6 +94,10 @@ if [ ! -d .git ]; then
   mv tmp/.git .
   rm -rf tmp
   git lfs install
+  if [[ "${BELLE2_GIT_SERVER}" == *"github.com"* ]]; then
+    git config lfs.standalonetransferagent b2lfs
+    git config lfs.customtransfer.b2lfs.path ${BELLE2_TOOLS}/b2lfs
+  fi
 fi
 
 # sync data
