@@ -35,6 +35,14 @@ Alternatively you can use a docker container to get the Belle II software
 (instructions `here <https://confluence.desy.de/display/BI/How+to+run+basf2+on+a+laptop>`_),
 for example on Mac or Windows machines.
 
+If you want to use the Belle II software in a virtual environment, please have a look at the
+``b2venv`` documentation.
+
+.. toctree::
+   :maxdepth: 1
+
+   b2venv
+
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
 .. _access to the code repository: https://confluence.desy.de/x/2o4iAg

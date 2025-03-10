@@ -180,4 +180,4 @@ if __name__ == '__main__':
         supported = supported_release(release)
         if supported != release:
             print(
-                'echo "Warning: The release %s is not supported any more. Please update to %s"' % (release, supported))
+                'echo "Warning: The release %s is not supported. Please update to %s"' % (release, supported))
