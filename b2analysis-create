@@ -68,7 +68,7 @@ fi
 # check support of release version
 SUPPORTED_RELEASE=`b2anypython -c 'from versioning import supported_release;import sys;print(supported_release(sys.argv[1]))' ${RELEASE}`
 if [ "${RELEASE}" != "${SUPPORTED_RELEASE}" ]; then
-  echo "Warning: The release ${RELEASE} is not supported any more. It is recommended to use ${SUPPORTED_RELEASE} instead." 1>&2
+  echo "Warning: The release ${RELEASE} is not supported. It is recommended to use ${SUPPORTED_RELEASE} instead." 1>&2
   read -p "Would you like to continue nevertheless (y/n)? " -n 1 REPLY
   echo
   if [ "$REPLY" != "y" ]; then

@@ -45,7 +45,7 @@ if __name__ == '__main__':
         if release == 'light':
             print("The recommended light release is %s" % supported)
         elif supported != release:
-            print("Warning: The release %s is not supported any more. Please update to %s" % (release, supported))
+            print("Warning: The release %s is not supported. Please update to %s" % (release, supported))
         else:
             print("The release %s is supported" % release)
 
