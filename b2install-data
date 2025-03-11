@@ -37,8 +37,14 @@ if [ $# -gt 1 ]; then
   GIT_URL="https://oauth2:${2}@gitlab.desy.de/belle2/software"
 fi
 
-# get data type and corresponding directory and environment variable names
+# get data type and check that it is one of the supported values
 DATATYPE=$1
+if [[ "$DATATYPE" != "validation" && "$DATATYPE" != "examples" ]]; then
+  echo "Error: The first argument must be either 'validation' or 'examples'."
+  exit 1
+fi
+
+# set directory and environment variable names corresponding to data type
 DIRNAME="${DATATYPE,,}-data"
 ENVNAME="BELLE2_${DATATYPE^^}_DATA_DIR"
 
