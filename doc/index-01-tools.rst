@@ -32,7 +32,7 @@ the following documents:
    installation-local
 
 Alternatively you can use a docker container to get the Belle II software
-(instructions `here <https://confluence.desy.de/display/BI/How+to+run+basf2+on+a+laptop>`_),
+(instructions `here <https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Software/Software%20CodeManagement/Software%20SoftwareInstallation/How%20to%20run%20basf2%20on%20a%20laptop/>`_),
 for example on Mac or Windows machines.
 
 If you want to use the Belle II software in a virtual environment, please have a look at the
@@ -45,4 +45,4 @@ If you want to use the Belle II software in a virtual environment, please have a
 
 .. _CVMFS: https://cernvm.cern.ch/portal/filesystem
 .. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
-.. _access to the code repository: https://confluence.desy.de/x/2o4iAg
+.. _access to the code repository: https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Software/Software%20Basf2SoftwarePortal/GitGitLab%20Introduction/
