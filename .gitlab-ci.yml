@@ -31,8 +31,7 @@ test:
   parallel:
     matrix:
       # All the images we want to use
-      # rockylinux:8 is temporary excluded
-      - IMAGE: ['rockylinux:9', 'almalinux:9', 'ubuntu:22.04', 'ubuntu:24.04'] 
+      - IMAGE: ['rockylinux:8', 'rockylinux:9', 'almalinux:9', 'ubuntu:22.04', 'ubuntu:24.04'] 
   script:
     - echo "Running job \"${CI_JOB_NAME}\" with the image \"${CI_JOB_IMAGE}\"..."
     - tests/run.sh

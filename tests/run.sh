@@ -23,7 +23,14 @@ export BELLE2_NO_TOOLS_CHECK=yes
 export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
 echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
 
-# now we actually need zsh and tcsh for the tests
+# install all the dependencies
+${BELLE2_TOOLS}/b2install-prepare --non-interactive
+
+if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
+  exit 0
+fi
+
+# now we actually need xargs, zsh and tcsh for the tests
 for INSTALLER in dnf yum apt-get; do
   if [ -x "$(command -v ${INSTALLER})" ]; then
     # of course ubuntu needs to check for updates manually
@@ -33,18 +40,11 @@ for INSTALLER in dnf yum apt-get; do
       apt-get update
     fi
     if [ "$ONLY_B2INSTALL_PREPARE" = "no" ]; then
-      ${INSTALLER} install -y tcsh zsh
+      ${INSTALLER} install -y tcsh zsh findutils
     fi
     break
   fi
 done
-
-# install all the dependencies
-${BELLE2_TOOLS}/b2install-prepare --non-interactive
-
-if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
-  exit 0
-fi
 
 # and execute all test scripts we might have
 shopt -s nullglob extglob
