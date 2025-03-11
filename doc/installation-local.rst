@@ -89,5 +89,5 @@ and to list the available modules with ::
 
   $ basf2 -m
 
-.. _list of supported distributions: https://confluence.desy.de/display/BI/External+Software#ExternalSoftware-Precompiledbinaryversions
-.. _troubleshooting guide: https://confluence.desy.de/display/BI/External+Software#ExternalSoftware-Compilationtroubleshooting
+.. _list of supported distributions: https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Software/Software%20CodeManagement/Software%20SoftwareInstallation/External%20Software/#HPrecompiledbinaryversions
+.. _troubleshooting guide: https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Software/Software%20CodeManagement/Software%20SoftwareInstallation/External%20Software/#HCompilationtroubleshooting
