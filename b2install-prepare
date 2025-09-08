@@ -7,6 +7,9 @@ for i in "$@"; do
     --non-interactive)
       NO_PROMPT=yes
       ;;
+    --check)
+      CHECK=yes
+      ;;
     tools)
       INSTALL_OPTION=1
       ;;
@@ -32,6 +35,8 @@ Usage: b2install-prepare [--non-interactive] [tools|light|basf2|build|externals|
 This tool will check if all necessary packages are installed and if not it will
 ask the user if they should be installed. If --non-interactive is given the tool will not
 ask for confirmation but will just install the necessary packages.
+If --check is given the tool checks whether the required packages
+are installed and returns with exit code 0 if yes or 1 if no.
 
 The purpose for which the necessary packages are installed is given by one
 of the following arguments:
@@ -185,27 +190,18 @@ for PACKAGE in ${PACKAGES}; do
   fi
 done
 
-# check for missing optional packages
-MISSING_OPTIONALS=""
-for PACKAGE in ${OPTIONALS}; do
-  ${CHECK_CMD} ${PACKAGE} &> /dev/null
-  if [ "$?" != 0 ]; then
-    MISSING_OPTIONALS="${MISSING_OPTIONALS} ${PACKAGE}"
-  fi
-done
-
-
-# ask the user to install the missing packages
+# Command to install missing packages.
 if [ -n "${MISSING_PACKAGES}" ]; then
-  TEXT="now"
   INSTALL_MISSING=${INSTALL_CMD}${MISSING_PACKAGES}
   if [ "${SU_CMD}" != "sudo" ]; then
     INSTALL_MISSING=\"${INSTALL_MISSING}\"
   fi
-  if [ "$NO_PROMPT" = "yes" ]; then
-    REPLY=y
-  else
-    echo "The following packages are missing:${MISSING_PACKAGES}
+fi
+
+# Checking mode.
+function package_message
+{
+  echo "The following packages are missing:${MISSING_PACKAGES}
 
 Please install them with the following command:
 
@@ -213,6 +209,23 @@ Please install them with the following command:
 
 You will need root access to run this command.
 "
+}
+if [ "${CHECK}" = "yes" ]; then
+  if [ -n "${MISSING_PACKAGES}" ]; then
+    package_message
+    exit 1
+  else
+    exit 0
+  fi
+fi
+
+# Ask the user to install the missing packages
+if [ -n "${MISSING_PACKAGES}" ]; then
+  TEXT="now"
+  if [ "$NO_PROMPT" = "yes" ]; then
+    REPLY=y
+  else
+    package_message
     read -p "Would you like to execute it now (y/n)? " -n 1 REPLY
     echo
   fi
