@@ -43,6 +43,6 @@ If you want to use the Belle II software in a virtual environment, please have a
 
    b2venv
 
-.. _CVMFS: https://cernvm.cern.ch/portal/filesystem
-.. _CVMFS Client Quick Start: https://cernvm.cern.ch/portal/filesystem/quickstart
+.. _CVMFS: https://cernvm.cern.ch/fs/
+.. _CVMFS Client Quick Start: https://cvmfs.readthedocs.io/en/stable/cpt-quickstart.html
 .. _access to the code repository: https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Software/Software%20Basf2SoftwarePortal/GitGitLab%20Introduction/
