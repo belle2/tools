@@ -25,6 +25,8 @@ echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
 
 # install all the dependencies
 ${BELLE2_TOOLS}/b2install-prepare --non-interactive
+# and check they are all correctly installed
+${BELLE2_TOOLS}/b2install-prepare --check
 
 if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
   exit 0
