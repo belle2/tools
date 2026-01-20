@@ -24,7 +24,9 @@ export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-o
 echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
 
 # install all the dependencies
-${BELLE2_TOOLS}/b2install-prepare --non-interactive
+${BELLE2_TOOLS}/b2install-prepare --non-interactive all
+# and check they are all correctly installed
+${BELLE2_TOOLS}/b2install-prepare --check all
 
 if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
   exit 0

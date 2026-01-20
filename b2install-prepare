@@ -66,6 +66,10 @@ if [ -f /etc/os-release ]; then
   OS_RELEASE_VERSION=`(source /etc/os-release && echo $VERSION_ID)`
 fi
 
+# Small helper function to check for installed packages in Debian-based OS
+check_pkg_deb() {
+  apt-cache rdepends --installed "$1" | grep -q .
+}
 
 if [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
   # Ubuntu
@@ -85,7 +89,7 @@ if [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
   if [[ "$INSTALL_OPTION" > "5" ]]; then
     PACKAGES+=" flex"
   fi
-  CHECK_CMD="dpkg -s"
+  CHECK_CMD="check_pkg_deb"
   SU_CMD="sudo"
   # but sometimes there's no sudo (yes official docker images, looking at you ...)
   if ! [ -x "$(command -v sudo)" ]; then
@@ -128,7 +132,7 @@ elif [ $OS_RELEASE_ID == "debian" ]; then
   for package in ${PACKAGES_WITH_ARCHITECTURE}; do
     PACKAGES="${PACKAGES} ${package}:${ARCHITECTURE}"
   done
-  CHECK_CMD="dpkg -s"
+  CHECK_CMD="check_pkg_deb"
   SU_CMD="su -c"
   UPDATE_CMD="apt-get update"
   INSTALL_CMD="apt-get install"
@@ -157,7 +161,7 @@ else
   if [[ "$INSTALL_OPTION" > "5" ]]; then
     PACKAGES+=" flex"
   fi
-  CHECK_CMD="rpm -q"
+  CHECK_CMD="rpm -q --whatprovides"
   SU_CMD="su -c"
   INSTALL_CMD="dnf install"
   if [[ $OS_RELEASE_VERSION < "8" ]]; then # el7 or older
@@ -180,8 +184,7 @@ else
 fi
 TEXT="already"
 
-
-# check for missing packages
+# Check for missing packages
 MISSING_PACKAGES=""
 for PACKAGE in ${PACKAGES}; do
   ${CHECK_CMD} ${PACKAGE} &> /dev/null
@@ -198,8 +201,8 @@ if [ -n "${MISSING_PACKAGES}" ]; then
   fi
 fi
 
-# Checking mode.
-function package_message
+# Checking mode
+package_message()
 {
   echo "The following packages are missing:${MISSING_PACKAGES}
 
