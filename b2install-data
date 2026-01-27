@@ -8,7 +8,7 @@ if [ "$1" = "--help" -o "$1" = "-h" -o "$1" = "-?" ]; then
   echo "Usage: `basename $0` datatype [token]"
   echo
   echo "- This command installs or updates the given type of basf2 data."
-  echo "  Supported data types are 'validation' and 'examples'."
+  echo "  Supported data types are 'validation', 'examples' and 'starterkit'."
   echo "- The command requires that you have access to the DESY gitlab with ssh key:"
   echo "    https://gitlab.desy.de"
   echo "- Alternatively a token can be used to access the repository."
@@ -39,8 +39,8 @@ fi
 
 # get data type and check that it is one of the supported values
 DATATYPE=$1
-if [[ "$DATATYPE" != "validation" && "$DATATYPE" != "examples" ]]; then
-  echo "Error: The first argument must be either 'validation' or 'examples'."
+if [[ "$DATATYPE" != "validation" && "$DATATYPE" != "examples" && "$DATATYPE" != "starterkit" ]]; then
+  echo "Error: The first argument must be either 'validation', 'examples' or 'starterkit'."
   exit 1
 fi
 
