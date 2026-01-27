@@ -296,9 +296,11 @@ request which will send an email to the missing librarians and
 will add them to the list of people who receive notifications for every
 future action in the merge request.
 
-.. note:: only the thumbs-up emoji reaction from a librarian counts as an approval.
-    The "Approve" button only sends a notification but is not considered as an
-    approval by the bot. This is due to technical limitations of GitLab.
+.. note:: Only a thumbs-up emoji reaction from a librarian at the bottom of
+    the merge request description counts as approval.
+    Clicking the "Approve" button only sends a notification and is not
+    considered an approval by the bot.
+    This is due to technical limitations of GitLab.
 
 The second requirement that must be fulfilled before the merge request can be
 merged, is that the pipeline has to be successful. After you opened a merge
