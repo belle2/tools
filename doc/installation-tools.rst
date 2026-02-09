@@ -240,6 +240,8 @@ For users
 
   If no version is given it lists the available externals versions.
 
+.. _b2install-data-cmd:
+
 .. describe:: b2install-data
 
   :: 
@@ -247,7 +249,7 @@ For users
       Usage:: b2install-data datatype
 
   This command installs or updates the given type of basf2 data.
-  Supported data types are 'validation' and 'examples'.
+  Supported data types are 'validation', 'examples' and 'starterkit'.
 
 For developers
 ++++++++++++++
