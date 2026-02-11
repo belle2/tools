@@ -38,6 +38,8 @@ from the list of supported distributions in the table above.  For example, to do
 
   $ b2install-release release-08-02-06 ubuntu2204
 
+Additional basf2 data can be downloaded using :ref:`b2install-data <b2install-data-cmd>` command.
+
 .. warning:: If you work on a system for which we do not provide precompiled binaries
   the b2install-release command will compile the release from source.
   This requires that the externals are already installed, see next section.
