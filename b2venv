@@ -144,7 +144,7 @@ b2piplist() {
 }
 
 # Force JupyterLab to use the previously captured prefix to look for its assets
-export JUPYTERLAB_DIR="\${_basf2_python_prefix}/share/jupyter/lab"
+export JUPYTERLAB_DIR=\$(realpath "\${_basf2_python_prefix}/share/jupyter/lab")
 
 EOF
 )
