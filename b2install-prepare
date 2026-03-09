@@ -68,7 +68,13 @@ fi
 
 # Small helper function to check for installed packages in Debian-based OS
 check_pkg_deb() {
-  apt-cache rdepends --installed "$1" | grep -q .
+    local pkg="$1"
+    # Check if the package is fully installed
+    if dpkg-query -W -f='${Status}\n' "$pkg" 2>/dev/null | grep -q '^install ok installed$'; then
+        return 0
+    fi
+    # Otherwise, check if any installed package provides it (virtual packages)
+    dpkg-query -W -f='${Provides}\n' 2>/dev/null | grep -qw "$pkg"
 }
 
 if [ $OS_RELEASE_ID == "ubuntu" ] || [[ $OS_RELEASE_ID_LIKE = *ubuntu* ]]; then
