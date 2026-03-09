@@ -3,8 +3,8 @@ stages:
   - test
 
 default:
-  tags: [gitlab-runner12]
-  interruptible: true  # All the jobs can be interrupted by newer pipelines
+   # All the jobs can be interrupted by newer pipelines
+  interruptible: true
 
 workflow:
   rules:
@@ -13,6 +13,7 @@ workflow:
 
 b2install:
   stage: b2install
+  # Since this stage does not rely on CVMFS, the keyword `tags` is not used on purpose here
   image: $IMAGE
   parallel:
     matrix:
@@ -26,6 +27,8 @@ b2install:
 test:
   stage: test
   needs: [b2install]
+  # The test stage needs CVMFS, so it needs to be run using the Belle II runners
+  tags: [gitlab-runner12]
   # Run this job using multiple images
   image: $IMAGE
   parallel:
