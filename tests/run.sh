@@ -36,6 +36,7 @@ echo "Testing the command b2install-prepare"
 # b2install-prepare --check fails if called at this point:
 # we want to make sure it actually fails, so we exit 1 if the command succeeds
 if ${BELLE2_TOOLS}/b2install-prepare --check all; then
+    echo "If you are rerunning the test locally, please manually uninstall a package and rerun this script"
     exit 1
 fi
 # install all the dependencies
@@ -43,18 +44,20 @@ ${BELLE2_TOOLS}/b2install-prepare --non-interactive all
 # and check they are all correctly installed
 ${BELLE2_TOOLS}/b2install-prepare --check all
 
-# now let's uninstall a package (rsync) and try to rerun the previous commands
+# now let's uninstall few packages and try to rerun the previous commands
 ${INSTALLER} remove -y wget rsync
 # this command must fail and print a clear message that wget and rsync are both missing
-output=$(${BELLE2_TOOLS}/b2install-prepare --check all 2>&1)
-status=$?
+output=$(${BELLE2_TOOLS}/b2install-prepare --check all 2>&1) || status=$?
+status=${status:-0}  # default to 0 if the command succeeded
+# fail if exit code is not 1
 if [ "$status" -ne 1 ]; then
     exit 1
 fi
+# fail if the expected message is not present
 if ! echo "$output" | grep -q "The following packages are missing: wget rsync"; then
     exit 1
 fi
-# let's reinstall everything and check again
+# reinstall everything and check again
 ${BELLE2_TOOLS}/b2install-prepare --non-interactive all
 ${BELLE2_TOOLS}/b2install-prepare --check all
 
