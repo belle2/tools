@@ -16,23 +16,10 @@ for i in "$@"; do
 done
 
 set -e
+
 export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
-# we're testing development version of the tools, so we shouldn't check if they're up to date.
-export BELLE2_NO_TOOLS_CHECK=yes
-# make sure we find releases on cvmfs
-export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
-echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
 
-# install all the dependencies
-${BELLE2_TOOLS}/b2install-prepare --non-interactive all
-# and check they are all correctly installed
-${BELLE2_TOOLS}/b2install-prepare --check all
-
-if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
-  exit 0
-fi
-
-# now we actually need xargs, zsh and tcsh for the tests
+# determine the installation command
 for INSTALLER in dnf yum apt-get; do
   if [ -x "$(command -v ${INSTALLER})" ]; then
     # of course ubuntu needs to check for updates manually
@@ -41,12 +28,52 @@ for INSTALLER in dnf yum apt-get; do
       export DEBIAN_FRONTEND=noninteractive
       apt-get update
     fi
-    if [ "$ONLY_B2INSTALL_PREPARE" = "no" ]; then
-      ${INSTALLER} install -y tcsh zsh findutils
-    fi
     break
   fi
 done
+
+echo "Testing the command b2install-prepare"
+
+# b2install-prepare --check fails if called at this point:
+# we want to make sure it actually fails, so we exit 1 if the command succeeds
+if ${BELLE2_TOOLS}/b2install-prepare --check all; then
+  echo "If you are rerunning the test locally, please manually uninstall a package and rerun this script"
+  exit 1
+fi
+# install all the dependencies
+${BELLE2_TOOLS}/b2install-prepare --non-interactive all
+# and check they are all correctly installed
+${BELLE2_TOOLS}/b2install-prepare --check all
+
+if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
+  # now let's uninstall few packages and try to rerun the previous commands
+  ${INSTALLER} remove -y wget rsync
+  # this command must fail and print a clear message that wget and rsync are both missing
+  output=$(${BELLE2_TOOLS}/b2install-prepare --check all 2>&1) || status=$?
+  status=${status:-0}  # default to 0 if the command succeeded
+  # fail if exit code is not 1
+  if [ "$status" -ne 1 ]; then
+    exit 1
+  fi
+  # fail if the expected message is not present
+  if ! echo "$output" | grep -Eq "The following packages are missing: wget(:[[:alnum:]_]+)? rsync(:[[:alnum:]_]+)?"; then
+    exit 1
+  fi
+  # reinstall everything and check again
+  ${BELLE2_TOOLS}/b2install-prepare --non-interactive all
+  ${BELLE2_TOOLS}/b2install-prepare --check all
+
+  exit 0
+fi
+
+# we're testing development version of the tools, so we shouldn't check if they're up to date.
+export BELLE2_NO_TOOLS_CHECK=yes
+# make sure we find releases on cvmfs
+export VO_BELLE2_SW_DIR=/cvmfs/belle.cern.ch/$(${BELLE2_TOOLS}/b2install-print-os | tr -d " ")
+echo "Look for releases and externals in ${VO_BELLE2_SW_DIR}"
+
+# now we actually need xargs, zsh and tcsh for the tests
+${INSTALLER} install -y tcsh zsh findutils
 
 # and execute all test scripts we might have
 shopt -s nullglob extglob
