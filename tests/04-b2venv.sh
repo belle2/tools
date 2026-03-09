@@ -50,13 +50,22 @@ if [ -d "${VO_BELLE2_SW_DIR}/releases/${RECOMMENDED}" ]; then
     # Checking that packages from the externals are correctly linked
     echo "Checking that packages from the externals are correctly linked ..."
     pandas_path=$(python3 -c "import pandas; print(pandas.__file__)" 2>/dev/null)
-    python_path=$(readlink -f $(which python3))
-
     if [[ $? -ne 0 || $pandas_path != *externals* ]]; then
         exit 1
     fi
+    python_path=$(readlink -f $(which python3))
     if [[ $? -ne 0 || $python_path != *externals* ]]; then
         exit 1
+    fi
+
+    # Check that the JupyterLab server works correctly
+    echo "Checking that the JupyterLab server works correctly ..."
+    if [[ -z "${JUPYTERLAB_DIR:-}" || "$JUPYTERLAB_DIR" != *"$BELLE2_EXTERNALS_DIR"* ]]; then
+	exit 1
+    fi
+    jupyterlab_appdir=$(jupyter lab path | awk -F': *' '/Application directory/ {print $2}')
+    if [[ $? -ne 0 || "$jupyterlab_appdir" != "$JUPYTERLAB_DIR" ]]; then
+	exit 1
     fi
 
     # Checking that the output of b2piplist is not empty
