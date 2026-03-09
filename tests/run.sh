@@ -33,35 +33,36 @@ for INSTALLER in dnf yum apt-get; do
 done
 
 echo "Testing the command b2install-prepare"
+
 # b2install-prepare --check fails if called at this point:
 # we want to make sure it actually fails, so we exit 1 if the command succeeds
 if ${BELLE2_TOOLS}/b2install-prepare --check all; then
-    echo "If you are rerunning the test locally, please manually uninstall a package and rerun this script"
-    exit 1
+  echo "If you are rerunning the test locally, please manually uninstall a package and rerun this script"
+  exit 1
 fi
 # install all the dependencies
 ${BELLE2_TOOLS}/b2install-prepare --non-interactive all
 # and check they are all correctly installed
 ${BELLE2_TOOLS}/b2install-prepare --check all
 
-# now let's uninstall few packages and try to rerun the previous commands
-${INSTALLER} remove -y wget rsync
-# this command must fail and print a clear message that wget and rsync are both missing
-output=$(${BELLE2_TOOLS}/b2install-prepare --check all 2>&1) || status=$?
-status=${status:-0}  # default to 0 if the command succeeded
-# fail if exit code is not 1
-if [ "$status" -ne 1 ]; then
-    exit 1
-fi
-# fail if the expected message is not present
-if ! echo "$output" | grep -Eq "The following packages are missing: wget(:[[:alnum:]_]+)? rsync(:[[:alnum:]_]+)?"; then
-    exit 1
-fi
-# reinstall everything and check again
-${BELLE2_TOOLS}/b2install-prepare --non-interactive all
-${BELLE2_TOOLS}/b2install-prepare --check all
-
 if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
+  # now let's uninstall few packages and try to rerun the previous commands
+  ${INSTALLER} remove -y wget rsync
+  # this command must fail and print a clear message that wget and rsync are both missing
+  output=$(${BELLE2_TOOLS}/b2install-prepare --check all 2>&1) || status=$?
+  status=${status:-0}  # default to 0 if the command succeeded
+  # fail if exit code is not 1
+  if [ "$status" -ne 1 ]; then
+    exit 1
+  fi
+  # fail if the expected message is not present
+  if ! echo "$output" | grep -Eq "The following packages are missing: wget(:[[:alnum:]_]+)? rsync(:[[:alnum:]_]+)?"; then
+    exit 1
+  fi
+  # reinstall everything and check again
+  ${BELLE2_TOOLS}/b2install-prepare --non-interactive all
+  ${BELLE2_TOOLS}/b2install-prepare --check all
+
   exit 0
 fi
 
