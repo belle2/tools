@@ -17,6 +17,8 @@ done
 
 set -e
 
+export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
+
 # determine the installation command
 for INSTALLER in dnf yum apt-get; do
   if [ -x "$(command -v ${INSTALLER})" ]; then
@@ -60,7 +62,6 @@ if [ "$ONLY_B2INSTALL_PREPARE" = "yes" ]; then
   exit 0
 fi
 
-export BELLE2_TOOLS=$(cd -P $(dirname  $0)/.. && pwd -P)
 # we're testing development version of the tools, so we shouldn't check if they're up to date.
 export BELLE2_NO_TOOLS_CHECK=yes
 # make sure we find releases on cvmfs
