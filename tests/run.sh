@@ -54,7 +54,7 @@ if [ "$status" -ne 1 ]; then
     exit 1
 fi
 # fail if the expected message is not present
-if ! echo "$output" | grep -q "The following packages are missing: wget rsync"; then
+if ! echo "$output" | grep -Eq "The following packages are missing: wget(:[[:alnum:]_]+)? rsync(:[[:alnum:]_]+)?"; then
     exit 1
 fi
 # reinstall everything and check again
