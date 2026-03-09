@@ -44,7 +44,7 @@ ${BELLE2_TOOLS}/b2install-prepare --non-interactive all
 ${BELLE2_TOOLS}/b2install-prepare --check all
 
 # now let's uninstall a package (rsync) and try to rerun the previous commands
-${INSTALLER} remove wget rsync
+${INSTALLER} remove -y wget rsync
 # this command must fail and print a clear message that wget and rsync are both missing
 output=$(${BELLE2_TOOLS}/b2install-prepare --check all 2>&1)
 status=$?
