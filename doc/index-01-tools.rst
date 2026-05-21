@@ -31,9 +31,8 @@ the following documents:
    installation-tools
    installation-local
 
-Alternatively you can use a docker container to get the Belle II software
-(instructions `here <https://xwiki.desy.de/xwiki/bin/view/BI/Belle%20II%20Internal/Software/Software%20CodeManagement/Software%20SoftwareInstallation/How%20to%20run%20basf2%20on%20a%20laptop/>`_),
-for example on Mac or Windows machines.
+Alternatively, you can use Docker or Apptainer to run the Belle II software on macOS or Windows systems.
+For more information, see the `Belle II Docker Images repository <https://github.com/belle2/docker-images>_`.
 
 If you want to use the Belle II software in a virtual environment, please have a look at the
 ``b2venv`` documentation.
