@@ -32,7 +32,7 @@ the following documents:
    installation-local
 
 Alternatively, you can use Docker or Apptainer to run the Belle II software on macOS or Windows systems.
-For more information, see the `Belle II Docker Images repository <https://github.com/belle2/docker-images>_`.
+For more information, see the `Belle II Docker Images repository <https://github.com/belle2/docker-images>`_.
 
 If you want to use the Belle II software in a virtual environment, please have a look at the
 ``b2venv`` documentation.
