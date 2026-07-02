@@ -5,7 +5,7 @@ import subprocess
 import argparse
 
 try:
-    import packaging
+    from packaging.version import Version
     packaging_available = True
 except ImportError:
     from distutils.version import LooseVersion
@@ -184,7 +184,7 @@ def export_environment(csh=False):
 
     try:
         if packaging_available:
-            need_overwrite = packaging.Version('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= packaging.Version('01.10.00')
+            need_overwrite = Version('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= Version('01.10.00')
         else:
             need_overwrite = LooseVersion('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= '01.10.00'
         if need_overwrite:
