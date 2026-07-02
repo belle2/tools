@@ -3,13 +3,7 @@ import sys
 import os
 import subprocess
 import argparse
-
-try:
-    import packaging
-    packaging_available = True
-except ImportError:
-    from distutils.version import LooseVersion
-    packaging_available = False
+from distutils.version import LooseVersion
 
 try:
     from importlib import reload
@@ -183,11 +177,7 @@ def export_environment(csh=False):
             print('unset SAVEOLDPWD')
 
     try:
-        if packaging_available:
-            need_overwrite = packaging.Version('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= packaging.Version('01.10.00')
-        else:
-            need_overwrite = LooseVersion('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= '01.10.00'
-        if need_overwrite:
+        if LooseVersion('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= '01.10.00':
             # overwrite JUPYTER config directory to fix bug in ROOT v6.24
             try:
                 value = os.path.join(os.environ['HOME'], '.jupyter')
