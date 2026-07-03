@@ -180,23 +180,20 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    try:
-        need_overwrite = VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= VersionClass('01.10.00')
-        if need_overwrite:
-            # overwrite JUPYTER config directory to fix bug in ROOT v6.24
-            try:
-                value = os.path.join(os.environ['HOME'], '.jupyter')
-                if csh:
-                    print('setenv JUPYTER_CONFIG_DIR "%s"' % value)
-                else:
-                    print('export JUPYTER_CONFIG_DIR="%s"' % value)
-            except KeyError:
-                print(
-                    'echo "Info: HOME environment variable is not set, therefore can not set '
-                    'JUPYTER_CONFIG_DIR to \\$HOME/.jupyter."'
-                )
-    except:
-        pass
+    need_overwrite = VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= VersionClass('01.10.00')
+    if need_overwrite:
+        # overwrite JUPYTER config directory to fix bug in ROOT v6.24
+        try:
+            value = os.path.join(os.environ['HOME'], '.jupyter')
+            if csh:
+                print('setenv JUPYTER_CONFIG_DIR "%s"' % value)
+            else:
+                print('export JUPYTER_CONFIG_DIR="%s"' % value)
+        except KeyError:
+            print(
+                'echo "Info: HOME environment variable is not set, therefore can not set '
+                'JUPYTER_CONFIG_DIR to \\$HOME/.jupyter."'
+            )
 
 
 def unsetup_release(location):
