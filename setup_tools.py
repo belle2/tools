@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-import subprocess
 import argparse
-from distutils.version import LooseVersion
+
+try:
+    from packaging.version import Version as VersionClass
+except ImportError:
+    from distutils.version import LooseVersion as VersionClass
 
 try:
     from importlib import reload
@@ -176,22 +179,19 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    try:
-        if LooseVersion('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) >= '01.10.00':
-            # overwrite JUPYTER config directory to fix bug in ROOT v6.24
-            try:
-                value = os.path.join(os.environ['HOME'], '.jupyter')
-                if csh:
-                    print('setenv JUPYTER_CONFIG_DIR "%s"' % value)
-                else:
-                    print('export JUPYTER_CONFIG_DIR="%s"' % value)
-            except KeyError:
-                print(
-                    'echo "Info: HOME environment variable is not set, therefore can not set '
-                    'JUPYTER_CONFIG_DIR to \\$HOME/.jupyter."'
-                )
-    except:
-        pass
+    if VersionClass('01.10.00') <= VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) < VersionClass('02.04.00'):
+        # overwrite JUPYTER config directory to fix bug in ROOT v6.24
+        try:
+            value = os.path.join(os.environ['HOME'], '.jupyter')
+            if csh:
+                print('setenv JUPYTER_CONFIG_DIR "%s"' % value)
+            else:
+                print('export JUPYTER_CONFIG_DIR="%s"' % value)
+        except KeyError:
+            print(
+                'echo "Info: HOME environment variable is not set, therefore can not set '
+                'JUPYTER_CONFIG_DIR to \\$HOME/.jupyter."'
+            )
 
 
 def unsetup_release(location):
