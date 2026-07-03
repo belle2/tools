@@ -180,8 +180,7 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    need_overwrite = VersionClass('01.10.00') <= VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) < VersionClass('02.04.00')
-    if need_overwrite:
+    if VersionClass('01.10.00') <= VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) < VersionClass('02.04.00'):
         # overwrite JUPYTER config directory to fix bug in ROOT v6.24
         try:
             value = os.path.join(os.environ['HOME'], '.jupyter')
