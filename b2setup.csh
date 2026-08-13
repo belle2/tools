@@ -122,7 +122,7 @@ if ( ! ${?BELLE2_ANALYSES_PROJECT} ) then
   endif
 endif
 if ( ! ${?BELLE2_DOWNLOAD} ) then
-  setenv BELLE2_DOWNLOAD "--ca-certificate=${BELLE2_TOOLS}/certchain.pem https://software.belle2.org/download"
+  setenv BELLE2_DOWNLOAD "https://software.belle2.org/download"
 endif
 
 # list of packages that are excluded by default

@@ -80,9 +80,9 @@ fi
 NAME=$(basename ${ANALYSIS_PROJECT})
 GROUP=$(dirname ${ANALYSIS_PROJECT})
 echo "Enter your DESY password to create your analysis directory on the gitlab server."
-wget --ca-certificate=${BELLE2_TOOLS}/certchain.pem --user=${BELLE2_USER} --ask-password --auth-no-challenge -o /dev/null -O /dev/null --post-data="name=${NAME}&group=${GROUP}" "https://software.belle2.org/create_analysis"
+wget --user=${BELLE2_USER} --ask-password -o /dev/null -O /dev/null --post-data="name=${NAME}&group=${GROUP}" "https://webhook.belle2.org/create_analysis"
 if [ "$?" = "0" ]; then
-  sleep 2
+  sleep 5
   REMOTE_EXISTS=1
   git clone ${ANALYSIS_REPOSITORY} ${DIR}
   cd ${DIR}
