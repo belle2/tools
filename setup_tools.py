@@ -230,7 +230,7 @@ def setup_release(location):
         env_vars['BELLE2_EXTERNALS_VERSION'] = open(externals_file).readline().strip()
 
 
-def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None, csh=False):
+def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None, csh=False, conda_externals=None):
     """update the environment for the given central and local release or analysis and options"""
 
     # no change of release and local_dir if are both None (only change of options)
@@ -289,10 +289,23 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
         else:
             env_vars['BELLE2_LOCAL_DIR'] = local_dir
 
-    # setup externals
-    if len(env_vars['BELLE2_EXTERNALS_VERSION']) == 0:
+    # check for active conda environment
+    if conda_externals is None:
+        conda_externals = os.environ.get('BELLE2_EXTERNALS_USE_CONDA', '') == '1'
+    env_vars['BELLE2_EXTERNALS_USE_CONDA'] = '1' if conda_externals else ''
+    if conda_externals:
+        extdir = os.environ.get('CONDA_PREFIX', '')
+        if not extdir or not os.path.isdir(extdir):
+            sys.stderr.write(
+                'Error: --conda-externals was requested but no conda/mamba environment is active\n'
+                '(CONDA_PREFIX is not set). Activate the conda-forge externals environment\n'
+                'first, then run b2setup --conda-externals again.\n')
+            sys.exit(1)
+    # check for legacy externals
+    elif len(env_vars['BELLE2_EXTERNALS_VERSION']) == 0:
         sys.stderr.write('Error: No externals version is defined.\n')
         sys.exit(1)
+    # fall back to legacy externals
     else:
         version = env_vars['BELLE2_EXTERNALS_VERSION']
         extdir = os.path.join(os.environ['BELLE2_EXTERNALS_TOPDIR'], version)
@@ -305,7 +318,10 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
                                  % version)
                 sys.exit(1)
 
-        env_vars['BELLE2_EXTERNALS_DIR'] = extdir
+    env_vars['BELLE2_EXTERNALS_DIR'] = extdir
+    if conda_externals:
+        pass
+    else:
         try:
             sys.path[:0] = [extdir]
             import externals
