@@ -20,6 +20,13 @@ fi
 # make sure tar uses stdin
 unset TAPE
 
+# check for conda externals option
+BELLE2_EXTERNALS_USE_CONDA="no"
+if [ "$1" = "--conda-externals" ]; then
+    BELLE2_EXTERNALS_USE_CONDA="yes"
+    shift
+fi
+
 # check for binary option
 BINARY_ONLY="no"
 if [ "$1" = "--binary" ]; then
@@ -38,6 +45,33 @@ if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" -o -z "${BELLE2_EXTERNALS_TOPDIR}" ]; t
   echo "Belle II software environment is not set up." 1>&2
   echo "-> source b2setup" 1>&2
   exit 1
+fi
+
+# setup pixi environment
+if [ "$BELLE2_EXTERNALS_USE_CONDA" = "yes" ]; then
+    if ! command -v pixi >/dev/null 2>&1; then
+        echo "Error: pixi is required to install conda packages." 1>&2
+        exit 1
+    fi
+
+    mkdir -p "${BELLE2_CONDA_EXTERNALS_TOPDIR}"
+    cd "${BELLE2_CONDA_EXTERNALS_TOPDIR}"
+
+    git archive --format=tar.gz --prefix=belle_legacy/ --remote=${BELLE2_BELLE_LEGACY_REPOSITORY} v1.11 | tar xzv
+
+    for package in fann2 neurobayescppinterface belle_legacy; do
+        pixi run rattler-build build \
+            --recipe ${BELLE2_CONDA_EXTERNALS_TOPDIR}/recipes/${package}/recipe.yaml \
+            -m ${BELLE2_CONDA_EXTERNALS_TOPDIR}/variants/variants.yaml \
+            --output-dir ${BELLE2_CONDA_EXTERNALS_TOPDIR}/channels/local-channel
+    done
+
+    pixi workspace channel add "file://${BELLE2_CONDA_EXTERNALS_TOPDIR}/channels/local-channel/"
+    pixi add belle_legacy=1.11 fann2=2015.11.29 neurobayescppinterface=2018.1.11
+
+    pixi install
+
+    exit 0
 fi
 
 # list available versions if no argument is given
