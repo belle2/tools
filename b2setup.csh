@@ -62,6 +62,11 @@ if ( ! ${?BELLE2_EXTERNALS_TOPDIR} ) then
   setenv BELLE2_EXTERNALS_TOPDIR ${VO_BELLE2_SW_DIR}/externals
 endif
 
+# set top directory of conda external software
+if ( ! ${?BELLE2_CONDA_EXTERNALS_TOPDIR} ) then
+  setenv BELLE2_CONDA_EXTERNALS_TOPDIR ${BELLE2_EXTERNALS_TOPDIR}/conda-externals
+endif
+
 # set architecture, default option and sub directory name
 setenv BELLE2_ARCH `uname -s`_`uname -m`
 if ( ! ${?BELLE2_OPTION} ) then
@@ -110,6 +115,9 @@ if ( ! ${?BELLE2_SOFTWARE_REPOSITORY} ) then
 endif
 if ( ! ${?BELLE2_EXTERNALS_REPOSITORY} ) then
   setenv BELLE2_EXTERNALS_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/externals.git
+endif
+if ( ! ${?BELLE2_BELLE_LEGACY_REPOSITORY} ) then
+  setenv BELLE2_BELLE_LEGACY_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/belle_legacy.git
 endif
 if ( ! ${?BELLE2_VERSIONING_REPOSITORY} ) then
   setenv BELLE2_VERSIONING_REPOSITORY ${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/versioning.git

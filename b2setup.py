@@ -75,6 +75,10 @@ def get_argument_parser():
                         default=False,
                         action='store_true',
                         help='To be used with csh shells.')
+    parser.add_argument('--conda-externals',
+                        default=False,
+                        action='store_true',
+                        help='Use the conda externals environment.')
     parser.add_argument('--help', '-h', '-?',
                         nargs=0,
                         action=ListReleasesHelpAction)
@@ -114,7 +118,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     # setup environment for release
-    update_environment(release, local_dir, csh=args.csh)
+    update_environment(release, local_dir, csh=args.csh, conda_externals=args.conda_externals)
 
     # inform user about successful completion
     if release and local_dir:
