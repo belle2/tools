@@ -60,7 +60,7 @@ if [ "$BELLE2_EXTERNALS_USE_CONDA" = "yes" ]; then
     git archive --format=tar.gz --prefix=belle_legacy/ --remote=${BELLE2_BELLE_LEGACY_REPOSITORY} v1.11 | tar xzv
 
     for package in fann2 neurobayescppinterface belle_legacy; do
-        pixi run rattler-build build \
+        pixi exec rattler-build build \
             --recipe ${BELLE2_CONDA_EXTERNALS_TOPDIR}/recipes/${package}/recipe.yaml \
             -m ${BELLE2_CONDA_EXTERNALS_TOPDIR}/variants/variants.yaml \
             --output-dir ${BELLE2_CONDA_EXTERNALS_TOPDIR}/channels/local-channel
