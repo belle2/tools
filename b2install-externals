@@ -56,9 +56,19 @@ if [ "$BELLE2_EXTERNALS_USE_CONDA" = "yes" ]; then
 
     cd "${BELLE2_EXTERNALS_TOPDIR}"
 
-    git archive --format=tar.gz --prefix=belle_legacy/ --remote=${BELLE2_BELLE_LEGACY_REPOSITORY} v1.11 | tar xzv
+    if [ ! -d "${BELLE2_EXTERNALS_TOPDIR}/belle_legacy" ]; then
+        git archive --format=tar.gz --prefix=belle_legacy/ --remote=${BELLE2_BELLE_LEGACY_REPOSITORY} v1.11 | tar xzv
+    else
+        echo "Skipping belle_legacy download, source already present"
+    fi
 
     for package in fann2 neurobayescppinterface belle_legacy; do
+        exists=$(find "${BELLE2_EXTERNALS_TOPDIR}/channels" -name "${package}-*.conda" 2>/dev/null | head -n1)
+        if [ -n "$exists" ]; then
+            echo "Skipping ${package}: already built at ${exists}"
+            continue
+        fi
+        echo "Building ${package}"
         pixi exec rattler-build build \
             --recipe ${BELLE2_EXTERNALS_TOPDIR}/recipes/${package}/recipe.yaml \
             -m ${BELLE2_EXTERNALS_TOPDIR}/variants/variants.yaml \
