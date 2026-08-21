@@ -299,7 +299,6 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
                 '(CONDA_PREFIX is not set). Activate the conda-forge externals environment\n'
                 'first, then run b2setup --conda-externals again.\n')
             sys.exit(1)
-        impdir = os.environ['BELLE2_CONDA_EXTERNALS_TOPDIR']
 
     # check for legacy externals
     else:
@@ -317,11 +316,10 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
                                  'You can use \'b2install-externals\' to install them.\n'
                                  % version)
                 sys.exit(1)
-        impdir = extdir
 
     env_vars['BELLE2_EXTERNALS_DIR'] = extdir
     try:
-        sys.path[:0] = [impdir]
+        sys.path[:0] = [os.environ['BELLE2_EXTERNALS_TOPDIR']]
         import externals
         # previously we may have imported unsetup_externals() from the old version,
         # force reload of module from new file here

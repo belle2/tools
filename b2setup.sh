@@ -32,11 +32,6 @@ if [ -z "${BELLE2_EXTERNALS_TOPDIR}" ]; then
   export BELLE2_EXTERNALS_TOPDIR=${VO_BELLE2_SW_DIR}/externals
 fi
 
-# set top directory of conda external software
-if [ -z "${BELLE2_CONDA_EXTERNALS_TOPDIR}" ]; then
-  export BELLE2_CONDA_EXTERNALS_TOPDIR=${BELLE2_EXTERNALS_TOPDIR}/conda-externals
-fi
-
 # set architecture, default option and sub directory name
 export BELLE2_ARCH=`uname -s`_`uname -m`
 if ! [[ "opt debug clang intel" =~ ( |^)${BELLE2_OPTION}( |$) ]]; then
@@ -109,7 +104,7 @@ fi
 function b2setup
 {
   if [ "$1" = "--conda-externals" ]; then
-    eval "$(pixi shell-hook --manifest-path ${BELLE2_CONDA_EXTERNALS_TOPDIR}/pixi.toml)"
+    eval "$(pixi shell-hook --manifest-path ${BELLE2_EXTERNALS_TOPDIR}/pixi.toml)"
   fi
   eval "`b2anypython ${BELLE2_TOOLS}/b2setup.py $* || echo 'return 1'`"
 }

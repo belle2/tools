@@ -62,11 +62,6 @@ if ( ! ${?BELLE2_EXTERNALS_TOPDIR} ) then
   setenv BELLE2_EXTERNALS_TOPDIR ${VO_BELLE2_SW_DIR}/externals
 endif
 
-# set top directory of conda external software
-if ( ! ${?BELLE2_CONDA_EXTERNALS_TOPDIR} ) then
-  setenv BELLE2_CONDA_EXTERNALS_TOPDIR ${BELLE2_EXTERNALS_TOPDIR}/conda-externals
-endif
-
 # set architecture, default option and sub directory name
 setenv BELLE2_ARCH `uname -s`_`uname -m`
 if ( ! ${?BELLE2_OPTION} ) then
