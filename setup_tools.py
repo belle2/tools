@@ -137,7 +137,7 @@ def remove_option(var, option):
     env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, '').strip()
 
 
-def export_environment(csh=False):
+def export_environment(csh=False, conda_externals=False):
     """generate shell commands for environment settings"""
 
     for var in env_vars.keys():
@@ -179,7 +179,7 @@ def export_environment(csh=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    if VersionClass('01.10.00') <= VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) < VersionClass('02.04.00'):
+    if not conda_externals and (VersionClass('01.10.00') <= VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) < VersionClass('02.04.00')):
         # overwrite JUPYTER config directory to fix bug in ROOT v6.24
         try:
             value = os.path.join(os.environ['HOME'], '.jupyter')
@@ -230,7 +230,7 @@ def setup_release(location):
         env_vars['BELLE2_EXTERNALS_VERSION'] = open(externals_file).readline().strip()
 
 
-def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None, csh=False):
+def update_environment(release=None, local_dir=None, externals_version=None, option=None, externals_option=None, csh=False, conda_externals=False):
     """update the environment for the given central and local release or analysis and options"""
 
     # no change of release and local_dir if are both None (only change of options)
@@ -289,11 +289,24 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
         else:
             env_vars['BELLE2_LOCAL_DIR'] = local_dir
 
-    # setup externals
-    if len(env_vars['BELLE2_EXTERNALS_VERSION']) == 0:
-        sys.stderr.write('Error: No externals version is defined.\n')
-        sys.exit(1)
+    # check for active conda environment
+    env_vars['BELLE2_EXTERNALS_USE_CONDA'] = '1' if conda_externals else ''
+    if conda_externals:
+        extdir = os.environ.get('CONDA_PREFIX', '')
+        if not extdir or not os.path.isdir(extdir):
+            sys.stderr.write(
+                'Error: --conda-externals was requested but no conda/mamba environment is active\n'
+                '(CONDA_PREFIX is not set). Activate the conda-forge externals environment\n'
+                'first, then run b2setup --conda-externals again.\n')
+            sys.exit(1)
+        impdir = os.environ['BELLE2_EXTERNALS_TOPDIR']
+
+    # check for legacy externals
     else:
+        if len(env_vars['BELLE2_EXTERNALS_VERSION']) == 0:
+            sys.stderr.write('Error: No externals version is defined.\n')
+            sys.exit(1)
+        # fall back to legacy externals
         version = env_vars['BELLE2_EXTERNALS_VERSION']
         extdir = os.path.join(os.environ['BELLE2_EXTERNALS_TOPDIR'], version)
         if not os.path.isdir(extdir):
@@ -304,19 +317,20 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
                                  'You can use \'b2install-externals\' to install them.\n'
                                  % version)
                 sys.exit(1)
+        impdir = extdir
 
-        env_vars['BELLE2_EXTERNALS_DIR'] = extdir
-        try:
-            sys.path[:0] = [extdir]
-            import externals
-            # previously we may have imported unsetup_externals() from the old version,
-            # force reload of module from new file here
-            reload(externals)
-            externals.setup_externals(extdir)
-        except BaseException:
-            sys.stderr.write('Error: Setup of externals at %s failed.\n'
-                             % extdir)
-            raise
+    env_vars['BELLE2_EXTERNALS_DIR'] = extdir
+    try:
+        sys.path[:0] = [impdir]
+        import externals
+        # previously we may have imported unsetup_externals() from the old version,
+        # force reload of module from new file here
+        reload(externals)
+        externals.setup_externals(extdir)
+    except BaseException:
+        sys.stderr.write('Error: Setup of externals at %s failed.\n'
+                         % extdir)
+        raise
 
     # setup environment for the release, including the externals
-    export_environment(csh=csh)
+    export_environment(csh=csh, conda_externals=conda_externals)

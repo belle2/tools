@@ -78,6 +78,9 @@ fi
 if [ -z "${BELLE2_EXTERNALS_REPOSITORY}" ]; then
   export BELLE2_EXTERNALS_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/externals.git
 fi
+if [ -z "${BELLE2_BELLE_LEGACY_REPOSITORY}" ]; then
+  export BELLE2_BELLE_LEGACY_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/belle_legacy.git
+fi
 if [ -z "${BELLE2_VERSIONING_REPOSITORY}" ]; then
   export BELLE2_VERSIONING_REPOSITORY=${BELLE2_GIT_SERVER}${BELLE2_GIT_PROJECT}/versioning.git
 fi
@@ -100,6 +103,9 @@ fi
 # define function for release/analysis setup
 function b2setup
 {
+  if [ "$1" = "--conda-externals" ]; then
+    eval "$(pixi shell-hook --manifest-path ${BELLE2_EXTERNALS_TOPDIR}/pixi.toml)"
+  fi
   eval "`b2anypython ${BELLE2_TOOLS}/b2setup.py $* || echo 'return 1'`"
 }
 
