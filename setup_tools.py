@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import re
 import argparse
-
-try:
-    from packaging.version import Version as VersionClass
-except ImportError:
-    from distutils.version import LooseVersion as VersionClass
 
 try:
     from importlib import reload
@@ -137,6 +133,39 @@ def remove_option(var, option):
     env_vars[var] = env_vars[var].replace(' ' + option, '').replace(option, '').strip()
 
 
+def externals_version_tuple(version):
+    """helper function to convert an externals version to a tuple of integers
+
+    The externals versions follow the 'vXX-YY-ZZ' scheme, so 'v01-10-00' is
+    converted to (1, 10, 0) and versions can be compared with each other.
+    Versions which don't start with a number, like the 'development' externals,
+    cannot be ordered and give None. A trailing non-numeric part is ignored.
+    """
+
+    if not version:
+        return None
+    match = re.match(r'v?(\d+(?:[-.]\d+)*)', version.strip())
+    if match is None:
+        return None
+    numbers = [int(number) for number in re.split(r'[-.]', match.group(1))]
+    # pad with zeros so that for example 'v02' and 'v02-00-00' are the same
+    numbers += [0] * (3 - len(numbers))
+    return tuple(numbers)
+
+
+def needs_jupyter_config_dir(version):
+    """helper function to check whether JUPYTER_CONFIG_DIR has to be set explicitly
+
+    This is needed to fix a bug in ROOT v6.24, which is shipped with the
+    externals from v01-10-00 up to, but excluding, v02-04-00.
+    """
+
+    version = externals_version_tuple(version)
+    if version is None:
+        return False
+    return (1, 10, 0) <= version < (2, 4, 0)
+
+
 def export_environment(csh=False, conda_externals=False):
     """generate shell commands for environment settings"""
 
@@ -179,7 +208,7 @@ def export_environment(csh=False, conda_externals=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    if not conda_externals and (VersionClass('01.10.00') <= VersionClass('.'.join(env_vars['BELLE2_EXTERNALS_VERSION'][1:].split('-'))) < VersionClass('02.04.00')):
+    if not conda_externals and needs_jupyter_config_dir(env_vars.get('BELLE2_EXTERNALS_VERSION', '')):
         # overwrite JUPYTER config directory to fix bug in ROOT v6.24
         try:
             value = os.path.join(os.environ['HOME'], '.jupyter')
