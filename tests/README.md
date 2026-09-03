@@ -19,5 +19,11 @@ running the tests which is very similar to the command above:
 
     docker run -it --volume $(pwd):/data --volume /cvmfs:/cvmfs:shared --workdir /data --rm ubuntu:22.04 bash
 
+The unit tests of `setup_tools.py` (`setup_tools_tests.py`, executed by
+`00-setup_tools_tests.sh`) don't need any release, externals or CernVM-FS,
+so they can also be run directly in the `tools` directory with
+
+    tests/00-setup_tools_tests.sh
+
 These tests are automatically run on the CI for all the supported distributions and for
 each merge request to this repository to make sure everything works as intended.
