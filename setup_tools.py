@@ -166,7 +166,7 @@ def needs_jupyter_config_dir(version):
     return (1, 10, 0) <= version < (2, 4, 0)
 
 
-def export_environment(csh=False, conda_externals=False):
+def export_environment(csh=False):
     """generate shell commands for environment settings"""
 
     for var in env_vars.keys():
@@ -208,7 +208,7 @@ def export_environment(csh=False, conda_externals=False):
             print('unset SAVEPWD')
             print('unset SAVEOLDPWD')
 
-    if not conda_externals and needs_jupyter_config_dir(env_vars.get('BELLE2_EXTERNALS_VERSION', '')):
+    if needs_jupyter_config_dir(env_vars.get('BELLE2_EXTERNALS_VERSION', '')):
         # overwrite JUPYTER config directory to fix bug in ROOT v6.24
         try:
             value = os.path.join(os.environ['HOME'], '.jupyter')
@@ -362,4 +362,4 @@ def update_environment(release=None, local_dir=None, externals_version=None, opt
         raise
 
     # setup environment for the release, including the externals
-    export_environment(csh=csh, conda_externals=conda_externals)
+    export_environment(csh=csh)

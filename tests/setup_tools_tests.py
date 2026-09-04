@@ -351,14 +351,6 @@ class ExportEnvironmentTestCase(SetupToolsTestCase):
             setup_tools.env_vars['BELLE2_EXTERNALS_VERSION'] = version
             self.assertFalse([line for line in self.export() if 'JUPYTER_CONFIG_DIR' in line], version)
 
-    def test_jupyter_config_dir_conda(self):
-        """the conda based externals are never affected by the ROOT v6.24 bug"""
-
-        os.environ['HOME'] = '/home/belle2'
-        setup_tools.env_vars['BELLE2_EXTERNALS_VERSION'] = 'v02-02-00'
-        self.assertFalse([line for line in self.export(conda_externals=True)
-                          if 'JUPYTER_CONFIG_DIR' in line])
-
     def test_jupyter_config_dir_without_home(self):
         setup_tools.env_vars['BELLE2_EXTERNALS_VERSION'] = 'v02-02-00'
         lines = self.export()
@@ -449,8 +441,6 @@ class UpdateEnvironmentTestCase(SetupToolsTestCase):
         lines = self.update(conda_externals=True)
         self.assertEqual(setup_tools.get_var('BELLE2_EXTERNALS_DIR'), conda_dir)
         self.assertIn('export BELLE2_EXTERNALS_USE_CONDA="1"', lines)
-        # the conda externals don't suffer from the ROOT v6.24 bug
-        self.assertFalse([line for line in lines if 'JUPYTER_CONFIG_DIR' in line])
 
     def test_conda_externals_without_conda(self):
         os.environ['BELLE2_EXTERNALS_VERSION'] = 'v02-02-00'
