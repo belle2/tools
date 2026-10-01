@@ -166,13 +166,16 @@ else
   if [[ "$INSTALL_OPTION" > "2" ]]; then
     PACKAGES+=" mesa-libGLU libglvnd-opengl libtirpc libicu libXpm libXft"
   fi
-    if [[ ! $OS_RELEASE_VERSION < "9" ]]; then
-  if [[ "$INSTALL_OPTION" > "3" ]]; then
-      PACKAGES+=" perl-FindBin perl-File-Copy perl-Sys-Hostname perl-Hash-Util"
-    fi
-  fi
   if [[ "$INSTALL_OPTION" > "4" ]]; then
     PACKAGES+=" make wget unzip gcc m4 gcc-c++ bzip2 bison texinfo openssl-devel patch readline-devel freetype-devel libX11-devel libXpm-devel libXft-devel libXext-devel mesa-libGL-devel mesa-libGLU-devel protobuf-devel rsync libtirpc-devel ocaml"
+    # perl modules needed to build EPICS and to configure and build OpenSSL.
+    PACKAGES+=" perl-File-Path perl-PathTools perl-Getopt-Long"
+    if [[ $OS_RELEASE_VERSION < "9" ]]; then
+      PACKAGES+=" perl-interpreter"
+    else
+      PACKAGES+=" perl-FindBin perl-File-Copy perl-Sys-Hostname perl-Hash-Util"
+      PACKAGES+=" perl-File-Basename perl-Getopt-Std"
+    fi
   fi
   if [[ "$INSTALL_OPTION" > "5" ]]; then
     PACKAGES+=" flex"
