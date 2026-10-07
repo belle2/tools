@@ -169,12 +169,12 @@ else
   if [[ "$INSTALL_OPTION" > "4" ]]; then
     PACKAGES+=" make wget unzip gcc m4 gcc-c++ bzip2 bison texinfo openssl-devel patch readline-devel freetype-devel libX11-devel libXpm-devel libXft-devel libXext-devel mesa-libGL-devel mesa-libGLU-devel protobuf-devel rsync libtirpc-devel ocaml"
     # perl modules needed to build EPICS and to configure and build OpenSSL.
-    PACKAGES+=" perl-File-Path perl-PathTools perl-Getopt-Long"
+    # On el8 File::Compare is part of perl-interpreter and has no own package.
+    PACKAGES+=" perl-File-Path perl-PathTools perl-Getopt-Long perl-IPC-Cmd perl-Time-Piece"
     if [[ $OS_RELEASE_VERSION < "9" ]]; then
       PACKAGES+=" perl-interpreter"
     else
-      PACKAGES+=" perl-FindBin perl-File-Copy perl-Sys-Hostname perl-Hash-Util"
-      PACKAGES+=" perl-File-Basename perl-Getopt-Std"
+      PACKAGES+=" perl-FindBin perl-File-Copy perl-Sys-Hostname perl-Hash-Util perl-File-Basename perl-Getopt-Std perl-File-Compare"
     fi
   fi
   if [[ "$INSTALL_OPTION" > "5" ]]; then
